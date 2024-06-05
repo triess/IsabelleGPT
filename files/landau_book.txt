@@ -1,0 +1,404 @@
+Theorem 1: If
+x \<noteq> y
+then
+x' \<noteq> y'.
+Proof: Otherwise, we would have
+x' = y'
+and hence, by Axiom 4,
+x = y.
+Theorem 2: x' \<noteq> x.
+Proof: Let \<MM> be the set of all x for which this holds true.
+I) By Axiom 1 and Axiom 3,
+1' \<noteq> 1;
+therefore 1 belongs to \<MM>.
+II) If x belongs to \<MM>, then
+x' \<noteq> x,
+and hence by Theorem 1,
+(x')' \<noteq> x',
+so that x' belongs to \<MM>.
+By Axiom 5, \<MM> therefore contains all the natural numbers, i.e.
+we have for each x that
+x' \<noteq> x.
+Theorem 3: If
+x \<noteq> 1,
+then there exists one (hence, by Axiom 4, exactly one) u such that
+x = u'.
+Proof: Let \<MM> be the set consisting of the number 1 and of all
+those x for which there exists such a u. (For any such x, we have
+of necessity that
+x \<noteq> 1
+by Axiom 3.)
+I) 1 belongs to \<MM>.
+
+
+II) If x belongs to \<MM>, then, with u denoting the number x,
+we have
+x' = u',
+so that x' belongs to \<MM>.
+By Axiom 5, \<MM> therefore contains all the natural numbers;
+thus for each
+x \<noteq> 1
+there exists a u such that
+x = u'.
+Theorem 4, and at the same time Definition 1: To every pair
+of numbers x, y, we may assign in exactly one way a natural num-
+number, called x + y (+ to be read "plus"), such that
+1) x + 1 = x' for every x,
+2) x + y' = (x + y)' for every x and every y.
+x + y is called the sum of x and y, or the number obtained by
+addition of y to x.
+Proof: A) First we will show that for each fixed x there is
+at most one possibility of defining x + y for all y in such a way that
+x + 1 = x'
+and
+x + y' = (x + y)' for every y.
+Let a\<^sub>y and b\<^sub>y be defined for all y and be such that
+a\<^sub>1 = x', b\<^sub>1 = x'
+a\<^bsub>y'\<^esub> = (a\<^sub>y)', b\<^bsub>y'\<^esub> = (b\<^sub>y)' for every y.
+Let \<MM> be the set of all y for which
+a\<^sub>y = b\<^sub>.
+I) a\<^sub>1 = x' = b\<^sub>1;
+hence 1 belongs to \<MM>.
+II) If y belongs to \<MM>, then
+a\<^sub>y = b\<^sub>y,
+hence by Axiom 2,
+(a\<^sub>y)' = (b\<^sub>y)',
+therefore
+a\<^bsub>y'\<^esub> = (a\<^sub>y)' = (b\<^sub>y)' = b\<^bsub>y'\<^esub>,
+so that y' belongs to \<MM>.
+Hence \<MM> is the set of all natural numbers; i.e. for every y we
+have
+a\<^sub>y = b\<^sub>y.
+
+B) Now we will show that for each x it is actually possible to
+define x + y for all y in such a way that
+x + 1 = x'
+and
+x + y' = (x + y)' for every y.
+Let \<MM> be the set of all x for which this is possible (in exactly
+one way, by A)).
+I) For
+x = 1,
+the number
+x + y = y'
+is as required, since
+x + 1 = 1' = x',
+x + y' = (y')' = (x + y)'.
+Hence 1 belongs to \<MM>.
+II) Let x belong to \<MM>, so that there exists an x + y for all y.
+Then the number
+x' + y = (x + y)''
+is the required number for x', since
+x' + 1 = (x + 1)' = (x')'
+and
+x' + y' = (x + y')' = ((x+y)')' = (x' + y)'.
+Hence x' belongs to \<MM>.
+Therefore \<MM> contains all x.
+Theorem 5 (Associative Law of Addition) :
+(x + y) + z = x + (y + z).
+Proof: Fix x and y, and denote by \<MM> the set of all z for which
+the assertion of the theorem holds.
+I) (x + y) + 1 = (x + y)' = x + y' = x + (y + 1);
+thus 1 belongs to \<MM>.
+II) Let z belong to \<MM>. Then
+(x + y) + z = x + (y + z),
+hence
+(x + y) + z' = ((x+y) +z)' = (x + (y + z))' = x + (y + z)' = x + (y + z'),
+so that z' belongs to \<MM>.
+Therefore the assertion holds for all z.
+
+
+Theorem 6 (Commutative Law of Addition) :
+x + y = y + x.
+Proof: Fix y, and let \<MM> be the set of all x for which the
+assertion holds.
+I) We have
+y + 1 = y',
+and furthermore, by the construction in the proof of Theorem 4,
+1 + y = y',
+so that
+1 + y = y + 1
+and 1 belongs to \<MM>.
+II) If a belongs to \<MM>, then
+x + y = y + x,
+therefore
+(x + y)' = (y + x)' = y + x'.
+By the construction in the proof of Theorem 4, we have
+x' + y = (x + y)',
+hence
+x' + y = y + x',
+so that x' belongs to \<MM>.
+The assertion therefore holds for all x.
+
+Theorem 7: y \<noteq> x + y.
+Proof: Fix x, and let \<MM> be the set of all y for which the assertion holds.
+I) 1 \<noteq> x',
+1 \<noteq> x + 1;
+1 belongs to \<MM>.
+II) If y belongs to \<MM>, then
+y \<noteq> x + y,
+hence
+y' \<noteq> (x + y)',
+y' \<noteq> x + y'.
+so that y' belongs to \<MM>.
+Therefore the assertion holds for all y.
+
+Theorem 8: If
+y \<noteq> z
+then
+x + y \<noteq> x + z.
+Proof: Consider a fixed y and a fixed z such that
+y \<noteq> z,
+and let \<MM> be the set of all x for which
+x + y \<noteq> x + z.
+I) y' \<noteq> z',
+1 + y \<noteq> 1 + z;
+hence 1 belongs to \<MM>.
+II) If x belongs to \<MM>, then
+x + y \<noteq> x + z,
+hence
+(x + y)' \<noteq> (x + z)',
+x' + y \<noteq> x' + z,
+so that x' belongs to \<MM>.
+Therefore the assertion holds always.
+
+Theorem 9: For given x and y, exactly one of the following
+must be the case:
+1) x = y.
+2) There exists a u (exactly one, by Theorem 8) such that
+x = y + u.
+3) There exists a v (exactly one, by Theorem 8) such that
+y = x + v.
+Proof: A) By Theorem 7, cases 1) and 2) are incompatible.
+Similarly, 1) and 3) are incompatible. The incompatibility of 2)
+and 3) also follows from Theorem 7; for otherwise, we would have
+x = y + u = (x + v) + u = x + (v + u) = (v + u) + x.
+Therefore we can have at most one of the cases 1), 2) and 3).
+B) Let x be fixed, and let \<MM> be the set of all y for which one
+(hence by A), exactly one) of the cases 1), 2) and 3) obtains.
+I) For y = 1, we have by Theorem 3 that either
+x = 1 = y (case 1))
+or
+x = u' = 1 + u = y + u (case 2)).
+Hence 1 belongs to \<MM>.
+II) Let y belong to \<MM>. Then
+either (case 1) for y)
+x = y
+hence
+y' = y + 1 = x + 1 (case 3) for y');
+or (case 2) for y)
+x = y + u,
+hence if
+u = 1,
+then
+x = y + 1 = y' (case 1) for y');
+but if
+u \<noteq> 1,
+then, by Theorem 3,
+u = w' = 1 + w,
+x = y + (1 + w) = (y + 1) + w = y' + w (case 2) for y');
+or (case 3) for y)
+y= x + v,
+hence
+y' = (x + v)' = x + v' (case 3) for y').
+In any case, y' belongs to \<MM>.
+Therefore we always have one of the cases 1),2) and 3).
+
+Definition 2: If
+x = y + u
+then
+x > y.
+(> to be read "is greater than.")
+
+Definition 3: If
+y = x + v
+then
+x < y.
+(< to be read "is less than.")
+
+Theorem 10: For any given x, y, we have exactly one of the cases
+x = y, x > y, x < y.
+Proof: Theorem 9, Definition 2 and Definition 3.
+
+Theorem 11: If
+x > y
+then
+y < x.
+Proof: Each of these means that
+x = y + u
+for some suitable u.
+
+Theorem 12: If
+x < y
+then
+y > x.
+Proof: Each of these means that
+y = x + v
+for some suitable v.
+
+Definition 4: x \<ge> y
+means
+x > y or x = y.
+(\<ge> to be read "is greater than or equal to.")
+
+Definition 5: x \<le> y
+means
+x < y or x = y.
+(\<le> to be read "is less than or equal to.")
+
+Theorem 13: If
+x \<ge> y
+then
+y \<le> x.
+Proof: Theorem 11.
+
+Theorem 14: If
+x \<le> y
+then
+y \<ge> x.
+Proof: Theorem 12.
+
+Theorem 15 (Transitivity of Ordering): If
+x < y, y < z,
+then
+x < z.
+Preliminary Remark: Thus if
+x > y, y > z,
+then
+x > z,
+since
+z < y, y < x,
+z < x;
+but in what follows I will not even bother to write down such
+statements, which are obtained trivially by simply reading the
+formulas backwards.
+Proof: With suitable v, w, we have
+y = x + v, z = y + w,
+hence
+z = (x + v) + w = x + (v + w),
+x < z.
+
+Theorem 16: If
+x \<le> y, y < z or x < y, y \<le> z,
+then
+x < z.
+Proof: Obvious if an equality sign holds in the hypothesis:
+otherwise, Theorem 15 does it.
+
+Theorem 17: If
+x \<le> y, y \<le> z,
+then
+x \<le> z.
+Proof: Obvious if two equality signs hold in the hypothesis;
+otherwise, Theorem 16 does it.
+A notation such as
+a < b \<le> c < d
+is justified on the basis of Theorems 15 and 17. While its
+immediate meaning is
+a < b, b \<le> c, c < d,
+it also implies, according to these theorems, that, say
+a < c, a < d, b < d.
+(Similarly in the later chapters.)
+
+Theorem 18: x + y > x.
+Proof: x + y = x + y.
+
+Theorem 19: If
+x > y, or x = y, or x < y,
+then
+x + z > y + z, or x + z = y + z, or x + z < y + z,
+respectively.
+Proof: 1) If
+x > y
+then
+x = y + u,
+x + z = (y + u) + z = (u + y) + z = u + (y + z) = (y + z) + u,
+x + z > y + z.
+2) If
+x = y
+then clearly
+x + z = y + z.
+3) If
+x < y
+then
+y > x,
+hence, by 1),
+y + z > x + z,
+x + z < y + z.
+
+Theorem 20: If
+x + z > y + z, or x + z = y + z, or x + z < y + z,
+then
+x > y, or x = y, or x < y, respectively.
+Proof: Follows from Theorem 19, since the three cases are, in
+both instances, mutually exclusive and exhaust all possibilities.
+
+Theorem 21: If
+x > y, z > u,
+then
+x + z > y + u.
+Proof: By Theorem 19, we have
+x + z > y + z
+and
+y + z = z + y > u + y = y + u,
+hence
+x + z > y + u.
+
+Theorem 22: If
+x \<ge> y, z > u or x > y, z \<ge> u,
+then
+x + z > y + u.
+Proof: Follows from Theorem 19 if an equality sign holds in
+the hypothesis, otherwise from Theorem 21.
+
+Theorem 23: If
+x \<ge> y, z \<ge> u,
+then
+x + z \<ge> y + u.
+Proof: Obvious if two equality signs hold in the hypothesis;
+otherwise Theorem 22 does it.
+
+Theorem 24: x \<ge> 1.
+Proof: Either
+x = 1
+or
+x = u' = u + 1 > 1.
+
+Theorem 25: If y > x
+then
+y \<ge> x + 1.
+Proof: y = x + u,
+u \<ge> 1,
+hence
+y \<ge> x + 1.
+
+Theorem 26: If
+y < x + 1
+then
+y \<ge> x.
+Proof: Otherwise we would have
+y > x
+and therefore, by Theorem 25,
+y \<ge> x + 1.
+
+Theorem 27: In every non-empty set of natural numbers
+there is a least one (i.e. one which is less than any other number
+of the set).
+Proof: Let \<NN> be the given set, and let \<MM> be the set of all x
+which are \<le> every number of \<NN>.
+By Theorem 24, the set \<MM> contains the number 1. Not every
+x belongs to \<MM>; in fact, for each y of \<NN> the number y + 1 does
+not belong to \<MM>, since
+y + 1 > y.
+Therefore there is an m in \<MM> such that m + 1 does not belong
+to \<MM>; for otherwise, every natural number would have to belong
+to \<MM>, by Axiom 5.
+Of this m I now assert that it is \<le> every n of \<NN>, and that it belongs
+to \<NN>. The former we already know. The latter is established by an
+indirect argument, as follows: If m did not belong to \<NN> then for
+each n of \<NN> we would have
+m < n,
+hence, by Theorem 25,
+m + 1 \<le> n;
+thus m + 1 would belong to \<MM>, contradicting the statement above
+by which m was introduced.

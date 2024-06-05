@@ -1,0 +1,12 @@
+#path to .thy file of already correctly translated parts
+theory = files/Landau_GPT4.thy
+#path to a .txt file or similar of the natural language proofs
+proof = files/landau_book.txt
+#optional seed for GPT
+seed = 12345
+#optional model to be used from OpenAI
+model = gpt-4-turbo
+#optional starting count of the number of proofs that are already translated
+starting_proof = 7
+#The size of the sliding window of proofs that should be kept in the GPT chat history
+few_shot = 5

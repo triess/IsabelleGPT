@@ -1,0 +1,225 @@
+import subprocess
+import threading
+import queue
+import os
+import GPTStuff
+import Utils
+import shutil
+from deprecated import deprecated
+
+proofs = []
+proof_counter = 0
+client = None
+TEMP_THY_FILE = "temp.thy"
+theory_file = ''
+
+
+def enqueue_output(out, queue):
+    while True:
+        try:
+            line = out.readline()
+            #print("line:")
+            #print(line)
+            if not line:
+                break
+            queue.put(line.rstrip('\r\n'))
+        except UnicodeDecodeError:
+            print("decoding issue")
+            continue
+    out.close()
+
+
+
+@deprecated
+def run_command(command):
+    try:
+        result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        if result.returncode == 0:
+            return result.stdout.strip()
+        else:
+            print(f'Error running command: {command}')
+            print(f'Error: {result.stderr}')
+            return None
+    except Exception as e:
+        print(f'Error running command: {command}')
+        print(f'Error: {e}')
+        return None
+
+
+@deprecated
+def run_continuous(shell_process, command):
+    print("running command")
+    try:
+        shell_process.stdin.write(command.encode('utf-8')+b'\n')
+        shell_process.stdin.flush()
+        output = []
+        for line in shell_process.stdout:
+            output.append(line.decode('utf-8').strip())
+            print(line)
+        return '\n'.join(output)
+    except Exception as e:
+        print(f'Error running command: {command}:{e}')
+        return None
+    
+
+def main():
+    try:
+        env_backup = os.environ.copy()
+        os.environ['TEMP_WINDOWS'] = os.environ.get('TEMP', '')
+        os.environ['HOME'] = os.path.join(os.environ.get('HOMEDRIVE', ''), os.environ.get('HOMEPATH', ''))
+        os.environ['PATH'] = os.path.join('E:\\', 'Programme', 'Isabelle', 'Isabelle2023', 'bin') + ';' + os.environ.get('PATH', '')
+        os.environ['LANG'] = 'en_US.UTF-8'
+        os.environ['CHERE_INVOKING'] = 'true'
+        bash_command = [os.path.join('E:', 'Programme', 'Isabelle', 'Isabelle2023', 'contrib', 'cygwin', 'bin', 'bash.exe'), '--login', '-i']
+        print(os.environ['HOME'])
+        print(os.environ['PATH'])
+        print(bash_command)
+        shell_process = subprocess.Popen(bash_command,
+                                         stdout=subprocess.PIPE,
+                                         stderr=subprocess.PIPE,
+                                         stdin=subprocess.PIPE,
+                                         text=True)
+
+        output_queue = queue.Queue()
+        output_thread = threading.Thread(target=enqueue_output, args=(shell_process.stdout, output_queue), daemon=True)
+        output_thread.start()
+        error_thread = threading.Thread(target=enqueue_output, args=(shell_process.stderr, output_queue), daemon=True)
+        error_thread.start()
+        print("Shell Process Started")
+        # main loop
+        while True:
+            next_proof = get_next_proof()
+            if next_proof is None:
+                print("translation finished")
+                break
+            print(f"Translating next proof {next_proof[0:15]}")
+            # deleting "end"
+            Utils.delete_last_line(TEMP_THY_FILE)
+            # writing prompt as comment
+            with open(TEMP_THY_FILE, 'a') as file:
+                file.write("(* " + next_proof + " *)\n")
+            translation = GPTStuff.chat_call(client, next_proof)
+            # writing translation and "end" if needed
+            with open(TEMP_THY_FILE, 'a') as file:
+                file.write(translation)
+                if not translation.strip().endswith('end'):
+                    file.write('\nend')
+                file.close()
+            status = {}
+            while True:
+                command = get_next_command(status)
+                shell_process.stdin.write(command+'\n')
+                shell_process.stdin.flush()
+                output_lines = []
+                while True:
+                    try:
+                        output_line = output_queue.get(timeout=10)
+                        output_lines.append(output_line)
+                        #print(output_line)
+                    except queue.Empty:
+                        print("Queue empty, moving on")
+                        break
+                old_status = status
+                status = Utils.parse_output(output_lines, old_status)
+                print(status.get("status"))
+                if status.get("status") == Utils.StatusCode.OK:
+                    shutil.copyfile(TEMP_THY_FILE, theory_file)
+                    GPTStuff.startup(theory_file)
+                    break
+                elif status.get("status") == Utils.StatusCode.SLEDGEHAMMER_NEEDED:
+                    if status.get("error_lines") is not None:
+                        Utils.cheating(TEMP_THY_FILE, status)
+                elif status.get("status") == Utils.StatusCode.GPT_CORRECTION:
+                    corr = GPTStuff.chat_call(client, status.get("lines"), error=True)
+                    shutil.copyfile(theory_file, TEMP_THY_FILE)
+                    Utils.delete_last_line(TEMP_THY_FILE)
+                    with open(TEMP_THY_FILE, 'a') as file:
+                        file.write(corr)
+                        file.write('\nend')
+                        file.close()
+                elif status.get("status") == Utils.StatusCode.LOGS_NEEDED:
+                    pass
+                else:
+                    print(status.get("lines"))
+                    raise ChildProcessError
+    except KeyboardInterrupt:
+        print("\nUser Interrupt. Session terminated.")
+    except ChildProcessError:
+        print("Fatal Error. Shutting down.")
+    finally:
+        shell_process.stdin.close()
+        shell_process.wait()
+        os.environ.clear()
+        os.environ.update(env_backup)
+        print("Session Terminated.")
+
+
+def get_next_proof():
+    global proof_counter
+    if proof_counter >= len(proofs):
+        return None
+    ret = proofs[proof_counter]
+    proof_counter += 1
+    return ret
+
+
+def get_next_command(status, set_up=''):
+    if set_up == 'user':
+        return input("Command:")
+    elif not set_up:
+        if status.get("status") == Utils.StatusCode.LOGS_NEEDED:
+            print("calling isabelle error log")
+            return "isabelle build_log -H Error Test"
+        else:
+            print("calling isabelle build")
+            return "isabelle build -o quick_and_dirty=true -d. Test"
+
+
+def read_proofs(proof_file):
+    global proofs
+    curr_proof = ""
+    with open(proof_file, 'r') as f:
+        for line in f:
+            line = line.strip()
+            if line.startswith("Theorem") or line.startswith("Definition"):
+                if curr_proof:
+                    proofs.append(curr_proof)
+                    curr_proof = line
+                else:
+                    curr_proof += line + "\n"
+            else:
+                curr_proof += line + "\n"
+        if curr_proof:
+            proofs.append(curr_proof)
+
+
+def read_params():
+    global theory_file, client, proof_counter
+    parameters = {}
+    with open("files/config", "r") as f:
+        for line in f:
+            line = line.strip()
+            if line.startswith('#') or not line:
+                continue
+            param = line.split("=")
+            parameters[param[0].strip()] = param[1].strip()
+    print("Parameters loaded")
+    print(parameters)
+    theory_file = parameters['theory']
+    print("copying theory file")
+    shutil.copyfile(theory_file, TEMP_THY_FILE)
+    print("initializing GPT module")
+    client = GPTStuff.initialise(seed=int(parameters.get('seed')), model=parameters.get('model'), few_shot=int(parameters.get('few_shot')))
+    GPTStuff.startup(theory_file)
+    print("reading natural language proofs")
+    read_proofs(parameters["proof"])
+    print(f"found:{len(proofs)} proofs")
+    proof_counter = int(parameters.get("starting_proof"))
+    if not proof_counter:
+        proof_counter = 0
+
+
+if __name__ == '__main__':
+    read_params()
+    print("starting command line module")
+    main()
