@@ -84,12 +84,12 @@ define M where "M \<equiv> {I} \<union> {x. \<exists>u. x = succ u}"
 $$x \neq 1$$
 by Axiom 3.)" *)
 {
-fix x assume "x \<in> {x. \<exists>u. x = succ u}"
+fix x::Natnums assume "x \<in> {x. \<exists>u. x = succ u}"
 from this Axiom_3 have "x \<noteq> I" by auto
 }
 have "I \<in> M" by (simp add: M_def)
 {
-fix x assume "x \<in> M"
+fix x::Natnums assume "x \<in> M"
 define u where "u \<equiv> x"
 have "succ x = succ u" by (simp add: u_def)
 from this have "succ x \<in> M" using M_def by blast
@@ -103,13 +103,13 @@ there exists a $u$ such that
 $$x = u'.$$" *)
 (* This is identical to the theorem statement, so it finishes the proof. *)
 {
-  fix x assume "x \<noteq> I"
+  fix x::Natnums assume "x \<noteq> I"
   from \<open>\<forall>x. x \<in> M\<close> have "x \<in> M" by simp
   from this M_def have "\<exists>u. x = succ u"  (* sledgehammer *)
     using \<open>x \<noteq> I\<close> by blast
 }
 {
-    fix x assume "x \<noteq> I"
+    fix x::Natnums assume "x \<noteq> I"
     from \<open>\<forall>x. x \<in> M\<close> have "x \<in> M" by simp
     from this M_def have "\<exists>u. x = succ u" (* sledgehammer *)
       using \<open>x \<noteq> I\<close> by blast
@@ -141,7 +141,7 @@ proof -
   proof -
     {
 (* The fact that $x$ was called "fixed" means that we need to fix $x$ at the beginning of the formalization of the subproof. *)
-      fix x
+      fix x::Natnums
 (* "Let $a_y$ and $b_y$ be defined for all $y$ and be such that
 $$a_1 = x', b_1 = x',$$
 $$a_{y'} = (a_y)', b_{y'} = (by)' \textnormal{for every y}.$$" *)
@@ -164,7 +164,7 @@ We need to split the chained equation into its parts: *)
       }
 (* "II) If $y$ belongs to $\mathfrak{M}$," *)
       {
-        fix y assume "y \<in> M"
+        fix y::Natnums assume "y \<in> M"
 (* "then
 $$a_y = b_y,$$" *)
         from this have "a y = b y" (* sledgehammer *) using M_def by blast
@@ -202,7 +202,7 @@ $$a_y = b_y.$$" *)
   {
     fix a b assume "(\<forall>x. a x I = succ x) \<and> (\<forall>x y. a x (succ y) = succ(a x y)) \<and> (\<forall>x. b x I = succ x) \<and> (\<forall>x y. b x (succ y) = succ(a x y))"
     {
-      fix x
+      fix x::Natnums
       have "a x I = succ x \<and> (\<forall>y. a x (succ y) = succ(a x y)) \<and> b x I = succ x \<and> (\<forall>y. b x (succ y) = succ(a x y))" (* sledgehammer *)
         by (simp add: \<open>(\<forall>x. a x I = succ x) \<and> (\<forall>x y. a x (succ y) = succ (a x y)) \<and> (\<forall>x. b x I = succ x) \<and> (\<forall>x y. b x (succ y) = succ (a x y))\<close>)
       have "\<forall>a b :: Natnums \<Rightarrow> Natnums. (a I = succ x \<and> (\<forall>y. a(succ y) = succ(a y)) \<and> b I = succ x \<and> (\<forall>y. b(succ y) = succ(b y)) \<longrightarrow> a = b)" (* sledgehammer *)
@@ -235,7 +235,7 @@ $$a_y = b_y.$$" *)
       have "I \<in> M" (* sledgehammer *) using M_def by blast
     }
     {
-      fix x assume  "x \<in> M"
+      fix x::Natnums assume  "x \<in> M"
       from this obtain f where "(f I = succ x  \<and> (\<forall>y. f(succ y) = succ(f y)))" (* sledgehammer *)
         using M_def by blast
       define f' where "f' \<equiv> \<lambda>y. succ (f y)"
@@ -290,7 +290,7 @@ theorem Theorem_5: "\<forall>x y z. (x\<^bold>+y)\<^bold>+z = x\<^bold>+(y\<^bol
 (* "Proof: Fix $x$ and $y$, and denote by $\mathfrak{M}$ the set of all $z$ for which the assertion of the theorem holds." *)
 proof -
 {
-fix x y
+fix x y::Natnums
 define M where "M \<equiv> {z. (x \<^bold>+ y) \<^bold>+ z = x \<^bold>+ (y \<^bold>+ z)}"
 (* "I) $$(x + y) + 1 = (x + y)' = x + y' = x + (y + 1);$$
 thus $1$ belongs to $\mathfrak{M}$." *)
@@ -304,7 +304,7 @@ thus $1$ belongs to $\mathfrak{M}$." *)
     }
 (* "II) Let $z$ belong to $\mathfrak{M}$." *)
 {
-fix z assume "z \<in> M"
+fix z::Natnums assume "z \<in> M"
 (* "Then
 $$(x + y) + z = x + (y + z),$$
 hence
@@ -336,7 +336,7 @@ theorem Theorem_6: "\<forall>x y. x \<^bold>+ y = y \<^bold>+ x"
 proof -
 (*Proof: Fix y, and let M be the set of all x for which the assertion holds. *)
 {
-  fix y
+  fix y::Natnums
   define M where "M \<equiv> {x. x \<^bold>+ y = y \<^bold>+ x}"
 (*I) We have \n y+1=y' \n and furthermore by the construction in the proof of Theorem 4, \n 1+y=y' \n so that \n 1+y=y+1 \n and 1 belongs to M. *)
 {
@@ -347,7 +347,7 @@ proof -
       by (simp add: N_def)
 
     {
-      fix z assume "z \<in> N"
+      fix z::Natnums assume "z \<in> N"
 
       have "succ z \<in> N"
         using L1 N_def \<open>z \<in> N\<close> by force
@@ -367,7 +367,7 @@ proof -
   }
 (*II) If x belongs to M, then \n x+y=y+x \n therefore \n (x+y)'=(y+x)'=y+x'. *)
 {
-    fix x assume "x \<in> M"
+    fix x::Natnums assume "x \<in> M"
     from this M_def have "x \<^bold>+ y = y \<^bold>+ x" by auto
     then have "succ (x \<^bold>+ y) = succ (y \<^bold>+ x)" by auto
     moreover have "succ (y \<^bold>+ x) = y \<^bold>+ succ x" by (simp add: L1)
@@ -402,17 +402,20 @@ Therefore the assertion holds for all y. *)
 theorem Theorem_7: "\<forall>x y. y \<noteq> x \<^bold>+ y"
 proof -
   {
-    fix x
+    fix x::Natnums
     define M where "M \<equiv> {y. y \<noteq> x \<^bold>+ y}"
     {
-      have "I \<noteq> succ x" sorry
-      moreover have "I \<noteq> x \<^bold>+ I" sorry
+      have "I \<noteq> succ x"
+        by (metis Axiom_3)
+      moreover have "I \<noteq> x \<^bold>+ I"
+      using L1 calculation by presburger
       ultimately have "I \<in> M" by (simp add: M_def)
     }
     {
-      fix y assume "y \<in> M"
+      fix y::Natnums assume "y \<in> M"
       from this have "y \<noteq> x \<^bold>+ y" by (simp add: M_def)
-      hence "succ y \<noteq> succ (x \<^bold>+ y)" sorry
+      hence "succ y \<noteq> succ (x \<^bold>+ y)"
+        using Theorem_1 by presburger
       moreover have "succ (x \<^bold>+ y) = x \<^bold>+ succ y" by (simp add: L1)
       ultimately have "succ y \<noteq> x \<^bold>+ succ y" by auto
       hence "succ y \<in> M" by (simp add: M_def)
@@ -422,6 +425,25 @@ proof -
   }
   thus "\<forall>x y. y \<noteq> x \<^bold>+ y" by auto
 qed
+(* Theorem 8: Ify \<noteq> z
+then
+x + y \<noteq> x + z.
+Proof: Consider a fixed y and a fixed z such that
+y \<noteq> z,
+and let \<MM> be the set of all x for which
+x + y \<noteq> x + z.
+I) y' \<noteq> z',
+1 + y \<noteq> 1 + z;
+hence 1 belongs to \<MM>.
+II) If x belongs to \<MM>, then
+x + y \<noteq> x + z,
+hence
+(x + y)' \<noteq> (x + z)',
+x' + y \<noteq> x' + z,
+so that x' belongs to \<MM>.
+Therefore the assertion holds always.
+
+ *)
 (* Theorem 8: If
 y \<noteq> z
 then
@@ -439,30 +461,316 @@ hence
 (x + y)' \<noteq> (x + z)',
 x' + y \<noteq> x' + z,
 so that x' belongs to \<MM>.
-Therefore the assertion holds always. *)
+Therefore the assertion holds always.
+
+ *)
 theorem Theorem_8: "\<forall>x y z. y \<noteq> z \<longrightarrow> x \<^bold>+ y \<noteq> x \<^bold>+ z"
 proof -
   {
     fix y z::Natnums assume "y \<noteq> z"
     define M where "M \<equiv> {x. x \<^bold>+ y \<noteq> x \<^bold>+ z}"
     {
-      have "succ y \<noteq> succ z" by (simp add: `y \<noteq> z`)
-      moreover have "I \<^bold>+ y \<noteq> I \<^bold>+ z" by (simp add: L1 `succ y \<noteq> succ z`)
+      have "succ y \<noteq> succ z" (*manual sledge*)
+        using Axiom_4 \<open>y \<noteq> z\<close> by blast
+      moreover have "I \<^bold>+ y \<noteq> I \<^bold>+ z"
+        by (metis L1 Theorem_6 calculation)
       ultimately have "I \<in> M" by (simp add: M_def)
     }
     {
-      fix x assume "x \<in> M"
+      fix x::Natnums assume "x \<in> M"
       from this have "x \<^bold>+ y \<noteq> x \<^bold>+ z" by (simp add: M_def)
-      hence "succ (x \<^bold>+ y) \<noteq> succ (x \<^bold>+ z)" by auto
+      hence "succ (x \<^bold>+ y) \<noteq> succ (x \<^bold>+ z)"
+        using Axiom_4 by blast
       moreover have "succ (x \<^bold>+ y) = x \<^bold>+ succ y" by (simp add: L1)
       moreover have "succ (x \<^bold>+ z) = x \<^bold>+ succ z" by (simp add: L1)
       ultimately have "x \<^bold>+ succ y \<noteq> x \<^bold>+ succ z" by auto
-      hence "succ x \<^bold>+ y \<noteq> succ x \<^bold>+ z" by (simp add: L1)
+      hence "succ x \<^bold>+ y \<noteq> succ x \<^bold>+ z"
+        by (simp add: L1 Theorem_6)
       hence "succ x \<in> M" by (simp add: M_def)
     }
     from Axiom_5 have "\<forall>x. x \<in> M" using \<open>I \<in> M\<close> \<open>\<And>x. x \<in> M \<Longrightarrow> succ x \<in> M\<close> by blast
     from this M_def have "\<forall>x. x \<^bold>+ y \<noteq> x \<^bold>+ z" by auto
   }
   thus "\<forall>x y z. y \<noteq> z \<longrightarrow> x \<^bold>+ y \<noteq> x \<^bold>+ z" by auto
+qed
+(* Theorem 9: For given x and y, exactly one of the following
+must be the case:
+1) x = y.
+2) There exists a u (exactly one, by Theorem 8) such that
+x = y + u.
+3) There exists a v (exactly one, by Theorem 8) such that
+y = x + v.
+Proof: A) By Theorem 7, cases 1) and 2) are incompatible.
+Similarly, 1) and 3) are incompatible. The incompatibility of 2)
+and 3) also follows from Theorem 7; for otherwise, we would have
+x = y + u = (x + v) + u = x + (v + u) = (v + u) + x.
+Therefore we can have at most one of the cases 1), 2) and 3).
+B) Let x be fixed, and let \<MM> be the set of all y for which one
+(hence by A), exactly one) of the cases 1), 2) and 3) obtains.
+I) For y = 1, we have by Theorem 3 that either
+x = 1 = y (case 1))
+or
+x = u' = 1 + u = y + u (case 2)).
+Hence 1 belongs to \<MM>.
+II) Let y belong to \<MM>. Then
+either (case 1) for y)
+x = y
+hence
+y' = y + 1 = x + 1 (case 3) for y');
+or (case 2) for y)
+x = y + u,
+hence if
+u = 1,
+then
+x = y + 1 = y' (case 1) for y');
+but if
+u \<noteq> 1,
+then, by Theorem 3,
+u = w' = 1 + w,
+x = y + (1 + w) = (y + 1) + w = y' + w (case 2) for y');
+or (case 3) for y)
+y= x + v,
+hence
+y' = (x + v)' = x + v' (case 3) for y').
+In any case, y' belongs to \<MM>.
+Therefore we always have one of the cases 1),2) and 3).
+
+ *)
+theorem Theorem_9: "\<forall>x y. (x = y) \<or> (\<exists>!u. x = y \<^bold>+ u) \<or> (\<exists>!v. y = x \<^bold>+ v)"
+proof -
+  {
+    fix x::Natnums
+    define M where "M \<equiv> {y. (x = y) \<or> (\<exists>!u. x = y \<^bold>+ u) \<or> (\<exists>!v. y = x \<^bold>+ v)}"
+    {
+      from Theorem_3 have "x = I \<or> (\<exists>!u. x = I \<^bold>+ u)"
+        by (metis L1 Theorem_6)
+      hence "I \<in> M"
+        using M_def by blast
+    }
+    {
+      fix y::Natnums assume "y \<in> M"
+      from this M_def have "(x = y) \<or> (\<exists>!u. x = y \<^bold>+ u) \<or> (\<exists>!v. y = x \<^bold>+ v)" by auto
+      {
+        assume "x = y"
+        hence "succ x = succ y" by simp
+        hence "succ y = x \<^bold>+ I" by (simp add: L1)
+        hence "succ y = y \<^bold>+ I" by (simp add: \<open>x = y\<close>)
+        hence "succ y \<in> M"
+          using M_def Theorem_8 \<open>x = y\<close> by auto
+      }
+      moreover
+      {
+        assume "\<exists>!u. x = y \<^bold>+ u"
+        then obtain u where "x = y \<^bold>+ u" and "\<forall>v. x = y \<^bold>+ v \<longrightarrow> v = u" by auto
+        hence "succ x = succ (y \<^bold>+ u)" by simp
+        hence "succ x = y \<^bold>+ succ u" by (simp add: L1)
+        hence "succ y = y \<^bold>+ succ u" sorry
+        hence "succ y \<in> M"
+          using Axiom_4 \<open>succ x = y \<^bold>+ succ u\<close> calculation by presburger
+      }
+      moreover
+      {
+        assume "\<exists>!v. y = x \<^bold>+ v"
+        then obtain v where "y = x \<^bold>+ v" and "\<forall>w. y = x \<^bold>+ w \<longrightarrow> w = v" by auto
+        hence "succ y = succ (x \<^bold>+ v)" by simp
+        hence "succ y = x \<^bold>+ succ v" by (simp add: L1)
+        hence "succ y \<in> M"
+          using M_def Theorem_8 by auto
+      }
+      ultimately have "succ y \<in> M"
+        using \<open>x = y \<or> (\<exists>!u. x = y \<^bold>+ u) \<or> (\<exists>!v. y = x \<^bold>+ v)\<close> by fastforce
+    }
+    from Axiom_5 have "\<forall>y. y \<in> M" using \<open>I \<in> M\<close> \<open>\<And>y. y \<in> M \<Longrightarrow> succ y \<in> M\<close> by blast
+    from this M_def have "\<forall>y. (x = y) \<or> (\<exists>!u. x = y \<^bold>+ u) \<or> (\<exists>!v. y = x \<^bold>+ v)" by auto
+  }
+  thus "\<forall>x y. (x = y) \<or> (\<exists>!u. x = y \<^bold>+ u) \<or> (\<exists>!v. y = x \<^bold>+ v)" by auto
+qed
+(* Definition 2: If
+x = y + u
+then
+x > y.
+(> to be read "is greater than.")
+
+ *)
+definition greater_than (infix "\<^bold>>" 50) where
+"x \<^bold>> y \<equiv> (\<exists>u. x = y \<^bold>+ u \<and> u \<noteq> I)"
+(* Definition 3: If
+y = x + v
+then
+x < y.
+(< to be read "is less than.")
+
+ *)
+definition less_than (infix "\<^bold><" 50) where
+"x \<^bold>< y \<equiv> (\<exists>v. y = x \<^bold>+ v \<and> v \<noteq> I)"
+(* Theorem 10: For any given x, y, we have exactly one of the cases
+x = y, x > y, x < y.
+Proof: Theorem 9, Definition 2 and Definition 3.
+
+ *)
+theorem Theorem_10: "\<forall>x y. (x = y) \<or> (x \<^bold>> y) \<or> (x \<^bold>< y)"
+proof -
+  from Theorem_9 have "\<forall>x y. (x = y) \<or> (\<exists>!u. x = y \<^bold>+ u) \<or> (\<exists>!v. y = x \<^bold>+ v)" by simp
+  thus "\<forall>x y. (x = y) \<or> (x \<^bold>> y) \<or> (x \<^bold>< y)"
+    unfolding greater_than_def less_than_def sorry
+qed
+(* Theorem 11: If
+x > y
+then
+y < x.
+Proof: Each of these means that
+x = y + u
+for some suitable u.
+
+ *)
+theorem Theorem_11: "\<forall>x y. (x \<^bold>> y) \<longrightarrow> (y \<^bold>< x)"
+proof -
+  {
+    fix x y assume "x \<^bold>> y"
+    then have "\<exists>u. x = y \<^bold>+ u \<and> u \<noteq> I"
+      unfolding greater_than_def by simp
+    then obtain u where "x = y \<^bold>+ u" and "u \<noteq> I" by auto
+    hence "y = x \<^bold>+ u"
+      by (metis L1 less_than_def Theorem_10 Theorem_7 Theorem_8 greater_than_def)
+    hence "y \<^bold>< x"
+      unfolding less_than_def using \<open>u \<noteq> I\<close>
+      using \<open>\<exists>u. x = y \<^bold>+ u \<and> u \<noteq> I\<close> by blast
+  }
+  thus "\<forall>x y. (x \<^bold>> y) \<longrightarrow> (y \<^bold>< x)" by auto
+qed
+(* Theorem 12: If
+x < y
+then
+y > x.
+Proof: Each of these means that
+y = x + v
+for some suitable v.
+
+ *)
+theorem Theorem_12: "\<forall>x y. (x \<^bold>< y) \<longrightarrow> (y \<^bold>> x)"
+proof -
+  {
+    fix x y assume "x \<^bold>< y"
+    then have "\<exists>v. y = x \<^bold>+ v \<and> v \<noteq> I"
+      unfolding less_than_def by simp
+    then obtain v where "y = x \<^bold>+ v" and "v \<noteq> I" by auto
+    hence "y \<^bold>> x"
+      unfolding greater_than_def using \<open>v \<noteq> I\<close> by auto
+  }
+  thus "\<forall>x y. (x \<^bold>< y) \<longrightarrow> (y \<^bold>> x)" by auto
+qed
+(* Definition 4: x \<ge> y
+means
+x > y or x = y.
+(\<ge> to be read "is greater than or equal to.")
+
+ *)
+definition geq (infix "\<^bold>\<ge>" 50) where
+"x \<^bold>\<ge> y \<equiv> (x \<^bold>> y) \<or> (x = y)"
+(* Definition 5: x \<le> y
+means
+x < y or x = y.
+(\<le> to be read "is less than or equal to.")
+
+ *)
+definition leq (infix "\<^bold>\<le>" 50) where
+"x \<^bold>\<le> y \<equiv> (x \<^bold>< y) \<or> (x = y)"
+(* Theorem 13: If
+x \<ge> y
+then
+y \<le> x.
+Proof: Theorem 11.
+
+ *)
+theorem Theorem_13: "\<forall>x y. (x \<^bold>\<ge> y) \<longrightarrow> (y \<^bold>\<le> x)"
+proof -
+  {
+    fix x y assume "x \<^bold>\<ge> y"
+    then have "(x \<^bold>> y) \<or> (x = y)"
+      unfolding geq_def by simp
+    then have "y \<^bold>\<le> x"
+    proof
+      assume "x \<^bold>> y"
+      then have "y \<^bold>< x"
+        using Theorem_11 by simp
+      then show "y \<^bold>\<le> x"
+        unfolding leq_def by simp
+    next
+      assume "x = y"
+      then show "y \<^bold>\<le> x"
+        unfolding leq_def by simp
+    qed
+  }
+  thus "\<forall>x y. (x \<^bold>\<ge> y) \<longrightarrow> (y \<^bold>\<le> x)" by auto
+qed
+(* Theorem 14: If
+x \<le> y
+then
+y \<ge> x.
+Proof: Theorem 12.
+
+ *)
+theorem Theorem_14: "\<forall>x y. (x \<^bold>\<le> y) \<longrightarrow> (y \<^bold>\<ge> x)"
+proof -
+  {
+    fix x y assume "x \<^bold>\<le> y"
+    then have "(x \<^bold>< y) \<or> (x = y)"
+      unfolding leq_def by simp
+    then have "y \<^bold>\<ge> x"
+    proof
+      assume "x \<^bold>< y"
+      then have "y \<^bold>> x"
+        using Theorem_12 by simp
+      then show "y \<^bold>\<ge> x"
+        unfolding geq_def by simp
+    next
+      assume "x = y"
+      then show "y \<^bold>\<ge> x"
+        unfolding geq_def by simp
+    qed
+  }
+  thus "\<forall>x y. (x \<^bold>\<le> y) \<longrightarrow> (y \<^bold>\<ge> x)" by auto
+qed
+(* Theorem 15 (Transitivity of Ordering): If
+x < y, y < z,
+then
+x < z.
+Preliminary Remark: Thus if
+x > y, y > z,
+then
+x > z,
+since
+z < y, y < x,
+z < x;
+but in what follows I will not even bother to write down such
+statements, which are obtained trivially by simply reading the
+formulas backwards.
+Proof: With suitable v, w, we have
+y = x + v, z = y + w,
+hence
+z = (x + v) + w = x + (v + w),
+x < z.
+
+ *)
+theorem Theorem_15: "\<forall>x y z. (x \<^bold>< y) \<and> (y \<^bold>< z) \<longrightarrow> (x \<^bold>< z)"
+proof -
+  {
+    fix x y z assume "(x \<^bold>< y) \<and> (y \<^bold>< z)"
+    then have "x \<^bold>< y" and "y \<^bold>< z" by simp+
+    from `x \<^bold>< y` obtain v where "y = x \<^bold>+ v" and "v \<noteq> I"
+      unfolding less_than_def by auto
+    from `y \<^bold>< z` obtain w where "z = y \<^bold>+ w" and "w \<noteq> I"
+      unfolding less_than_def by auto
+    have "z = (x \<^bold>+ v) \<^bold>+ w"
+      using `z = y \<^bold>+ w` `y = x \<^bold>+ v` by simp
+    also have "... = x \<^bold>+ (v \<^bold>+ w)"
+      using Theorem_5 by simp
+    finally have "z = x \<^bold>+ (v \<^bold>+ w)" .
+    then have "x \<^bold>< z"
+      using `v \<noteq> I` `w \<noteq> I` Theorem_1
+      unfolding less_than_def
+      by (metis L1 Theorem_3 Theorem_7)
+  }
+  thus "\<forall>x y z. (x \<^bold>< y) \<and> (y \<^bold>< z) \<longrightarrow> (x \<^bold>< z)" by fastforce
 qed
 end

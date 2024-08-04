@@ -1,3 +1,4 @@
+import re
 import subprocess
 import threading
 import queue
@@ -64,28 +65,21 @@ def run_continuous(shell_process, command):
 
 def main():
     try:
-        env_backup = os.environ.copy()
-        os.environ['TEMP_WINDOWS'] = os.environ.get('TEMP', '')
-        os.environ['HOME'] = os.path.join(os.environ.get('HOMEDRIVE', ''), os.environ.get('HOMEPATH', ''))
-        os.environ['PATH'] = os.path.join('E:\\', 'Programme', 'Isabelle', 'Isabelle2023', 'bin') + ';' + os.environ.get('PATH', '')
-        os.environ['LANG'] = 'en_US.UTF-8'
-        os.environ['CHERE_INVOKING'] = 'true'
-        bash_command = [os.path.join('E:', 'Programme', 'Isabelle', 'Isabelle2023', 'contrib', 'cygwin', 'bin', 'bash.exe'), '--login', '-i']
-        print(os.environ['HOME'])
-        print(os.environ['PATH'])
-        print(bash_command)
-        shell_process = subprocess.Popen(bash_command,
+        shell_process = subprocess.Popen("bash",
                                          stdout=subprocess.PIPE,
                                          stderr=subprocess.PIPE,
                                          stdin=subprocess.PIPE,
                                          text=True)
-
         output_queue = queue.Queue()
         output_thread = threading.Thread(target=enqueue_output, args=(shell_process.stdout, output_queue), daemon=True)
         output_thread.start()
         error_thread = threading.Thread(target=enqueue_output, args=(shell_process.stderr, output_queue), daemon=True)
         error_thread.start()
         print("Shell Process Started")
+        shell_process.stdin.write("export ISABELLE_HOME=\"/home/tim/Downloads/Isabelle2024\"\n")
+        shell_process.stdin.flush()
+        shell_process.stdin.write("export PATH=\"$ISABELLE_HOME/bin:$PATH\"\n")
+        shell_process.stdin.flush()
         # main loop
         while True:
             next_proof = get_next_proof()
@@ -97,7 +91,7 @@ def main():
             Utils.delete_last_line(TEMP_THY_FILE)
             # writing prompt as comment
             with open(TEMP_THY_FILE, 'a') as file:
-                file.write("(* " + next_proof + " *)\n")
+                file.write("\n(* " + next_proof + " *)\n")
             translation = GPTStuff.chat_call(client, next_proof)
             # writing translation and "end" if needed
             with open(TEMP_THY_FILE, 'a') as file:
@@ -106,6 +100,7 @@ def main():
                     file.write('\nend')
                 file.close()
             status = {}
+            Utils.change_namespace("Landau_GPT4", "temp", TEMP_THY_FILE)
             while True:
                 command = get_next_command(status)
                 shell_process.stdin.write(command+'\n')
@@ -124,6 +119,7 @@ def main():
                 print(status.get("status"))
                 if status.get("status") == Utils.StatusCode.OK:
                     shutil.copyfile(TEMP_THY_FILE, theory_file)
+                    Utils.change_namespace("temp", "Landau_GPT4", theory_file)
                     GPTStuff.startup(theory_file)
                     break
                 elif status.get("status") == Utils.StatusCode.SLEDGEHAMMER_NEEDED:
@@ -132,6 +128,7 @@ def main():
                 elif status.get("status") == Utils.StatusCode.GPT_CORRECTION:
                     corr = GPTStuff.chat_call(client, status.get("lines"), error=True)
                     shutil.copyfile(theory_file, TEMP_THY_FILE)
+                    Utils.change_namespace("Landau_GPT4", "temp", TEMP_THY_FILE)
                     Utils.delete_last_line(TEMP_THY_FILE)
                     with open(TEMP_THY_FILE, 'a') as file:
                         file.write(corr)
@@ -146,11 +143,10 @@ def main():
         print("\nUser Interrupt. Session terminated.")
     except ChildProcessError:
         print("Fatal Error. Shutting down.")
+        return
     finally:
         shell_process.stdin.close()
         shell_process.wait()
-        os.environ.clear()
-        os.environ.update(env_backup)
         print("Session Terminated.")
 
 
@@ -184,13 +180,26 @@ def read_proofs(proof_file):
             if line.startswith("Theorem") or line.startswith("Definition"):
                 if curr_proof:
                     proofs.append(curr_proof)
-                    curr_proof = line
+                    curr_proof = line + "\n"
                 else:
                     curr_proof += line + "\n"
             else:
                 curr_proof += line + "\n"
         if curr_proof:
             proofs.append(curr_proof)
+
+
+def find_current_proof():
+    global proof_counter
+    last_theo = ""
+    last_def = ""
+    with open(TEMP_THY_FILE, 'r') as f:
+        for line in f:
+            if line.startswith("theorem"):
+                last_theo = line
+            elif line.startswith("(* Definition"):
+                last_def = line
+    proof_counter = int(re.search(r'\d+', last_theo).group()) + int(re.search(r'\d+', last_def).group()) - 1
 
 
 def read_params():
@@ -208,6 +217,7 @@ def read_params():
     theory_file = parameters['theory']
     print("copying theory file")
     shutil.copyfile(theory_file, TEMP_THY_FILE)
+    Utils.change_namespace("Landau_GPT4", "temp", TEMP_THY_FILE)
     print("initializing GPT module")
     client = GPTStuff.initialise(seed=int(parameters.get('seed')), model=parameters.get('model'), few_shot=int(parameters.get('few_shot')))
     GPTStuff.startup(theory_file)
@@ -217,6 +227,8 @@ def read_params():
     proof_counter = int(parameters.get("starting_proof"))
     if not proof_counter:
         proof_counter = 0
+    elif proof_counter == -1:
+        find_current_proof()
 
 
 if __name__ == '__main__':

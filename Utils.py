@@ -35,11 +35,11 @@ def parse_output(output_lines, old_status):
             ret["status"] = StatusCode.LOGS_NEEDED
             ret["error_lines"] = get_error_lines(lines)
         return ret
-    if 'Build errors:' in output_lines:
+    if any("At command \"by\"" in string for string in output_lines):
         ret["status"] = StatusCode.SLEDGEHAMMER_NEEDED
         ret["error_lines"] = get_error_lines(lines)
         return ret
-    if any("java.lang." in string for string in output_lines):
+    if any("java.lang." in string for string in output_lines) or "Build errors:" in output_lines:
         ret["status"] = StatusCode.GPT_CORRECTION
         err_lines = get_error_lines(lines)
         if err_lines:
@@ -128,3 +128,12 @@ def parse_thy_file(thy_file, window=None):
         for me in window_mess:
             cutoff_line += me["content"].count("\n")
         return window_mess, lines[0:len(lines) - cutoff_line]
+
+
+def change_namespace(namespace_before, namespace_after, file):
+    with open(file, 'r') as f:
+        file_content = f.read()
+    new_content = file_content.replace(namespace_before, namespace_after)
+    with open(file, 'w') as f:
+        f.write(new_content)
+
