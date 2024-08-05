@@ -108,7 +108,7 @@ def main():
                 output_lines = []
                 while True:
                     try:
-                        output_line = output_queue.get(timeout=10)
+                        output_line = output_queue.get(timeout=15)
                         output_lines.append(output_line)
                         #print(output_line)
                     except queue.Empty:
@@ -143,7 +143,6 @@ def main():
         print("\nUser Interrupt. Session terminated.")
     except ChildProcessError:
         print("Fatal Error. Shutting down.")
-        return
     finally:
         shell_process.stdin.close()
         shell_process.wait()

@@ -773,4 +773,131 @@ proof -
   }
   thus "\<forall>x y z. (x \<^bold>< y) \<and> (y \<^bold>< z) \<longrightarrow> (x \<^bold>< z)" by fastforce
 qed
+(* Theorem 16: If
+x \<le> y, y < z or x < y, y \<le> z,
+then
+x < z.
+Proof: Obvious if an equality sign holds in the hypothesis:
+otherwise, Theorem 15 does it.
+
+ *)
+theorem Theorem_16: "\<forall>x y z. ((x \<^bold>\<le> y) \<and> (y \<^bold>< z)) \<or> ((x \<^bold>< y) \<and> (y \<^bold>\<le> z)) \<longrightarrow> (x \<^bold>< z)"
+proof -
+  {
+    fix x y z assume "((x \<^bold>\<le> y) \<and> (y \<^bold>< z)) \<or> ((x \<^bold>< y) \<and> (y \<^bold>\<le> z))"
+    then have "x \<^bold>< z"
+    proof
+      assume "(x \<^bold>\<le> y) \<and> (y \<^bold>< z)"
+      then have "x \<^bold>\<le> y" and "y \<^bold>< z" by simp+
+      from `x \<^bold>\<le> y` have "(x \<^bold>< y) \<or> (x = y)"
+        unfolding leq_def by simp
+      then show "x \<^bold>< z"
+      proof
+        assume "x \<^bold>< y"
+        then have "(x \<^bold>< y) \<and> (y \<^bold>< z)"
+          using `y \<^bold>< z` by simp
+        then show "x \<^bold>< z"
+          using Theorem_15 by blast
+      next
+        assume "x = y"
+        then have "y \<^bold>< z"
+          using `y \<^bold>< z` by simp
+        then show "x \<^bold>< z"
+          using `x = y` by simp
+      qed
+    next
+      assume "(x \<^bold>< y) \<and> (y \<^bold>\<le> z)"
+      then have "x \<^bold>< y" and "y \<^bold>\<le> z" by simp+
+      from `y \<^bold>\<le> z` have "(y \<^bold>< z) \<or> (y = z)"
+        unfolding leq_def by simp
+      then show "x \<^bold>< z"
+      proof
+        assume "y \<^bold>< z"
+        then have "(x \<^bold>< y) \<and> (y \<^bold>< z)"
+          using `x \<^bold>< y` by simp
+        then show "x \<^bold>< z"
+          using Theorem_15 by blast
+      next
+        assume "y = z"
+        then have "x \<^bold>< y"
+          using `x \<^bold>< y` by simp
+        then show "x \<^bold>< z"
+          using `y = z` by simp
+      qed
+    qed
+  }
+  thus "\<forall>x y z. ((x \<^bold>\<le> y) \<and> (y \<^bold>< z)) \<or> ((x \<^bold>< y) \<and> (y \<^bold>\<le> z)) \<longrightarrow> (x \<^bold>< z)" by blast
+qed
+(* Theorem 17: If
+x \<le> y, y \<le> z,
+then
+x \<le> z.
+Proof: Obvious if two equality signs hold in the hypothesis;
+otherwise, Theorem 16 does it.
+A notation such as
+a < b \<le> c < d
+is justified on the basis of Theorems 15 and 17. While its
+immediate meaning is
+a < b, b \<le> c, c < d,
+it also implies, according to these theorems, that, say
+a < c, a < d, b < d.
+(Similarly in the later chapters.)
+
+ *)
+theorem Theorem_17: "\<forall>x y z. (x \<^bold>\<le> y) \<and> (y \<^bold>\<le> z) \<longrightarrow> (x \<^bold>\<le> z)"
+proof -
+  {
+    fix x y z assume "(x \<^bold>\<le> y) \<and> (y \<^bold>\<le> z)"
+    then have "x \<^bold>\<le> y" and "y \<^bold>\<le> z" by simp+
+    from `x \<^bold>\<le> y` have "(x \<^bold>< y) \<or> (x = y)"
+      unfolding leq_def by simp
+    from `y \<^bold>\<le> z` have "(y \<^bold>< z) \<or> (y = z)"
+      unfolding leq_def by simp
+    then have "x \<^bold>\<le> z"
+    proof
+      assume "y = z"
+      then have "x \<^bold>\<le> y"
+        using `x \<^bold>\<le> y` by simp
+      then show "x \<^bold>\<le> z"
+        using `y = z` by simp
+    next
+      assume "y \<^bold>< z"
+      then show "x \<^bold>\<le> z"
+      proof (cases "x = y")
+        case True
+        then have "x \<^bold>< z"
+          using `y \<^bold>< z` by simp
+        then show ?thesis
+          unfolding leq_def by simp
+      next
+        case False
+        then have "x \<^bold>< y"
+          using `x \<^bold>\<le> y` unfolding leq_def by simp
+        then have "(x \<^bold>< y) \<and> (y \<^bold>< z)"
+          using `y \<^bold>< z` by simp
+        then have "x \<^bold>< z"
+          using Theorem_15 by blast
+        then show ?thesis
+          unfolding leq_def by simp
+      qed
+    qed
+  }
+  thus "\<forall>x y z. (x \<^bold>\<le> y) \<and> (y \<^bold>\<le> z) \<longrightarrow> (x \<^bold>\<le> z)" by blast
+qed
+(* Theorem 18: x + y > x.
+Proof: x + y = x + y.
+
+ *)
+theorem Theorem_18: "\<forall>x y. x \<^bold>+ y \<^bold>> x"
+proof -
+  {
+    fix x y
+    have "x \<^bold>+ y = x \<^bold>+ y" by simp
+    then have "x \<^bold>+ y \<^bold>> x"
+      unfolding greater_than_def
+      using Theorem_1
+      by (metis L1 Theorem_10 Theorem_12 Theorem_6 Theorem_7 greater_than_def)
+  }
+  thus "\<forall>x y. x \<^bold>+ y \<^bold>> x" by blast
+qed
 end
