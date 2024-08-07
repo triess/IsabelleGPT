@@ -108,7 +108,7 @@ def main():
                 output_lines = []
                 while True:
                     try:
-                        output_line = output_queue.get(timeout=15)
+                        output_line = output_queue.get(timeout=20)
                         output_lines.append(output_line)
                         #print(output_line)
                     except queue.Empty:
@@ -131,8 +131,8 @@ def main():
                     Utils.change_namespace("Landau_GPT4", "temp", TEMP_THY_FILE)
                     Utils.delete_last_line(TEMP_THY_FILE)
                     with open(TEMP_THY_FILE, 'a') as file:
-                        file.write(corr)
-                        file.write('\nend')
+                        file.write("\n(* " + next_proof + " *)\n")
+                        file.write('\n'+corr)
                         file.close()
                 elif status.get("status") == Utils.StatusCode.LOGS_NEEDED:
                     pass

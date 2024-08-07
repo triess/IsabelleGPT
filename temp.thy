@@ -593,7 +593,7 @@ x > y.
 
  *)
 definition greater_than (infix "\<^bold>>" 50) where
-"x \<^bold>> y \<equiv> (\<exists>u. x = y \<^bold>+ u \<and> u \<noteq> I)"
+"x \<^bold>> y \<equiv> (\<exists>u. x = y \<^bold>+ u)"
 (* Definition 3: If
 y = x + v
 then
@@ -602,7 +602,7 @@ x < y.
 
  *)
 definition less_than (infix "\<^bold><" 50) where
-"x \<^bold>< y \<equiv> (\<exists>v. y = x \<^bold>+ v \<and> v \<noteq> I)"
+"x \<^bold>< y \<equiv> (\<exists>v. y = x \<^bold>+ v)"
 (* Theorem 10: For any given x, y, we have exactly one of the cases
 x = y, x > y, x < y.
 Proof: Theorem 9, Definition 2 and Definition 3.
@@ -627,14 +627,10 @@ theorem Theorem_11: "\<forall>x y. (x \<^bold>> y) \<longrightarrow> (y \<^bold>
 proof -
   {
     fix x y assume "x \<^bold>> y"
-    then have "\<exists>u. x = y \<^bold>+ u \<and> u \<noteq> I"
+    then have "\<exists>u. x = y \<^bold>+ u"
       unfolding greater_than_def by simp
-    then obtain u where "x = y \<^bold>+ u" and "u \<noteq> I" by auto
-    hence "y = x \<^bold>+ u"
-      by (metis L1 less_than_def Theorem_10 Theorem_7 Theorem_8 greater_than_def)
     hence "y \<^bold>< x"
-      unfolding less_than_def using \<open>u \<noteq> I\<close>
-      using \<open>\<exists>u. x = y \<^bold>+ u \<and> u \<noteq> I\<close> by blast 
+      unfolding less_than_def by auto
   }
   thus "\<forall>x y. (x \<^bold>> y) \<longrightarrow> (y \<^bold>< x)" by auto
 qed
@@ -651,11 +647,10 @@ theorem Theorem_12: "\<forall>x y. (x \<^bold>< y) \<longrightarrow> (y \<^bold>
 proof -
   {
     fix x y assume "x \<^bold>< y"
-    then have "\<exists>v. y = x \<^bold>+ v \<and> v \<noteq> I"
+    then have "\<exists>v. y = x \<^bold>+ v"
       unfolding less_than_def by simp
-    then obtain v where "y = x \<^bold>+ v" and "v \<noteq> I" by auto
     hence "y \<^bold>> x"
-      unfolding greater_than_def using \<open>v \<noteq> I\<close> by auto
+      unfolding greater_than_def by auto
   }
   thus "\<forall>x y. (x \<^bold>< y) \<longrightarrow> (y \<^bold>> x)" by auto
 qed
@@ -665,7 +660,7 @@ x > y or x = y.
 (\<ge> to be read "is greater than or equal to.")
 
  *)
-definition geq (infix "\<^bold>\<ge>" 50) where
+definition greater_than_or_equal_to (infix "\<^bold>\<ge>" 50) where
 "x \<^bold>\<ge> y \<equiv> (x \<^bold>> y) \<or> (x = y)"
 (* Definition 5: x \<le> y
 means
@@ -673,7 +668,7 @@ x < y or x = y.
 (\<le> to be read "is less than or equal to.")
 
  *)
-definition leq (infix "\<^bold>\<le>" 50) where
+definition less_than_or_equal_to (infix "\<^bold>\<le>" 50) where
 "x \<^bold>\<le> y \<equiv> (x \<^bold>< y) \<or> (x = y)"
 (* Theorem 13: If
 x \<ge> y
@@ -687,19 +682,19 @@ proof -
   {
     fix x y assume "x \<^bold>\<ge> y"
     then have "(x \<^bold>> y) \<or> (x = y)"
-      unfolding geq_def by simp
-    then have "y \<^bold>\<le> x"
+      unfolding greater_than_or_equal_to_def by simp
+    then have "(y \<^bold>< x) \<or> (x = y)"
     proof
       assume "x \<^bold>> y"
       then have "y \<^bold>< x"
         using Theorem_11 by simp
-      then show "y \<^bold>\<le> x"
-        unfolding leq_def by simp
+      thus "(y \<^bold>< x) \<or> (x = y)" by simp
     next
       assume "x = y"
-      then show "y \<^bold>\<le> x"
-        unfolding leq_def by simp
+      thus "(y \<^bold>< x) \<or> (x = y)" by simp
     qed
+    hence "y \<^bold>\<le> x"
+      unfolding less_than_or_equal_to_def by blast
   }
   thus "\<forall>x y. (x \<^bold>\<ge> y) \<longrightarrow> (y \<^bold>\<le> x)" by auto
 qed
@@ -715,19 +710,19 @@ proof -
   {
     fix x y assume "x \<^bold>\<le> y"
     then have "(x \<^bold>< y) \<or> (x = y)"
-      unfolding leq_def by simp
-    then have "y \<^bold>\<ge> x"
+      unfolding less_than_or_equal_to_def by simp
+    then have "(y \<^bold>> x) \<or> (x = y)"
     proof
       assume "x \<^bold>< y"
       then have "y \<^bold>> x"
         using Theorem_12 by simp
-      then show "y \<^bold>\<ge> x"
-        unfolding geq_def by simp
+      thus "(y \<^bold>> x) \<or> (x = y)" by simp
     next
       assume "x = y"
-      then show "y \<^bold>\<ge> x"
-        unfolding geq_def by simp
+      thus "(y \<^bold>> x) \<or> (x = y)" by simp
     qed
+    hence "y \<^bold>\<ge> x"
+      unfolding greater_than_or_equal_to_def by auto
   }
   thus "\<forall>x y. (x \<^bold>\<le> y) \<longrightarrow> (y \<^bold>\<ge> x)" by auto
 qed
@@ -757,21 +752,17 @@ proof -
   {
     fix x y z assume "(x \<^bold>< y) \<and> (y \<^bold>< z)"
     then have "x \<^bold>< y" and "y \<^bold>< z" by simp+
-    from `x \<^bold>< y` obtain v where "y = x \<^bold>+ v" and "v \<noteq> I"
+    from `x \<^bold>< y` obtain v where "y = x \<^bold>+ v"
       unfolding less_than_def by auto
-    from `y \<^bold>< z` obtain w where "z = y \<^bold>+ w" and "w \<noteq> I"
+    moreover from `y \<^bold>< z` obtain w where "z = y \<^bold>+ w"
       unfolding less_than_def by auto
-    have "z = (x \<^bold>+ v) \<^bold>+ w"
-      using `z = y \<^bold>+ w` `y = x \<^bold>+ v` by simp
+    ultimately have "z = (x \<^bold>+ v) \<^bold>+ w" by simp
     also have "... = x \<^bold>+ (v \<^bold>+ w)"
       using Theorem_5 by simp
-    finally have "z = x \<^bold>+ (v \<^bold>+ w)" .
-    then have "x \<^bold>< z"
-      using `v \<noteq> I` `w \<noteq> I` Theorem_1
-      unfolding less_than_def
-      by (metis L1 Theorem_3 Theorem_7)
+    finally have "x \<^bold>< z"
+      unfolding less_than_def by auto
   }
-  thus "\<forall>x y z. (x \<^bold>< y) \<and> (y \<^bold>< z) \<longrightarrow> (x \<^bold>< z)" by fastforce
+  thus "\<forall>x y z. (x \<^bold>< y) \<and> (y \<^bold>< z) \<longrightarrow> (x \<^bold>< z)" by blast
 qed
 (* Theorem 16: If
 x \<le> y, y < z or x < y, y \<le> z,
@@ -785,44 +776,39 @@ theorem Theorem_16: "\<forall>x y z. ((x \<^bold>\<le> y) \<and> (y \<^bold>< z)
 proof -
   {
     fix x y z assume "((x \<^bold>\<le> y) \<and> (y \<^bold>< z)) \<or> ((x \<^bold>< y) \<and> (y \<^bold>\<le> z))"
+    then consider (case1) "(x \<^bold>\<le> y) \<and> (y \<^bold>< z)" | (case2) "(x \<^bold>< y) \<and> (y \<^bold>\<le> z)" by auto
     then have "x \<^bold>< z"
-    proof
-      assume "(x \<^bold>\<le> y) \<and> (y \<^bold>< z)"
+    proof cases
+      case case1
       then have "x \<^bold>\<le> y" and "y \<^bold>< z" by simp+
       from `x \<^bold>\<le> y` have "(x \<^bold>< y) \<or> (x = y)"
-        unfolding leq_def by simp
-      then show "x \<^bold>< z"
+        unfolding less_than_or_equal_to_def by simp
+      then show ?thesis
       proof
         assume "x \<^bold>< y"
-        then have "(x \<^bold>< y) \<and> (y \<^bold>< z)"
-          using `y \<^bold>< z` by simp
-        then show "x \<^bold>< z"
+        with `y \<^bold>< z` have "x \<^bold>< z"
           using Theorem_15 by blast
+        thus ?thesis by simp
       next
         assume "x = y"
-        then have "y \<^bold>< z"
-          using `y \<^bold>< z` by simp
-        then show "x \<^bold>< z"
-          using `x = y` by simp
+        with `y \<^bold>< z` have "x \<^bold>< z" by simp
+        thus ?thesis by simp
       qed
     next
-      assume "(x \<^bold>< y) \<and> (y \<^bold>\<le> z)"
+      case case2
       then have "x \<^bold>< y" and "y \<^bold>\<le> z" by simp+
       from `y \<^bold>\<le> z` have "(y \<^bold>< z) \<or> (y = z)"
-        unfolding leq_def by simp
-      then show "x \<^bold>< z"
+        unfolding less_than_or_equal_to_def by simp
+      then show ?thesis
       proof
         assume "y \<^bold>< z"
-        then have "(x \<^bold>< y) \<and> (y \<^bold>< z)"
-          using `x \<^bold>< y` by simp
-        then show "x \<^bold>< z"
+        with `x \<^bold>< y` have "x \<^bold>< z"
           using Theorem_15 by blast
+        thus ?thesis by simp
       next
         assume "y = z"
-        then have "x \<^bold>< y"
-          using `x \<^bold>< y` by simp
-        then show "x \<^bold>< z"
-          using `y = z` by simp
+        with `x \<^bold>< y` have "x \<^bold>< z" by simp
+        thus ?thesis by simp
       qed
     qed
   }
@@ -842,45 +828,35 @@ a < b, b \<le> c, c < d,
 it also implies, according to these theorems, that, say
 a < c, a < d, b < d.
 (Similarly in the later chapters.)
-
- *)
+*)
 theorem Theorem_17: "\<forall>x y z. (x \<^bold>\<le> y) \<and> (y \<^bold>\<le> z) \<longrightarrow> (x \<^bold>\<le> z)"
 proof -
   {
     fix x y z assume "(x \<^bold>\<le> y) \<and> (y \<^bold>\<le> z)"
     then have "x \<^bold>\<le> y" and "y \<^bold>\<le> z" by simp+
-    from `x \<^bold>\<le> y` have "(x \<^bold>< y) \<or> (x = y)"
-      unfolding leq_def by simp
-    from `y \<^bold>\<le> z` have "(y \<^bold>< z) \<or> (y = z)"
-      unfolding leq_def by simp
-    then have "x \<^bold>\<le> z"
-    proof
+    from `x \<^bold>\<le> y` have x_le_y: "(x \<^bold>< y) \<or> (x = y)"
+      unfolding less_than_or_equal_to_def by simp
+    from `y \<^bold>\<le> z` have y_le_z: "(y \<^bold>< z) \<or> (y = z)"
+      unfolding less_than_or_equal_to_def by simp
+    {
+      assume "x \<^bold>< y" and "y \<^bold>< z"
+      then have "x \<^bold>< z"
+        using Theorem_15 by blast
+      then have "x \<^bold>\<le> z"
+        unfolding less_than_or_equal_to_def by simp
+    }
+    moreover {
+      assume "x = y"
+      then have "x \<^bold>\<le> z"
+        using y_le_z unfolding less_than_or_equal_to_def by auto
+    }
+    moreover {
       assume "y = z"
-      then have "x \<^bold>\<le> y"
-        using `x \<^bold>\<le> y` by simp
-      then show "x \<^bold>\<le> z"
-        using `y = z` by simp
-    next
-      assume "y \<^bold>< z"
-      then show "x \<^bold>\<le> z"
-      proof (cases "x = y")
-        case True
-        then have "x \<^bold>< z"
-          using `y \<^bold>< z` by simp
-        then show ?thesis
-          unfolding leq_def by simp
-      next
-        case False
-        then have "x \<^bold>< y"
-          using `x \<^bold>\<le> y` unfolding leq_def by simp
-        then have "(x \<^bold>< y) \<and> (y \<^bold>< z)"
-          using `y \<^bold>< z` by simp
-        then have "x \<^bold>< z"
-          using Theorem_15 by blast
-        then show ?thesis
-          unfolding leq_def by simp
-      qed
-    qed
+      then have "x \<^bold>\<le> z"
+        using x_le_y unfolding less_than_or_equal_to_def by auto
+    }
+    ultimately have "x \<^bold>\<le> z"
+      using x_le_y y_le_z by blast
   }
   thus "\<forall>x y z. (x \<^bold>\<le> y) \<and> (y \<^bold>\<le> z) \<longrightarrow> (x \<^bold>\<le> z)" by blast
 qed
@@ -893,72 +869,47 @@ proof -
   {
     fix x y
     have "x \<^bold>+ y = x \<^bold>+ y" by simp
-    then have "x \<^bold>+ y \<^bold>> x"
-      unfolding greater_than_def
-      using Theorem_1
-      by (metis L1 Theorem_10 Theorem_12 Theorem_6 Theorem_7 greater_than_def)
+    then have "\<exists>u. x \<^bold>+ y = x \<^bold>+ u"
+      by (rule_tac x="y" in exI, simp)
+    hence "x \<^bold>+ y \<^bold>> x"
+      unfolding greater_than_def by simp
   }
   thus "\<forall>x y. x \<^bold>+ y \<^bold>> x" by blast
 qed
-(* Theorem 19: If
-x > y, or x = y, or x < y,
-then
-x + z > y + z, or x + z = y + z, or x + z < y + z,
-respectively.
-Proof: 1) If
-x > y
-then
-x = y + u,
-x + z = (y + u) + z = (u + y) + z = u + (y + z) = (y + z) + u,
-x + z > y + z.
-2) If
-x = y
-then clearly
-x + z = y + z.
-3) If
-x < y
-then
-y > x,
-hence, by 1),
-y + z > x + z,
-x + z < y + z.
-
- *)
 theorem Theorem_19: "\<forall>x y z. ((x \<^bold>> y) \<or> (x = y) \<or> (x \<^bold>< y)) \<longrightarrow> ((x \<^bold>+ z) \<^bold>> (y \<^bold>+ z) \<or> (x \<^bold>+ z) = (y \<^bold>+ z) \<or> (x \<^bold>+ z) \<^bold>< (y \<^bold>+ z))"
 proof -
   {
     fix x y z
     assume "(x \<^bold>> y) \<or> (x = y) \<or> (x \<^bold>< y)"
+    then consider (gt) "x \<^bold>> y" | (eq) "x = y" | (lt) "x \<^bold>< y" by auto
     then have "(x \<^bold>+ z) \<^bold>> (y \<^bold>+ z) \<or> (x \<^bold>+ z) = (y \<^bold>+ z) \<or> (x \<^bold>+ z) \<^bold>< (y \<^bold>+ z)"
-    proof (cases)
-      assume "x \<^bold>> y"
-      then obtain u where "x = y \<^bold>+ u" and "u \<noteq> I"
+    proof cases
+      case gt
+      then obtain u where "x = y \<^bold>+ u"
         unfolding greater_than_def by auto
-      have "x \<^bold>+ z = (y \<^bold>+ u) \<^bold>+ z"
-        using `x = y \<^bold>+ u` by simp
+      then have "x \<^bold>+ z = (y \<^bold>+ u) \<^bold>+ z" by simp
       also have "... = y \<^bold>+ (u \<^bold>+ z)"
         using Theorem_5 by simp
-      finally have "x \<^bold>+ z = y \<^bold>+ (u \<^bold>+ z)" .
-      then have "x \<^bold>+ z \<^bold>> y \<^bold>+ z"
-        using `u \<noteq> I` unfolding greater_than_def
-        using Theorem_5 Theorem_6 by auto
-      then show ?thesis by simp
+      finally have "x \<^bold>+ z = (y \<^bold>+ z) \<^bold>+ u"
+        using Theorem_5 Theorem_6 by force
+      then have "x \<^bold>+ z \<^bold>> (y \<^bold>+ z)"
+        unfolding greater_than_def by (rule_tac x="u" in exI, simp)
+      thus ?thesis by simp
     next
-      assume "x = y"
+      case eq
       then have "x \<^bold>+ z = y \<^bold>+ z" by simp
-      then show ?thesis by simp
+      thus ?thesis by simp
     next
-      assume "x \<^bold>< y"
+      case lt
       then have "y \<^bold>> x"
-        using Theorem_12
-        by (metis Theorem_18 Theorem_8 greater_than_def) 
+        using Theorem_12 by simp
       then have "y \<^bold>+ z \<^bold>> x \<^bold>+ z"
-        using Theorem_18
-        using Theorem_5 Theorem_6 greater_than_def by auto
+        using greater_than_def
+        using Theorem_5 Theorem_6 by auto
       then have "x \<^bold>+ z \<^bold>< y \<^bold>+ z"
         using Theorem_12
         using Theorem_11 by blast
-      then show ?thesis by simp
+      thus ?thesis by simp
     qed
   }
   thus "\<forall>x y z. ((x \<^bold>> y) \<or> (x = y) \<or> (x \<^bold>< y)) \<longrightarrow> ((x \<^bold>+ z) \<^bold>> (y \<^bold>+ z) \<or> (x \<^bold>+ z) = (y \<^bold>+ z) \<or> (x \<^bold>+ z) \<^bold>< (y \<^bold>+ z))" by blast
