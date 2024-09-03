@@ -62,7 +62,26 @@ def run_continuous(shell_process, command):
     except Exception as e:
         print(f'Error running command: {command}:{e}')
         return None
-    
+
+
+def shell_startup():
+    shell_process = subprocess.Popen("bash",
+                                     stdout=subprocess.PIPE,
+                                     stderr=subprocess.PIPE,
+                                     stdin=subprocess.PIPE,
+                                     text=True)
+    output_queue = queue.Queue()
+    output_thread = threading.Thread(target=enqueue_output, args=(shell_process.stdout, output_queue), daemon=True)
+    output_thread.start()
+    error_thread = threading.Thread(target=enqueue_output, args=(shell_process.stderr, output_queue), daemon=True)
+    error_thread.start()
+    print("Shell Process Started")
+    shell_process.stdin.write("export ISABELLE_HOME=\"/home/tim/Downloads/Isabelle2024\"\n")
+    shell_process.stdin.flush()
+    shell_process.stdin.write("export PATH=\"$ISABELLE_HOME/bin:$PATH\"\n")
+    shell_process.stdin.flush()
+    return shell_process, output_queue
+
 
 def main(startup=None):
     if startup is None:
@@ -70,21 +89,7 @@ def main(startup=None):
     else:
         startup_done = False
     try:
-        shell_process = subprocess.Popen("bash",
-                                         stdout=subprocess.PIPE,
-                                         stderr=subprocess.PIPE,
-                                         stdin=subprocess.PIPE,
-                                         text=True)
-        output_queue = queue.Queue()
-        output_thread = threading.Thread(target=enqueue_output, args=(shell_process.stdout, output_queue), daemon=True)
-        output_thread.start()
-        error_thread = threading.Thread(target=enqueue_output, args=(shell_process.stderr, output_queue), daemon=True)
-        error_thread.start()
-        print("Shell Process Started")
-        shell_process.stdin.write("export ISABELLE_HOME=\"/home/tim/Downloads/Isabelle2024\"\n")
-        shell_process.stdin.flush()
-        shell_process.stdin.write("export PATH=\"$ISABELLE_HOME/bin:$PATH\"\n")
-        shell_process.stdin.flush()
+        shell_process, output_queue = shell_startup()
         # main loop
         while True:
             if startup_done:
@@ -105,6 +110,27 @@ def main(startup=None):
                     if not translation.strip().endswith('end'):
                         file.write('\nend')
                     file.close()
+                #user checks translation of theorem
+                print("Is the following translation correct?")
+                print(next_proof)
+                print(translation.split('\n')[0])
+                feedback = input("[Y/N]:")
+                while True:
+                    if feedback in ["Y", "y", "Yes", "yes", "YES"]:
+                        print("User check success. Continuing...")
+                        break #TODO
+                    elif feedback in ["N", "n", "No", "no", "NO"]:
+                        print("User check failure.")
+                        print("Re-translate? (Y)\nmanual input otherwise (N)")
+                        option = input("[Y/N]:")
+                        if option in ["Y", "y", "Yes", "yes", "YES"]:
+                            pass #TODO
+                        else:
+                            manual_trnas = input("manual translation:")
+                            #TODO
+                        break
+                    else:
+                        feedback = input("[Y/N]:")
                 status = {}
                 Utils.change_namespace("Landau_GPT4", "temp", TEMP_THY_FILE)
             else:
