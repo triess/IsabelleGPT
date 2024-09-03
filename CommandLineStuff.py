@@ -32,7 +32,6 @@ def enqueue_output(out, queue):
     out.close()
 
 
-
 @deprecated
 def run_command(command):
     try:
