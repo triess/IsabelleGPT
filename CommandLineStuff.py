@@ -3,6 +3,8 @@ import subprocess
 import threading
 import queue
 import os
+from threading import Thread
+
 import GPTStuff
 import Utils
 import shutil
@@ -63,7 +65,11 @@ def run_continuous(shell_process, command):
         return None
     
 
-def main():
+def main(startup=None):
+    if startup is None:
+        startup_done = True
+    else:
+        startup_done = False
     try:
         shell_process = subprocess.Popen("bash",
                                          stdout=subprocess.PIPE,
@@ -82,25 +88,31 @@ def main():
         shell_process.stdin.flush()
         # main loop
         while True:
-            next_proof = get_next_proof()
-            if next_proof is None:
-                print("translation finished")
-                break
-            print(f"Translating next proof {next_proof[0:15]}")
-            # deleting "end"
-            Utils.delete_last_line(TEMP_THY_FILE)
-            # writing prompt as comment
-            with open(TEMP_THY_FILE, 'a') as file:
-                file.write("\n(* " + next_proof + " *)\n")
-            translation = GPTStuff.chat_call(client, next_proof)
-            # writing translation and "end" if needed
-            with open(TEMP_THY_FILE, 'a') as file:
-                file.write(translation)
-                if not translation.strip().endswith('end'):
-                    file.write('\nend')
-                file.close()
-            status = {}
-            Utils.change_namespace("Landau_GPT4", "temp", TEMP_THY_FILE)
+            if startup_done:
+                next_proof = get_next_proof()
+                if next_proof is None:
+                    print("translation finished")
+                    break
+                print(f"Translating next proof {next_proof[0:15]}")
+                # deleting "end"
+                Utils.delete_last_line(TEMP_THY_FILE)
+                # writing prompt as comment
+                with open(TEMP_THY_FILE, 'a') as file:
+                    file.write("\n(* " + next_proof + " *)\n")
+                translation = GPTStuff.chat_call(client, next_proof)
+                # writing translation and "end" if needed
+                with open(TEMP_THY_FILE, 'a') as file:
+                    file.write(translation)
+                    if not translation.strip().endswith('end'):
+                        file.write('\nend')
+                    file.close()
+                status = {}
+                Utils.change_namespace("Landau_GPT4", "temp", TEMP_THY_FILE)
+            else:
+                print("skipping first translation")
+                status = {}
+                Utils.change_namespace("Landau_GPT4", "temp", TEMP_THY_FILE)
+                startup_done = True
             while True:
                 command = get_next_command(status)
                 shell_process.stdin.write(command+'\n')
@@ -117,28 +129,9 @@ def main():
                 old_status = status
                 status = Utils.parse_output(output_lines, old_status)
                 print(status.get("status"))
+                parse_status(status)
                 if status.get("status") == Utils.StatusCode.OK:
-                    shutil.copyfile(TEMP_THY_FILE, theory_file)
-                    Utils.change_namespace("temp", "Landau_GPT4", theory_file)
-                    GPTStuff.startup(theory_file)
                     break
-                elif status.get("status") == Utils.StatusCode.SLEDGEHAMMER_NEEDED:
-                    if status.get("error_lines") is not None:
-                        Utils.cheating(TEMP_THY_FILE, status)
-                elif status.get("status") == Utils.StatusCode.GPT_CORRECTION:
-                    corr = GPTStuff.chat_call(client, status.get("lines"), error=True)
-                    shutil.copyfile(theory_file, TEMP_THY_FILE)
-                    Utils.change_namespace("Landau_GPT4", "temp", TEMP_THY_FILE)
-                    Utils.delete_last_line(TEMP_THY_FILE)
-                    with open(TEMP_THY_FILE, 'a') as file:
-                        file.write("\n(* " + next_proof + " *)\n")
-                        file.write('\n'+corr)
-                        file.close()
-                elif status.get("status") == Utils.StatusCode.LOGS_NEEDED:
-                    pass
-                else:
-                    print(status.get("lines"))
-                    raise ChildProcessError
     except KeyboardInterrupt:
         print("\nUser Interrupt. Session terminated.")
     except ChildProcessError:
@@ -148,6 +141,27 @@ def main():
         shell_process.wait()
         print("Session Terminated.")
 
+
+def parse_status(status):
+    if status.get("status") == Utils.StatusCode.OK:
+        shutil.copyfile(TEMP_THY_FILE, theory_file)
+        Utils.change_namespace("temp", "Landau_GPT4", theory_file)
+        GPTStuff.startup(theory_file)
+    elif status.get("status") == Utils.StatusCode.SLEDGEHAMMER_NEEDED:
+        if status.get("error_lines") is not None:
+            Utils.cheating(TEMP_THY_FILE, status)
+    elif status.get("status") == Utils.StatusCode.GPT_CORRECTION:
+        corr = GPTStuff.chat_call(client, status.get("lines"), error=True)
+        Utils.write_correction(corr, TEMP_THY_FILE)
+    elif status.get("status") == Utils.StatusCode.LOGS_NEEDED:
+        pass
+    elif status.get("status") == Utils.StatusCode.END_SYNTAX:
+        Utils.delete_last_line(TEMP_THY_FILE)
+    elif status.get("status") == Utils.StatusCode.MALFORMED:
+        Utils.fix_malformation(TEMP_THY_FILE)
+    else:
+        print(status.get("lines"))
+        raise ChildProcessError
 
 def get_next_proof():
     global proof_counter
@@ -214,8 +228,11 @@ def read_params():
     print("Parameters loaded")
     print(parameters)
     theory_file = parameters['theory']
-    print("copying theory file")
-    shutil.copyfile(theory_file, TEMP_THY_FILE)
+    if not parameters.get("startup"):
+        print("copying theory file")
+        shutil.copyfile(theory_file, TEMP_THY_FILE)
+    else:
+        print("debug start")
     Utils.change_namespace("Landau_GPT4", "temp", TEMP_THY_FILE)
     print("initializing GPT module")
     client = GPTStuff.initialise(seed=int(parameters.get('seed')), model=parameters.get('model'), few_shot=int(parameters.get('few_shot')))
@@ -228,9 +245,10 @@ def read_params():
         proof_counter = 0
     elif proof_counter == -1:
         find_current_proof()
+    return parameters.get("startup")
 
 
 if __name__ == '__main__':
-    read_params()
+    start = read_params()
     print("starting command line module")
-    main()
+    main(startup=start)

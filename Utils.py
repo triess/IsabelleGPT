@@ -9,6 +9,8 @@ class StatusCode(Enum):
     FATAL = 3
     GPT_CORRECTION = 4
     LOGS_NEEDED = 5
+    END_SYNTAX = 6
+    MALFORMED = 7
 
 
 def parse_output(output_lines, old_status):
@@ -35,8 +37,16 @@ def parse_output(output_lines, old_status):
             ret["status"] = StatusCode.LOGS_NEEDED
             ret["error_lines"] = get_error_lines(lines)
         return ret
+    if any("missing theory context for command\"end\"" in s for s in output_lines):
+        ret["status"] = StatusCode.END_SYNTAX
+        ret["error_lines"] = get_error_lines(lines)
+        return ret
     if any("At command \"by\"" in string for string in output_lines):
         ret["status"] = StatusCode.SLEDGEHAMMER_NEEDED
+        ret["error_lines"] = get_error_lines(lines)
+        return ret
+    if any("<malformed>" in s for s in output_lines):
+        ret["status"] = StatusCode.MALFORMED
         ret["error_lines"] = get_error_lines(lines)
         return ret
     if any("java.lang." in string for string in output_lines) or "Build errors:" in output_lines:
@@ -137,3 +147,33 @@ def change_namespace(namespace_before, namespace_after, file):
     with open(file, 'w') as f:
         f.write(new_content)
 
+
+def write_correction(correction, file):
+    with open(file, 'r') as f:
+        lines = f.readlines()
+    last_proof = 0
+    for i in range(len(lines)):
+        if lines[i].strip().endswith("*)"):
+            last_proof = i
+    lines[last_proof + 1:] = [correction + '\nend\n']
+    with open(file, 'w') as f:
+        f.writelines(lines)
+
+
+def fix_malformation(file):
+    with open(file, 'r') as f:
+        lines = f.readlines()
+    last_comment = 0
+    code_start = -1
+    code_end = -1
+    for i in range(len(lines)):
+        if lines[i].strip().endswith("*)"):
+            last_comment = i
+        if lines[i].strip().startswith("```") and code_start == -1:
+            code_start = i
+        if lines[i].strip().startswith("```") and code_start != -1:
+            code_end = i
+    lines = lines[:last_comment + 1] + lines[code_start+1:code_end]
+    lines.append("\nend\n")
+    with open(file, 'w') as f:
+        f.writelines(lines)

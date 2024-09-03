@@ -937,4 +937,85 @@ proof -
   }
   thus "\<forall>x y z. ((x \<^bold>> y) \<or> (x = y) \<or> (x \<^bold>< y)) \<longrightarrow> ((x \<^bold>+ z) \<^bold>> (y \<^bold>+ z) \<or> (x \<^bold>+ z) = (y \<^bold>+ z) \<or> (x \<^bold>+ z) \<^bold>< (y \<^bold>+ z))" by blast
 qed
+(* Theorem 20: If
+x + z > y + z, or x + z = y + z, or x + z < y + z,
+then
+x > y, or x = y, or x < y, respectively.
+Proof: Follows from Theorem 19, since the three cases are, in
+both instances, mutually exclusive and exhaust all possibilities.
+
+ *)
+theorem Theorem_20: "\<forall>x y z. ((x \<^bold>+ z) \<^bold>> (y \<^bold>+ z) \<or> (x \<^bold>+ z) = (y \<^bold>+ z) \<or> (x \<^bold>+ z) \<^bold>< (y \<^bold>+ z)) \<longrightarrow> (x \<^bold>> y \<or> x = y \<or> x \<^bold>< y)"
+proof -
+  {
+    fix x y z
+    assume "(x \<^bold>+ z) \<^bold>> (y \<^bold>+ z) \<or> (x \<^bold>+ z) = (y \<^bold>+ z) \<or> (x \<^bold>+ z) \<^bold>< (y \<^bold>+ z)"
+    then consider (gt) "(x \<^bold>+ z) \<^bold>> (y \<^bold>+ z)" | (eq) "(x \<^bold>+ z) = (y \<^bold>+ z)" | (lt) "(x \<^bold>+ z) \<^bold>< (y \<^bold>+ z)" by auto
+    then have "x \<^bold>> y \<or> x = y \<or> x \<^bold>< y"
+    proof cases
+      case gt
+      then have "\<exists>u. (x \<^bold>+ z) = (y \<^bold>+ z) \<^bold>+ u"
+        unfolding greater_than_def by auto
+      then obtain u where "x \<^bold>+ z = (y \<^bold>+ z) \<^bold>+ u" by auto
+      then have "x = y \<^bold>+ u"
+        using Theorem_5 Theorem_6
+        by (metis Theorem_8)
+      then have "x \<^bold>> y"
+        unfolding greater_than_def by (rule_tac x="u" in exI, simp)
+      thus ?thesis by simp
+    next
+      case eq
+      then have "x = y"
+        by (metis Theorem_6 Theorem_8)
+      thus ?thesis by simp
+    next
+      case lt
+      then have "\<exists>u. (y \<^bold>+ z) = (x \<^bold>+ z) \<^bold>+ u"
+        unfolding less_than_def by auto
+      then obtain u where "y \<^bold>+ z = (x \<^bold>+ z) \<^bold>+ u" by auto
+      then have "y = x \<^bold>+ u"
+        using Theorem_5 Theorem_6
+        by (metis Theorem_8)
+      then have "y \<^bold>> x"
+        unfolding greater_than_def by (rule_tac x="u" in exI, simp)
+      then have "x \<^bold>< y"
+        using Theorem_12
+        using Theorem_11 by blast
+      thus ?thesis by simp
+    qed
+  }
+  thus "\<forall>x y z. ((x \<^bold>+ z) \<^bold>> (y \<^bold>+ z) \<or> (x \<^bold>+ z) = (y \<^bold>+ z) \<or> (x \<^bold>+ z) \<^bold>< (y \<^bold>+ z)) \<longrightarrow> (x \<^bold>> y \<or> x = y \<or> x \<^bold>< y)" by blast
+qed
+(* Theorem 21: If
+x > y, z > u,
+then
+x + z > y + u.
+Proof: By Theorem 19, we have
+x + z > y + z
+and
+y + z = z + y > u + y = y + u,
+hence
+x + z > y + u.
+
+ *)
+theorem Theorem_21: "\<forall>x y z u. (x \<^bold>> y) \<and> (z \<^bold>> u) \<longrightarrow> (x \<^bold>+ z) \<^bold>> (y \<^bold>+ u)"
+proof -
+  {
+    fix x y z u
+    assume "(x \<^bold>> y) \<and> (z \<^bold>> u)"
+    then have "x \<^bold>> y" and "z \<^bold>> u" by simp+
+    from `x \<^bold>> y` have "x \<^bold>+ z \<^bold>> y \<^bold>+ z"
+      using Theorem_19
+      using Theorem_5 Theorem_6 greater_than_def by auto
+    moreover from `z \<^bold>> u` have "z \<^bold>+ y \<^bold>> u \<^bold>+ y"
+      using Theorem_19
+      using Theorem_5 Theorem_6 greater_than_def by auto
+    then have "y \<^bold>+ z \<^bold>> y \<^bold>+ u"
+      using Theorem_6 by simp
+    ultimately have "(x \<^bold>+ z) \<^bold>> (y \<^bold>+ u)"
+      using Theorem_16
+      by (meson Theorem_11 Theorem_12 Theorem_15)
+  }
+  thus "\<forall>x y z u. (x \<^bold>> y) \<and> (z \<^bold>> u) \<longrightarrow> (x \<^bold>+ z) \<^bold>> (y \<^bold>+ u)" by blast
+qed
 end

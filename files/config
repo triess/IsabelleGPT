@@ -10,3 +10,5 @@ model = gpt-4-turbo
 starting_proof = -1
 #The size of the sliding window of proofs that should be kept in the GPT chat history
 few_shot = 5
+#startup debugging parameter
+#startup = gpt
