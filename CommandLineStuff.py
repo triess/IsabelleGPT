@@ -104,33 +104,36 @@ def main(startup=None):
                 with open(TEMP_THY_FILE, 'a') as file:
                     file.write("\n(* " + next_proof + " *)\n")
                 translation = GPTStuff.chat_call(client, next_proof)
-                # writing translation and "end" if needed
-                with open(TEMP_THY_FILE, 'a') as file:
-                    file.write(translation)
-                    if not translation.strip().endswith('end'):
-                        file.write('\nend')
-                    file.close()
                 #user checks translation of theorem
                 print("Is the following translation correct?")
-                print(next_proof)
+                print(next_proof.split("Proof")[0])
                 print(translation.split('\n')[0])
-                feedback = input("[Y/N]:")
+                trans = ""
                 while True:
+                    feedback = input("[Y/N]:")
                     if feedback in ["Y", "y", "Yes", "yes", "YES"]:
                         print("User check success. Continuing...")
-                        break #TODO
+                        trans = translation
+                        break
                     elif feedback in ["N", "n", "No", "no", "NO"]:
                         print("User check failure.")
                         print("Re-translate? (Y)\nmanual input otherwise (N)")
                         option = input("[Y/N]:")
                         if option in ["Y", "y", "Yes", "yes", "YES"]:
-                            pass #TODO
+                            trans = GPTStuff.chat_call(client, next_proof.split("Proof")[0],error="theorem")
+                            print("Is the following translation correct?")
+                            print(next_proof.split("Proof")[0])
+                            print(trans.split('\n')[0])
                         else:
-                            manual_trnas = input("manual translation:")
-                            #TODO
-                        break
-                    else:
-                        feedback = input("[Y/N]:")
+                            trans = input("manual translation:")
+                            trans = trans + "\n" + translation.split('\n')[1:]
+                            break
+                # writing translation and "end" if needed
+                with open(TEMP_THY_FILE, 'a') as file:
+                    file.write(trans)
+                    if not trans.strip().endswith('end'):
+                        file.write('\nend')
+                    file.close()
                 status = {}
                 Utils.change_namespace("Landau_GPT4", "temp", TEMP_THY_FILE)
             else:

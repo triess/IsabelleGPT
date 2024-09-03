@@ -26,12 +26,14 @@ def chat_loop(client, initial_messages):
         pickle.dump(messages, file)
 
 
-def chat_call(client, mess, error=False):
+def chat_call(client, mess, error=None):
     global global_messages
     messages = global_messages
-    if error:
+    if error == "isabelle":
         err_mess = "The following errors occurred in your code please fix it:\n" + mess
         messages.append({"role": "user", "content": err_mess})
+    elif error == "theorem":
+        messages.append({"role": "user", "content": "The translation of the theorem statement is incorrect:\n" + mess})
     else:
         messages.append({"role": "user", "content": mess})
     chat = client.chat.completions.create(model=MODEL, seed=SEED, temperature=0, messages=messages)
