@@ -83,6 +83,44 @@ def shell_startup():
     return shell_process, output_queue
 
 
+def user_interaction(translation,next_proof):
+    print("Is the following translation correct?")
+    print(next_proof.split("Proof")[0])
+    print(translation.split('\n')[0])
+    trans = ""
+    while True:
+        feedback = input("[Y/N]:")
+        if feedback in ["Y", "y", "Yes", "yes", "YES"]:
+            print("User check success. Continuing...")
+            trans = translation
+            break
+        elif feedback in ["N", "n", "No", "no", "NO"]:
+            print("User check failure.")
+            print("Re-translate? (Y)\nmanual input otherwise (N)")
+            option = input("[Y/N]:")
+            if option in ["Y", "y", "Yes", "yes", "YES"]:
+                trans = GPTStuff.chat_call(client, next_proof.split("Proof")[0], error="theorem")
+                print("Is the following translation correct?")
+                print(next_proof.split("Proof")[0])
+                print(trans.split('\n')[0])
+            else:
+                trans = input("manual translation:")
+                trans = trans + "\n" + translation.split('\n')[1:]
+                break
+    return trans
+
+def get_output_lines(output_queue):
+    output_lines = []
+    while True:
+        try:
+            output_line = output_queue.get(timeout=20)
+            output_lines.append(output_line)
+            # print(output_line)
+        except queue.Empty:
+            print("Queue empty, moving on")
+            break
+    return output_lines
+
 def main(startup=None):
     if startup is None:
         startup_done = True
@@ -105,29 +143,7 @@ def main(startup=None):
                     file.write("\n(* " + next_proof + " *)\n")
                 translation = GPTStuff.chat_call(client, next_proof)
                 #user checks translation of theorem
-                print("Is the following translation correct?")
-                print(next_proof.split("Proof")[0])
-                print(translation.split('\n')[0])
-                trans = ""
-                while True:
-                    feedback = input("[Y/N]:")
-                    if feedback in ["Y", "y", "Yes", "yes", "YES"]:
-                        print("User check success. Continuing...")
-                        trans = translation
-                        break
-                    elif feedback in ["N", "n", "No", "no", "NO"]:
-                        print("User check failure.")
-                        print("Re-translate? (Y)\nmanual input otherwise (N)")
-                        option = input("[Y/N]:")
-                        if option in ["Y", "y", "Yes", "yes", "YES"]:
-                            trans = GPTStuff.chat_call(client, next_proof.split("Proof")[0],error="theorem")
-                            print("Is the following translation correct?")
-                            print(next_proof.split("Proof")[0])
-                            print(trans.split('\n')[0])
-                        else:
-                            trans = input("manual translation:")
-                            trans = trans + "\n" + translation.split('\n')[1:]
-                            break
+                trans = user_interaction(translation,next_proof)
                 # writing translation and "end" if needed
                 with open(TEMP_THY_FILE, 'a') as file:
                     file.write(trans)
@@ -141,19 +157,13 @@ def main(startup=None):
                 status = {}
                 Utils.change_namespace("Landau_GPT4", "temp", TEMP_THY_FILE)
                 startup_done = True
+            #repeat command line calls and fix isabelle code until it runs fine
             while True:
                 command = get_next_command(status)
                 shell_process.stdin.write(command+'\n')
                 shell_process.stdin.flush()
-                output_lines = []
-                while True:
-                    try:
-                        output_line = output_queue.get(timeout=20)
-                        output_lines.append(output_line)
-                        #print(output_line)
-                    except queue.Empty:
-                        print("Queue empty, moving on")
-                        break
+                #wait for output from shell process
+                output_lines = get_output_lines(output_queue)
                 old_status = status
                 status = Utils.parse_output(output_lines, old_status)
                 print(status.get("status"))
@@ -179,7 +189,7 @@ def parse_status(status):
         if status.get("error_lines") is not None:
             Utils.cheating(TEMP_THY_FILE, status)
     elif status.get("status") == Utils.StatusCode.GPT_CORRECTION:
-        corr = GPTStuff.chat_call(client, status.get("lines"), error=True)
+        corr = GPTStuff.chat_call(client, status.get("lines"), error="isabelle")
         Utils.write_correction(corr, TEMP_THY_FILE)
     elif status.get("status") == Utils.StatusCode.LOGS_NEEDED:
         pass
