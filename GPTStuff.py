@@ -42,6 +42,18 @@ def chat_call(client, mess, error=None):
     global_messages = messages
     return reply
 
+def start_step_by_step():
+    global global_messages
+    messages = global_messages
+    messages.append({"role":"system", "content":"The following statements are not complete proofs but only "
+                                                "single sentences of a proof. Please only translate the exact state given."})
+    global_messages = messages
+
+def stop_step_by_step():
+    global global_messages
+    messages = global_messages
+    messages.append({"role":"system", "content":"The partial proofs are finished. You will be given complete proofs again."})
+    global_messages = messages
 
 def initialise(seed=None, model=None, few_shot=None):
     global SEED, MODEL, FEW_SHOT_NO
@@ -139,9 +151,10 @@ def read_file_to_gpt():
     messages[0]["role"] = "user"
     return messages
 
-
+'''
 if __name__ == '__main__':
     with open("files/thy_file.pkl", "rb") as f:
         messages = pickle.load(f) #read_file_to_gpt()
     client = initialise()
     chat_loop(client, messages)
+'''

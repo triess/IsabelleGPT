@@ -11,6 +11,7 @@ class StatusCode(Enum):
     LOGS_NEEDED = 5
     END_SYNTAX = 6
     MALFORMED = 7
+    STEP_BY_STEP = 8
 
 
 def parse_output(output_lines, old_status):
@@ -78,7 +79,9 @@ def delete_last_line(file):
                 break
         f.truncate(pos)
 
-
+#invoke sledgehammer or replace relevant part with "sorry"
+#returns True if sledgehammer is successful and False if it fails TODO
+#always returns True in case of cheating
 def cheating(thy_file, status):
     if status.get("error_lines") is None or len(status.get("error_lines")) == 0:
         return
@@ -103,6 +106,7 @@ def cheating(thy_file, status):
         lines[0] = "theory temp\n"
         f.writelines(lines[:last_line_counter + 1])
         f.close()
+    return True
 
 
 def parse_thy_file(thy_file, window=None):

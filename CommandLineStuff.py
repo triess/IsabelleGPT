@@ -129,47 +129,7 @@ def main(startup=None):
     try:
         shell_process, output_queue = shell_startup()
         # main loop
-        while True:
-            if startup_done:
-                next_proof = get_next_proof()
-                if next_proof is None:
-                    print("translation finished")
-                    break
-                print(f"Translating next proof {next_proof[0:15]}")
-                # deleting "end"
-                Utils.delete_last_line(TEMP_THY_FILE)
-                # writing prompt as comment
-                with open(TEMP_THY_FILE, 'a') as file:
-                    file.write("\n(* " + next_proof + " *)\n")
-                translation = GPTStuff.chat_call(client, next_proof)
-                #user checks translation of theorem
-                trans = user_interaction(translation,next_proof)
-                # writing translation and "end" if needed
-                with open(TEMP_THY_FILE, 'a') as file:
-                    file.write(trans)
-                    if not trans.strip().endswith('end'):
-                        file.write('\nend')
-                    file.close()
-                status = {}
-                Utils.change_namespace("Landau_GPT4", "temp", TEMP_THY_FILE)
-            else:
-                print("skipping first translation")
-                status = {}
-                Utils.change_namespace("Landau_GPT4", "temp", TEMP_THY_FILE)
-                startup_done = True
-            #repeat command line calls and fix isabelle code until it runs fine
-            while True:
-                command = get_next_command(status)
-                shell_process.stdin.write(command+'\n')
-                shell_process.stdin.flush()
-                #wait for output from shell process
-                output_lines = get_output_lines(output_queue)
-                old_status = status
-                status = Utils.parse_output(output_lines, old_status)
-                print(status.get("status"))
-                parse_status(status)
-                if status.get("status") == Utils.StatusCode.OK:
-                    break
+        main_loop(startup_done, shell_process , output_queue)
     except KeyboardInterrupt:
         print("\nUser Interrupt. Session terminated.")
     except ChildProcessError:
@@ -179,6 +139,54 @@ def main(startup=None):
         shell_process.wait()
         print("Session Terminated.")
 
+def main_loop(start, shell_process, output_queue):
+    startup_done = start
+    while True:
+        if startup_done:
+            next_proof = get_next_proof()
+            if next_proof is None:
+                print("translation finished")
+                break
+            print(f"Translating next proof {next_proof[0:15]}")
+            # deleting "end"
+            Utils.delete_last_line(TEMP_THY_FILE)
+            # writing prompt as comment
+            with open(TEMP_THY_FILE, 'a') as file:
+                file.write("\n(* " + next_proof + " *)\n")
+            translation = GPTStuff.chat_call(client, next_proof)
+            # user checks translation of theorem
+            trans = user_interaction(translation, next_proof)
+            # writing translation and "end" if needed
+            with open(TEMP_THY_FILE, 'a') as file:
+                file.write(trans)
+                if not trans.strip().endswith('end'):
+                    file.write('\nend')
+                file.close()
+            status = {}
+            Utils.change_namespace("Landau_GPT4", "temp", TEMP_THY_FILE)
+        else:
+            print("skipping first translation")
+            status = {}
+            Utils.change_namespace("Landau_GPT4", "temp", TEMP_THY_FILE)
+            startup_done = True
+            next_proof = get_next_proof(-1)
+        # repeat command line calls and fix isabelle code until it runs fine
+        while True:
+            command = get_next_command(status)
+            shell_process.stdin.write(command + '\n')
+            shell_process.stdin.flush()
+            # wait for output from shell process
+            output_lines = get_output_lines(output_queue)
+            old_status = status
+            #analyze status
+            status = Utils.parse_output(output_lines, old_status)
+            print(status.get("status"))
+            #act appropriately on status
+            status = parse_status(status)
+            if not status.get("cheating_success"):
+                step_by_step_translation(next_proof)
+            if status.get("status") == Utils.StatusCode.OK:
+                break
 
 def parse_status(status):
     if status.get("status") == Utils.StatusCode.OK:
@@ -187,7 +195,8 @@ def parse_status(status):
         GPTStuff.startup(theory_file)
     elif status.get("status") == Utils.StatusCode.SLEDGEHAMMER_NEEDED:
         if status.get("error_lines") is not None:
-            Utils.cheating(TEMP_THY_FILE, status)
+            success = Utils.cheating(TEMP_THY_FILE, status)
+            status["cheating_success"] = success
     elif status.get("status") == Utils.StatusCode.GPT_CORRECTION:
         corr = GPTStuff.chat_call(client, status.get("lines"), error="isabelle")
         Utils.write_correction(corr, TEMP_THY_FILE)
@@ -200,13 +209,23 @@ def parse_status(status):
     else:
         print(status.get("lines"))
         raise ChildProcessError
+    return status
 
-def get_next_proof():
+def step_by_step_translation(proof):
+    GPTStuff.start_step_by_step()
+    trans = ""
+    for line in proof.split("."):
+        trans += "\n" + GPTStuff.chat_call(client, line)
+
+    GPTStuff.stop_step_by_step()
+
+def get_next_proof(offset=0):
     global proof_counter
     if proof_counter >= len(proofs):
         return None
-    ret = proofs[proof_counter]
-    proof_counter += 1
+    ret = proofs[proof_counter+offset]
+    if offset == 0:
+        proof_counter += 1
     return ret
 
 
@@ -250,9 +269,20 @@ def find_current_proof():
                 last_theo = line
             elif line.startswith("(* Definition"):
                 last_def = line
-    proof_counter = int(re.search(r'\d+', last_theo).group()) + int(re.search(r'\d+', last_def).group()) - 1
+    gr = re.search(r'\d+', last_def)
+    if gr is not None:
+        gr = int(gr.group())
+    else:
+        gr = 0
+    theo = re.search(r'\d+', last_theo)
+    if theo is not None:
+        theo = int(theo.group())
+    else:
+        theo = 0
+    proof_counter = theo + gr
 
 
+#TODO refactor to Utils (GPT stuff need to stay here)
 def read_params():
     global theory_file, client, proof_counter
     parameters = {}
@@ -266,11 +296,15 @@ def read_params():
     print("Parameters loaded")
     print(parameters)
     theory_file = parameters['theory']
+    #TODO startup should load temp theory from config
     if not parameters.get("startup"):
         print("copying theory file")
         shutil.copyfile(theory_file, TEMP_THY_FILE)
     else:
         print("debug start")
+    if parameters.get("fresh_start"):
+        #TODO figure out what to do with empty file
+        pass
     Utils.change_namespace("Landau_GPT4", "temp", TEMP_THY_FILE)
     print("initializing GPT module")
     client = GPTStuff.initialise(seed=int(parameters.get('seed')), model=parameters.get('model'), few_shot=int(parameters.get('few_shot')))
