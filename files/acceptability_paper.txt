@@ -1,0 +1,96 @@
+Definition 2. An argumentation framework is a pair
+AF = (AR, attacks)
+where AR is a set of arguments, and attacks is a binary relation on AR, i.e.
+attacks \<subseteq> AR x AR.
+For two arguments A and B, the meaning of attacks(A, B) is that A represents
+an attack against B.
+
+Example 3 (Continuation of Example 1). The exchange between I and A can be
+represented by an argumentation framework (AR, attacks) as follows: AR =
+{i_1, i_2, a} and attacks = {(i_1, a), (a, i_1), (i_2, a)} with i_1 and i_2 denoting the first and
+the second argument of I, respectively, and a denoting the argument of A.
+
+Remark 4. From now on, if not explicitly mentioned otherwise, we always refer
+to an arbitrary but fixed argumentation framework AF = (AR, attacks). Further,
+we say that A attacks B (or B is attacked by A) if attacks(A, B) holds. Similarly,
+we say that a set S of arguments attacks B (or B is attacked by S) if B is attacked
+by an argument in S.
+
+Definition 5. A set S of arguments is said to be conflict-free if there are no
+arguments A and B in S such that A attacks B.
+
+Definition 6.
+(1) An argument A \<in> AR is acceptable with respect to a set S of arguments iff
+for each argument B \<in> AR: if B attacks A then B is attacked by S (see Remark 4).
+(2) A conflict-free set of arguments S is admissible iff each argument in S is
+acceptable with respect to S.
+
+Definition 7. A preferred extension of an argumentation framework AF is a
+maximal (with respect to set inclusion) admissible set of AF.
+
+Example 8 (Continuation of Example 3). It is not difficult to see that AF has
+exactly one preferred extension E = {i_1, i_2}.
+
+Example 9 (Nixon diamond). The well-known Nixon diamond example can be
+represented as an argumentation framework AF = (AR, attacks) with AR =
+{A, B}, and attacks = {(A, B), (B, A)} where A represents the argument “Nixon
+is anti-pacifist since he is a republican”, and B represents the argument “Nixon is
+a pacifist since he is a quaker”. This argumentation framework has two preferred
+extensions, one in which Nixon is a pacifist and one in which Nixon is a quaker.
+
+Lemma 10 (Fundamental Lemma). Let S be an admissible set of arguments, and A
+and A’ be arguments which are acceptable with respect to S. Then
+(1) S’ = S \<union> {A} is admissible, and
+(2) A’ is acceptable with respect to S’.
+Proof. (1) We need only to show that S’ is conflict-free. Assume the contrary.
+Therefore, there exists an argument B \<in> S such that either A attacks B or B
+attacks A. From the admissibility of S and the acceptability of A, there is an
+argument B’ in S such that B’ attacks B or B’ attacks A. Since S is conflict-free,
+it follows that B’ attacks A. But then there is an argument B” in S such that B”
+attacks B’. Contradiction!
+(2) Obvious. \<box>
+
+###
+Theorem 11. Let AF be an argumentation framework.
+(1) The set of all admissible sets of AF form a complete partial order with
+respect to set inclusion.
+(2) For each admissible set S of AF, there exists a preferred extension E of AF
+such that S \<subseteq> E.
+
+Corollary 12. Every argumentation framework possesses at least one preferred
+extension.
+###
+
+Definition 13. A conflict-free set of arguments S is called a stable extension iff S
+attacks each argument which does not belong to S.
+
+Lemma 14. S is a stable extension iff S = {A|A is not attacked by S}.
+
+Lemma 15. Every stable extension is u preferred extension, but not vice versa.
+Proof. It is clear that each stable extension is a preferred extension. To show that
+the reverse does not hold, we construct the following argumentation framework:
+Let AF = (AR, attacks) with AR = {A} and attacks = {(A, A)}. It is clear that the
+empty set is a preferred extension of AF which is clearly not stable. \<box>
+
+Definition 16. The characteristic function, denoted by FAF, of an argumentation
+framework AF = (AR. attacks) is defined as follows:
+F_AF:2^AR \<rightarrow> 2^AR,
+F_AF(S) = {A | A is acceptable with respect to S}.
+
+Remark 17. As we always refer to an arbitrary but fixed argumentation framework AF, we often write F instead of FAF for short.
+
+Lemma 18. A conflict-free set S of arguments is admissible iff S \<subseteq> F(S).
+Proof. The lemma follows immediately from the property “If S is conflict-free,
+then F(S) is also conflict-free”. So we need only to prove this property. Assume
+that there are A and A’ in F(S) such that A attacks A’. Thus, there exists B in S
+such that B attacks A. Hence there is B’ in S such that B’ attacks B.
+Contradiction! So F(S) is conflict-free. \<box>
+
+Lemma 19. F_AF is monotonic (with respect to set inclusion).
+
+Definition 20. The grounded extension of an argumentation framework AF,
+denoted by GE_AF, is the least fixed point of F_AF.
+
+Example 21 (Continuation of Example 8). It is easy to see that
+F_AF(\<Phi>) = {i_2}, F_AF^2(\<Phi>) = {i_1,i_2}, F_AF^3(\<Phi>)=F_AF^2(\<Phi>).
+Thus GE_AF = {i_1, i_2}. Note that GE_AF is also the only preferred extension of AF.
