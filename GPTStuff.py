@@ -68,6 +68,29 @@ def initialise(seed=None, model=None, few_shot=None):
     client = OpenAI(api_key=API_KEY)
     return client
 
+def fresh_start(examples=None):
+    global global_messages
+    messages = []
+    with open("files/GPT_startup_messages.txt", 'r') as file:
+        for line in file:
+            line = line.strip()
+            messages.append({"role": "system", "content": line})
+        file.close()
+    with open("files/GPT_startup_examples.txt", 'r') as file:
+        lines = file.readlines()
+    if  not examples:
+        ex = range(len(lines))
+    else:
+        ex = examples
+    for i in ex:
+        line = lines[i]
+        line = line.split(",")
+        messages.append({"role": "user", "content": line[0].strip()})
+        messages.append({"role": "assistant", "content": line[1].strip()})
+    global_messages += messages
+
+
+
 
 def startup(theory_file):
     global global_messages
