@@ -80,33 +80,42 @@ def delete_last_line(file):
         f.truncate(pos)
 
 #invoke sledgehammer or replace relevant part with "sorry"
-#returns True if sledgehammer is successful and False if it fails TODO
+#returns True if sledgehammer is successful and False if it fails
 #always returns True in case of cheating
-def cheating(thy_file, status):
+#returns None in case of error
+def cheating(thy_file, status, sledge=False):
     if status.get("error_lines") is None or len(status.get("error_lines")) == 0:
-        return
+        return None
     print(f"cheating in line {status.get('error_lines')[0]}")
-    with open(thy_file, 'r+') as f:
-        lines = f.readlines()
-        print(f"lines before cheating:{len(lines)}")
-        to_fix = status.get("error_lines")[0] - 1
-        cheat_line = lines[to_fix]
-        cheat_line = cheat_line[:cheat_line.find(" by ")] + " sorry"
-        lines[to_fix] = cheat_line
-        last_line_counter = 0
-        for i in range(len(lines)):
-            lines[i] = lines[i].rstrip(" \n\r")
-            lines[i] += "\n"
-            if lines[i].strip().startswith("end"):
-                lines[i] = "end"
-                last_line_counter = i
-        f.truncate(0)
-        f.seek(0)
-        print(f"lines after cheating:{len(lines[:last_line_counter + 1])}")
-        lines[0] = "theory temp\n"
-        f.writelines(lines[:last_line_counter + 1])
-        f.close()
-    return True
+    #TODO actually call sledgehammer
+    if sledge:
+        manual = input("check if sledgehammer gets it done(0/1):")
+        if manual == "0":
+            return False
+        elif manual == "1":
+            return True
+    else:
+        with open(thy_file, 'r+') as f:
+            lines = f.readlines()
+            print(f"lines before cheating:{len(lines)}")
+            to_fix = status.get("error_lines")[0] - 1
+            cheat_line = lines[to_fix]
+            cheat_line = cheat_line[:cheat_line.find(" by ")] + " sorry"
+            lines[to_fix] = cheat_line
+            last_line_counter = 0
+            for i in range(len(lines)):
+                lines[i] = lines[i].rstrip(" \n\r")
+                lines[i] += "\n"
+                if lines[i].strip().startswith("end"):
+                    lines[i] = "end"
+                    last_line_counter = i
+            f.truncate(0)
+            f.seek(0)
+            print(f"lines after cheating:{len(lines[:last_line_counter + 1])}")
+            lines[0] = "theory temp\n"
+            f.writelines(lines[:last_line_counter + 1])
+            f.close()
+        return True
 
 
 def parse_thy_file(thy_file, window=None):
@@ -162,6 +171,14 @@ def write_correction(correction, file):
     lines[last_proof + 1:] = [correction + '\nend\n']
     with open(file, 'w') as f:
         f.writelines(lines)
+
+def get_only_isabelle_code(message):
+    try:
+        start = message.index("```isabelle\n") + len("```isabelle\n")
+        stop = message.index("```", start)
+        return message[start:stop]
+    except ValueError:
+        return message
 
 
 def fix_malformation(file):

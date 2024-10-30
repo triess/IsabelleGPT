@@ -5,12 +5,12 @@ proof = files/landau_book.txt
 #optional seed for GPT
 seed = 12345
 #optional model to be used from OpenAI
-model = gpt-4-turbo
+model = gpt-4o
 #optional starting count of the number of proofs that are already translated or -1 to automatically determine last translated proof
 starting_proof = -1
 #The size of the sliding window of proofs that should be kept in the GPT chat history
 few_shot = 5
 #startup debugging parameter
-startup = gpt
+#startup = gpt
 #for completely new translations from scratch
 #fresh_start = True

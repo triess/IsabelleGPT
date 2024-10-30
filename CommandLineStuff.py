@@ -87,27 +87,33 @@ def user_interaction(translation,next_proof):
     print("Is the following translation correct?")
     print(next_proof.split("Proof")[0])
     print(translation.split('\n')[0])
-    trans = ""
+    trans = translation
+    retries = 0
     while True:
         feedback = input("[Y/N]:")
         if feedback in ["Y", "y", "Yes", "yes", "YES"]:
             print("User check success. Continuing...")
-            trans = translation
             break
         elif feedback in ["N", "n", "No", "no", "NO"]:
             print("User check failure.")
             print("Re-translate? (Y)\nmanual input otherwise (N)")
             option = input("[Y/N]:")
             if option in ["Y", "y", "Yes", "yes", "YES"]:
-                trans = GPTStuff.chat_call(client, next_proof.split("Proof")[0], error="theorem")
+                err_mess = input("Whats wrong with the translation?")
+                trans = GPTStuff.chat_call(client, next_proof.split("Proof")[0], error="theorem", err_mess=err_mess)
+                one_line = trans.split("\n")
+                if len(one_line) > 1:
+                    trans = one_line[0]
                 print("Is the following translation correct?")
                 print(next_proof.split("Proof")[0])
-                print(trans.split('\n')[0])
+                print(trans)
             else:
                 trans = input("manual translation:")
-                trans = trans + "\n" + translation.split('\n')[1:]
+                trans = trans + "\n"+ "\n".join(translation.split('\n')[1:])
+                retries = -1
                 break
-    return trans
+        retries += 1
+    return trans, retries
 
 def get_output_lines(output_queue):
     output_lines = []
@@ -155,7 +161,19 @@ def main_loop(start, shell_process, output_queue):
                 file.write("\n(* " + next_proof + " *)\n")
             translation = GPTStuff.chat_call(client, next_proof)
             # user checks translation of theorem
-            trans = user_interaction(translation, next_proof)
+            trans, retries = user_interaction(translation, next_proof)
+            print(f"retires: {retries}")
+            proof_without_theorem = "\n".join(next_proof.split("\n")[1:]) #Todo split has to be proof
+            if retries != 0:
+                trans_without_theorem = GPTStuff.chat_call(client, proof_without_theorem) #todo translates wrong
+                print(trans_without_theorem)
+                if not trans_without_theorem.startswith("theorem "):
+                    trans += "\n" + trans_without_theorem
+                else:
+                    if trans != trans_without_theorem.split("proof")[0].strip():
+                        trans = trans + "\n" + trans_without_theorem[trans_without_theorem.find("proof")+1:]
+                    else:
+                        trans = trans_without_theorem
             # writing translation and "end" if needed
             with open(TEMP_THY_FILE, 'a') as file:
                 file.write(trans)
@@ -195,7 +213,7 @@ def parse_status(status):
         GPTStuff.startup(theory_file)
     elif status.get("status") == Utils.StatusCode.SLEDGEHAMMER_NEEDED:
         if status.get("error_lines") is not None:
-            success = Utils.cheating(TEMP_THY_FILE, status)
+            success = Utils.cheating(TEMP_THY_FILE, status, sledge=True)
             status["cheating_success"] = success
     elif status.get("status") == Utils.StatusCode.GPT_CORRECTION:
         corr = GPTStuff.chat_call(client, status.get("lines"), error="isabelle")
@@ -241,8 +259,13 @@ def get_next_command(status, set_up=''):
             return "isabelle build -o quick_and_dirty=true -d. Test"
 
 
-def read_proofs(proof_file):
+def read_proofs(proof_file,paper=False):
     global proofs
+    if paper:
+        with open(proof_file,'r') as file:
+            lines = file.readlines()
+            full_text = '\n'.join(lines)
+            proofs = full_text.split('§')
     curr_proof = ""
     with open(proof_file, 'r') as f:
         for line in f:
@@ -282,7 +305,7 @@ def find_current_proof():
     proof_counter = theo + gr
 
 
-#TODO refactor to Utils (GPT stuff need to stay here)
+#TODO refactor to Utils (GPT stuff needs to stay here)
 def read_params():
     global theory_file, client, proof_counter
     parameters = {}
@@ -304,7 +327,11 @@ def read_params():
         print("debug start")
     if parameters.get("fresh_start"):
         #TODO figure out what to do with empty file
-        pass
+        print("reading natural language proofs")
+        read_proofs(parameters["proof"],paper=True)
+    else:
+        print("reading natural language proofs")
+        read_proofs(parameters["proof"])
     Utils.change_namespace("Landau_GPT4", "temp", TEMP_THY_FILE)
     print("initializing GPT module")
     client = GPTStuff.initialise(seed=int(parameters.get('seed')), model=parameters.get('model'), few_shot=int(parameters.get('few_shot')))

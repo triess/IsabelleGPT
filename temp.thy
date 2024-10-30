@@ -517,53 +517,64 @@ In any case, y' belongs to \<MM>.
 Therefore we always have one of the cases 1),2) and 3).
 
  *)
-theorem Theorem_9: "\<forall>x y. (\<exists>!c. (c = 1 \<and> x = y) \<or> (c = 2 \<and> (\<exists>!u. x = y \<^bold>+ u)) \<or> (c = 3 \<and> (\<exists>!v. y = x \<^bold>+ v)))"
+theorem Theorem_9: "\<forall>x y. \<exists>!c. (c = 1 \<and> x = y) \<or> (c = 2 \<and> (\<exists>!u. x = y \<^bold>+ u)) \<or> (c = 3 \<and> (\<exists>!v. y = x \<^bold>+ v))"
 proof -
   {
     fix x::Natnums
-    define M where "M \<equiv> {y. (\<exists>!c. (c = 1 \<and> x = y) \<or> (c = 2 \<and> (\<exists>!u. x = y \<^bold>+ u)) \<or> (c = 3 \<and> (\<exists>!v. y = x \<^bold>+ v)))}"
+    define M where "M \<equiv> {y. \<exists>!c. (c = 1 \<and> x = y) \<or> (c = 2 \<and> (\<exists>!u. x = y \<^bold>+ u)) \<or> (c = 3 \<and> (\<exists>!v. y = x \<^bold>+ v))}"
     {
-      consider (case1) "x = I" | (case2) "\<exists>!u. x = I \<^bold>+ u" | (case3) "\<exists>!v. I = x \<^bold>+ v"
-        using Theorem_3
-        by (metis L1 Theorem_6)
-      then have "I \<in> M"
-        sorry
+      have "\<exists>!c. (c = 1 \<and> x = I) \<or> (c = 2 \<and> (\<exists>!u. x = I \<^bold>+ u)) \<or> (c = 3 \<and> (\<exists>!v. I = x \<^bold>+ v))"
+      proof -
+        {
+          assume "x = I"
+          then show ?thesis by auto
+        }
+        {
+          assume "x \<noteq> I"
+          then obtain u where "x = succ u" by (metis Theorem_3)
+          then have "x = I \<^bold>+ u" by (simp add: L1)
+          then show ?thesis by (metis Theorem_3)
+        }
+      qed
+      then have "I \<in> M" by (simp add: M_def)
     }
     {
       fix y::Natnums assume "y \<in> M"
-      from this obtain c where cases: "(c = 1 \<and> x = y) \<or> (c = 2 \<and> (\<exists>!u. x = y \<^bold>+ u)) \<or> (c = 3 \<and> (\<exists>!v. y = x \<^bold>+ v))"
-        by (smt (verit) M_def mem_Collect_eq)
+      from this have "\<exists>!c. (c = 1 \<and> x = y) \<or> (c = 2 \<and> (\<exists>!u. x = y \<^bold>+ u)) \<or> (c = 3 \<and> (\<exists>!v. y = x \<^bold>+ v))" by (simp add: M_def)
       {
         assume "x = y"
-        hence "succ y = x \<^bold>+ I"
-          by (simp add: L1)
-        hence "succ y \<in> M"
-          by (metis L1 M_def Theorem_2 Theorem_6 Theorem_7 Theorem_8 mem_Collect_eq numeral_One numeral_inc one_add_one)
+        then have "succ y = succ x" by auto
+        then have "succ y = x \<^bold>+ I" by (simp add: L1)
+        then have "succ y \<in> M" by (simp add: M_def)
       }
-      moreover
       {
         assume "\<exists>!u. x = y \<^bold>+ u"
-        then obtain u where "x = y \<^bold>+ u" by auto
-        then have "succ y = x \<^bold>+ succ u"
-          sorry
-        hence "succ y \<in> M"
-          by (metis L1 Theorem_5 Theorem_7 Theorem_8 \<open>x = y \<^bold>+ u\<close>)
+        then obtain u where "x = y \<^bold>+ u" and "\<forall>v. x = y \<^bold>+ v \<longrightarrow> v = u" by auto
+        {
+          assume "u = I"
+          then have "x = succ y" by (simp add: L1)
+          then have "succ y = x" by auto
+          then have "succ y \<in> M" by (simp add: M_def)
+        }
+        {
+          assume "u \<noteq> I"
+          then obtain w where "u = succ w" by (metis Theorem_3)
+          then have "x = y \<^bold>+ succ w" using \<open>x = y \<^bold>+ u\<close> by auto
+          then have "x = succ (y \<^bold>+ w)" by (simp add: L1)
+          then have "succ y = x" by auto
+          then have "succ y \<in> M" by (simp add: M_def)
+        }
       }
-      moreover
       {
         assume "\<exists>!v. y = x \<^bold>+ v"
-        then obtain v where "y = x \<^bold>+ v" by auto
-        then have "succ y = x \<^bold>+ succ v"
-          by (metis L1 Theorem_6)
-        hence "succ y \<in> M"
-          sorry
+        then obtain v where "y = x \<^bold>+ v" and "\<forall>w. y = x \<^bold>+ w \<longrightarrow> w = v" by auto
+        then have "succ y = x \<^bold>+ succ v" by (simp add: L1)
+        then have "succ y \<in> M" by (simp add: M_def)
       }
-      ultimately have "succ y \<in> M"
-        using cases by auto
     }
     from Axiom_5 have "\<forall>y. y \<in> M" using \<open>I \<in> M\<close> \<open>\<And>y. y \<in> M \<Longrightarrow> succ y \<in> M\<close> by blast
-    from this M_def have "\<forall>y. (\<exists>!c. (c = 1 \<and> x = y) \<or> (c = 2 \<and> (\<exists>!u. x = y \<^bold>+ u)) \<or> (c = 3 \<and> (\<exists>!v. y = x \<^bold>+ v)))" sorry
+    from this M_def have "\<forall>y. \<exists>!c. (c = 1 \<and> x = y) \<or> (c = 2 \<and> (\<exists>!u. x = y \<^bold>+ u)) \<or> (c = 3 \<and> (\<exists>!v. y = x \<^bold>+ v))" by auto
   }
-  thus "\<forall>x y. (\<exists>!c. (c = 1 \<and> x = y) \<or> (c = 2 \<and> (\<exists>!u. x = y \<^bold>+ u)) \<or> (c = 3 \<and> (\<exists>!v. y = x \<^bold>+ v)))" sorry
+  thus "\<forall>x y. \<exists>!c. (c = 1 \<and> x = y) \<or> (c = 2 \<and> (\<exists>!u. x = y \<^bold>+ u)) \<or> (c = 3 \<and> (\<exists>!v. y = x \<^bold>+ v))" by auto
 qed
 end

@@ -26,18 +26,22 @@ def chat_loop(client, initial_messages):
         pickle.dump(messages, file)
 
 
-def chat_call(client, mess, error=None):
+def chat_call(client, mess, error=None, err_mess=None):
     global global_messages
     messages = global_messages
     if error == "isabelle":
         err_mess = "The following errors occurred in your code please fix it:\n" + mess
         messages.append({"role": "user", "content": err_mess})
     elif error == "theorem":
-        messages.append({"role": "user", "content": "The translation of the theorem statement is incorrect:\n" + mess})
+        if err_mess:
+            messages.append({"role": "user", "content": err_mess + "\n" + mess})
+        else:
+            messages.append({"role": "user", "content": "The translation of the theorem statement is incorrect:\n" + mess})
     else:
         messages.append({"role": "user", "content": mess})
     chat = client.chat.completions.create(model=MODEL, seed=SEED, temperature=0, messages=messages)
     reply = chat.choices[0].message.content
+    reply = Utils.get_only_isabelle_code(reply)
     messages.append({"role": "assistant", "content": reply})
     global_messages = messages
     return reply
@@ -84,7 +88,7 @@ def fresh_start(examples=None):
         ex = examples
     for i in ex:
         line = lines[i]
-        line = line.split(",")
+        line = line.split("§")
         messages.append({"role": "user", "content": line[0].strip()})
         messages.append({"role": "assistant", "content": line[1].strip()})
     global_messages += messages
@@ -94,7 +98,11 @@ def fresh_start(examples=None):
 
 def startup(theory_file):
     global global_messages
-    mess, theory = Utils.parse_thy_file(theory_file, window=FEW_SHOT_NO)
+    try:
+        mess, theory = Utils.parse_thy_file(theory_file, window=FEW_SHOT_NO)
+    except ValueError:
+        mess = []
+        theory = []
     theory = ''.join(theory)
     messages = []
     with open("files/GPT_startup_messages.txt", 'r') as file:
