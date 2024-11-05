@@ -10,10 +10,12 @@ import Utils
 import shutil
 from deprecated import deprecated
 
+from GPTStuff import startup
+
 proofs = []
 proof_counter = 0
 client = None
-TEMP_THY_FILE = "temp.thy"
+TEMP_THY_FILE = ""
 theory_file = ''
 
 
@@ -86,7 +88,7 @@ def shell_startup():
 def user_interaction(translation,next_proof):
     print("Is the following translation correct?")
     print(next_proof.split("Proof")[0])
-    print(translation.split('\n')[0])
+    print(translation.split('proof')[0])
     trans = translation
     retries = 0
     while True:
@@ -101,7 +103,7 @@ def user_interaction(translation,next_proof):
             if option in ["Y", "y", "Yes", "yes", "YES"]:
                 err_mess = input("Whats wrong with the translation?")
                 trans = GPTStuff.chat_call(client, next_proof.split("Proof")[0], error="theorem", err_mess=err_mess)
-                one_line = trans.split("\n")
+                one_line = trans.split("proof")
                 if len(one_line) > 1:
                     trans = one_line[0]
                 print("Is the following translation correct?")
@@ -127,11 +129,11 @@ def get_output_lines(output_queue):
             break
     return output_lines
 
-def main(startup=None):
-    if startup is None:
-        startup_done = True
-    else:
+def main(skip_first=None):
+    if skip_first is None:
         startup_done = False
+    else:
+        startup_done = skip_first
     try:
         shell_process, output_queue = shell_startup()
         # main loop
@@ -145,6 +147,7 @@ def main(startup=None):
         shell_process.wait()
         print("Session Terminated.")
 
+#@param start boolean True when starting with the next translation False when starting with isabelle check
 def main_loop(start, shell_process, output_queue):
     startup_done = start
     while True:
@@ -166,7 +169,7 @@ def main_loop(start, shell_process, output_queue):
             proof_without_theorem = "\n".join(next_proof.split("\n")[1:]) #Todo split has to be proof
             if retries != 0:
                 trans_without_theorem = GPTStuff.chat_call(client, proof_without_theorem) #todo translates wrong
-                print(trans_without_theorem)
+                #print(trans_without_theorem)
                 if not trans_without_theorem.startswith("theorem "):
                     trans += "\n" + trans_without_theorem
                 else:
@@ -202,7 +205,8 @@ def main_loop(start, shell_process, output_queue):
             #act appropriately on status
             status = parse_status(status)
             if not status.get("cheating_success"):
-                step_by_step_translation(next_proof)
+                sbs_trans = step_by_step_translation(next_proof)
+                Utils.write_correction(sbs_trans, TEMP_THY_FILE)
             if status.get("status") == Utils.StatusCode.OK:
                 break
 
@@ -234,8 +238,8 @@ def step_by_step_translation(proof):
     trans = ""
     for line in proof.split("."):
         trans += "\n" + GPTStuff.chat_call(client, line)
-
     GPTStuff.stop_step_by_step()
+    return trans
 
 def get_next_proof(offset=0):
     global proof_counter
@@ -307,8 +311,9 @@ def find_current_proof():
 
 #TODO refactor to Utils (GPT stuff needs to stay here)
 def read_params():
-    global theory_file, client, proof_counter
+    global theory_file, client, proof_counter, TEMP_THY_FILE
     parameters = {}
+    isa_start = False
     with open("files/config", "r") as f:
         for line in f:
             line = line.strip()
@@ -319,12 +324,14 @@ def read_params():
     print("Parameters loaded")
     print(parameters)
     theory_file = parameters['theory']
-    #TODO startup should load temp theory from config
-    if not parameters.get("startup"):
-        print("copying theory file")
-        shutil.copyfile(theory_file, TEMP_THY_FILE)
+    temp_file = parameters.get("temp")
+    if temp_file:
+        print("loading temp file")
+        TEMP_THY_FILE = temp_file.strip()
+        isa_start = Utils.check_temp_status(TEMP_THY_FILE)
     else:
-        print("debug start")
+        TEMP_THY_FILE = "temp.thy"
+        shutil.copyfile(theory_file, TEMP_THY_FILE)
     if parameters.get("fresh_start"):
         #TODO figure out what to do with empty file
         print("reading natural language proofs")
@@ -344,10 +351,10 @@ def read_params():
         proof_counter = 0
     elif proof_counter == -1:
         find_current_proof()
-    return parameters.get("startup")
+    return isa_start
 
 
 if __name__ == '__main__':
-    start = read_params()
-    print("starting command line module")
-    main(startup=start)
+    starts_with_comment = read_params()
+    print(f"starting command line module. (skip?{not starts_with_comment})")
+    main(skip_first=starts_with_comment)

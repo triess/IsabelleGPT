@@ -30,7 +30,7 @@ def chat_call(client, mess, error=None, err_mess=None):
     global global_messages
     messages = global_messages
     if error == "isabelle":
-        err_mess = "The following errors occurred in your code please fix it:\n" + mess
+        err_mess = "The following errors occurred in your translation of the proof please fix them but do not change the theorem statement in any way:\n" + mess
         messages.append({"role": "user", "content": err_mess})
     elif error == "theorem":
         if err_mess:

@@ -42,6 +42,10 @@ def parse_output(output_lines, old_status):
         ret["status"] = StatusCode.END_SYNTAX
         ret["error_lines"] = get_error_lines(lines)
         return ret
+    if any("Failed to refine any pending" in string for string in output_lines):
+        ret["status"] = StatusCode.GPT_CORRECTION
+        ret["error_lines"] = get_error_lines(lines)
+        return ret
     if any("At command \"by\"" in string for string in output_lines):
         ret["status"] = StatusCode.SLEDGEHAMMER_NEEDED
         ret["error_lines"] = get_error_lines(lines)
@@ -79,6 +83,18 @@ def delete_last_line(file):
                 break
         f.truncate(pos)
 
+#returns False if the file ends with isabelle code and True if it ends with a comment
+def check_temp_status(temp_file):
+    with open(temp_file, 'r') as f:
+        lines = f.readlines()
+    comment_end = 0
+    for i in range(len(lines)):
+        if lines[i].strip().endswith('*)'):
+            comment_end = i
+    if len(lines) > comment_end + 3:
+        return False
+    return True
+
 #invoke sledgehammer or replace relevant part with "sorry"
 #returns True if sledgehammer is successful and False if it fails
 #always returns True in case of cheating
@@ -86,9 +102,12 @@ def delete_last_line(file):
 def cheating(thy_file, status, sledge=False):
     if status.get("error_lines") is None or len(status.get("error_lines")) == 0:
         return None
-    print(f"cheating in line {status.get('error_lines')[0]}")
-    #TODO actually call sledgehammer
     if sledge:
+        print(f"sledge in line {status.get('error_lines')[0]}")
+    else:
+        print(f"cheating in line {status.get('error_lines')[0]}")
+    if sledge:
+        #TODO actually call sledgehammer
         manual = input("check if sledgehammer gets it done(0/1):")
         if manual == "0":
             return False
@@ -161,6 +180,7 @@ def change_namespace(namespace_before, namespace_after, file):
         f.write(new_content)
 
 
+#replaces everything after last comment with given correction and adds "end"
 def write_correction(correction, file):
     with open(file, 'r') as f:
         lines = f.readlines()
