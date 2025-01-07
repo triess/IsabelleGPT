@@ -143,6 +143,7 @@ def main(skip_first=None):
     except ChildProcessError:
         print("Fatal Error. Shutting down.")
     finally:
+        GPTStuff.log_messages()
         shell_process.stdin.close()
         shell_process.wait()
         print("Session Terminated.")
@@ -205,8 +206,10 @@ def main_loop(start, shell_process, output_queue):
             #act appropriately on status
             status = parse_status(status)
             if not status.get("cheating_success"):
+                print("trying step by step translation")
+                Utils.cut_comment(TEMP_THY_FILE)
                 sbs_trans = step_by_step_translation(next_proof)
-                Utils.write_correction(sbs_trans, TEMP_THY_FILE)
+                Utils.write_correction(sbs_trans, TEMP_THY_FILE, keep_theorem=True)
             if status.get("status") == Utils.StatusCode.OK:
                 break
 
@@ -236,8 +239,9 @@ def parse_status(status):
 def step_by_step_translation(proof):
     GPTStuff.start_step_by_step()
     trans = ""
-    for line in proof.split("."):
-        trans += "\n" + GPTStuff.chat_call(client, line)
+    theo_split = ("Proof:" + proof.split("Proof:")[1]).split(".")
+    for line in theo_split:
+        trans += "\n" + "(* " + line + " *)\n" + GPTStuff.chat_call(client, line)
     GPTStuff.stop_step_by_step()
     return trans
 
@@ -356,5 +360,5 @@ def read_params():
 
 if __name__ == '__main__':
     starts_with_comment = read_params()
-    print(f"starting command line module. (skip?{not starts_with_comment})")
-    main(skip_first=starts_with_comment)
+    print(f"starting command line module. (skip?{starts_with_comment})")
+    main(skip_first=not starts_with_comment)

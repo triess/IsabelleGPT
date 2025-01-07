@@ -1,3 +1,4 @@
+import datetime
 import pickle
 
 from openai import OpenAI
@@ -8,6 +9,8 @@ SEED = 12345
 MODEL = "gpt-4"
 global_messages = []
 FEW_SHOT_NO = 5
+WORKING_FILE = None
+LOG_FILE = "files/gpt_messages.log"
 
 
 def chat_loop(client, initial_messages):
@@ -50,7 +53,8 @@ def start_step_by_step():
     global global_messages
     messages = global_messages
     messages.append({"role":"system", "content":"The following statements are not complete proofs but only "
-                                                "single sentences of a proof. Please only translate the exact state given."})
+                                                "single sentences of a proof. Please only translate the exact statements given. "
+                                                "They do not have to be syntactically correct by themselves."})
     global_messages = messages
 
 def stop_step_by_step():
@@ -93,11 +97,16 @@ def fresh_start(examples=None):
         messages.append({"role": "assistant", "content": line[1].strip()})
     global_messages += messages
 
-
-
+def log_messages():
+    global global_messages
+    with open(LOG_FILE,"a") as file:
+        file.write(str(datetime.datetime.now()) + "\n")
+        for mess in global_messages:
+            file.write(str(mess) + "\n")
 
 def startup(theory_file):
-    global global_messages
+    global global_messages, WORKING_FILE
+    WORKING_FILE = theory_file
     try:
         mess, theory = Utils.parse_thy_file(theory_file, window=FEW_SHOT_NO)
     except ValueError:

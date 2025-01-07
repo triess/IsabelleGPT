@@ -180,13 +180,37 @@ def change_namespace(namespace_before, namespace_after, file):
         f.write(new_content)
 
 
+#cuts the last comment down to only the theorem statement
+def cut_comment(file):
+    with open(file, 'r') as f:
+        lines = f.readlines()
+    start_comment=0
+    end_comment=0
+    for i in range(len(lines)):
+        if lines[i].strip().startswith("(*"):
+            start_comment = i
+        if lines[i].strip().endswith("*)"):
+            end_comment = i
+    proof_start = 0
+    for i in range(start_comment, end_comment):
+        if lines[i].strip().startswith("Proof:"):
+            proof_start = i
+            break
+    lines[proof_start-1] += "*)"
+    lines = lines[start_comment:proof_start] + lines[end_comment:]
+    with open(file, 'w') as f:
+        f.writelines(lines)
+
 #replaces everything after last comment with given correction and adds "end"
-def write_correction(correction, file):
+#if keep_theorem is True it tries to keep the last theorem from the file
+def write_correction(correction, file, keep_theorem=False):
     with open(file, 'r') as f:
         lines = f.readlines()
     last_proof = 0
     for i in range(len(lines)):
-        if lines[i].strip().endswith("*)"):
+        if (not keep_theorem) and lines[i].strip().endswith("*)"):
+            last_proof = i
+        elif keep_theorem and lines[i].strip().startswith("theorem Theorem"):
             last_proof = i
     lines[last_proof + 1:] = [correction + '\nend\n']
     with open(file, 'w') as f:
