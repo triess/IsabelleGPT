@@ -519,38 +519,105 @@ Therefore we always have one of the cases 1),2) and 3).
 
  *)
 theorem Theorem_9:
-  "\<forall>x y. \<exists>!c::nat. (c = 1 \<and> x = y) \<or> (c = 2 \<and> (\<exists>!u. x = y \<^bold>+ u)) \<or> (c = 3 \<and> (\<exists>!v. y = x \<^bold>+ v))"
+  "\<forall>x y. \<exists>!c::nat. (c = 1 \<and> x = y) \<or> (c = 2 \<and> (\<exists>u. x = y \<^bold>+ u)) \<or> (c = 3 \<and> (\<exists>v. y = x \<^bold>+ v))"
 proof -
   {
     fix x y::Natnums
-    have "\<not>((x = y) \<and> (\<exists>!u. x = y \<^bold>+ u))"
+    have "\<not>((x = y) \<and> (\<exists>u. x = y \<^bold>+ u))"
     proof
-      assume "(x=y) \<and> ( \<exists>!u. x = y \<^bold>+ u)"
+      assume "(x=y) \<and> ( \<exists>u. x = y \<^bold>+ u)"
       then show False
         using Theorem_6 Theorem_7 by auto
     qed
-    moreover have "\<not>((x = y) \<and> (\<exists>!v. y = x \<^bold>+ v))"
+    moreover have "\<not>((x = y) \<and> (\<exists>v. y = x \<^bold>+ v))"
     proof
-      assume "(x = y) \<and> (\<exists>!v. y = x \<^bold>+ v)"
+      assume "(x = y) \<and> (\<exists>v. y = x \<^bold>+ v)"
       then show False
         using Theorem_6 Theorem_7 by auto 
     qed
-    moreover have "\<not>((\<exists>!u. x = y \<^bold>+ u) \<and> (\<exists>!v. y = x \<^bold>+ v))"
+    moreover have "\<not>((\<exists>u. x = y \<^bold>+ u) \<and> (\<exists>v. y = x \<^bold>+ v))"
     proof
-      assume "(\<exists>!u. x = y \<^bold>+ u) \<and> (\<exists>!v. y = x \<^bold>+ v)"
+      assume "(\<exists>u. x = y \<^bold>+ u) \<and> (\<exists>v. y = x \<^bold>+ v)"
       then show False
-        by (metis Theorem_5 Theorem_7)
+        by (metis Theorem_5 Theorem_6 Theorem_7) 
     qed
+  hence "(\<exists>c.(c = 1 \<and> x = y) \<or> (c = 2 \<and> (\<exists>u. x = y \<^bold>+ u)) \<or> (c = 3 \<and> (\<exists>v. y = x \<^bold>+ v)))\<longrightarrow>(\<exists>!c.(c = 1 \<and> x = y) \<or> (c = 2 \<and> (\<exists>u. x = y \<^bold>+ u)) \<or> (c = 3 \<and> (\<exists>v. y = x \<^bold>+ v)))"
+    by metis 
   }
-
+ 
   {
     fix x::Natnums
-    define M where "M \<equiv> {y. \<exists>!c::nat. (c = 1 \<and> x = y) \<or> (c = 2 \<and> (\<exists>!u. x = y \<^bold>+ u)) \<or> (c = 3 \<and> (\<exists>!v. y = x \<^bold>+ v))}"
+    define M where "M \<equiv> {y::Natnums.(x = y) \<or>  (\<exists>u. x = y \<^bold>+ u) \<or>  (\<exists>v. y = x \<^bold>+ v)}"
     {
-      from Theorem_3 have "x = I \<or> (\<exists>!u. x = I \<^bold>+ u)" by (metis L1 Theorem_6) 
-      hence "I \<in> M"
-        by (metis L1 M_def Theorem_6 Theorem_7 mem_Collect_eq) 
-      }
+      have "x = I \<or> (\<exists>u. x = I \<^bold>+ u)"
+      proof (cases "x = I")
+        case True
+        then show ?thesis by auto
+      next
+        case False
+        then obtain u where "x = succ u" using Theorem_3 by blast 
+        then have "x = I \<^bold>+ u" using L1 by (metis Theorem_6) 
+        show ?thesis using \<open>x = I \<^bold>+ u\<close> by auto 
+      qed
+      hence "I \<in> M" using M_def by blast
     }
-    oops
+
+    {
+      fix y::Natnums assume "y \<in> M"
+      then have "(x = y) \<or> (\<exists>u. x = y \<^bold>+ u) \<or> (\<exists>v. y = x \<^bold>+ v)" by (simp add: M_def)
+      then consider (case1) "x = y" | (case2) "(\<exists>u. x = y \<^bold>+ u)" | (case3) "(\<exists>v. y = x \<^bold>+ v)" by blast 
+      then have "succ y \<in> M"
+      proof (cases)
+        case case1
+        then have "succ y = y \<^bold>+ I" using L1 by auto
+        then have "succ y = x \<^bold>+ I" by (simp add: \<open>x = y\<close>) 
+        then have "\<exists>v. succ y = x \<^bold>+ v" by blast 
+        then show ?thesis using M_def by blast 
+      next
+        case case2
+        then obtain u where "x = y \<^bold>+ u" by auto
+        show "succ y \<in> M"
+        proof (cases "u = I")
+          case True
+          then have "x = succ y" using L1 \<open>x = y \<^bold>+ u\<close> by auto
+          then have "succ y = x" by auto
+          then show "succ y \<in> M" by (simp add: M_def)
+        next
+          case False
+          then obtain w where "u = succ w" using Theorem_3 by blast 
+          then have "x = y \<^bold>+ succ w" using \<open>x = y \<^bold>+ u\<close> by auto
+          then have "x = succ (y \<^bold>+ w)" using L1 by auto
+          then have "x = succ y \<^bold>+ w" using Theorem_6 by (simp add: L1)
+          then have "\<exists>u. x = succ y \<^bold>+ u" using Theorem_8 by blast 
+          then show "succ y \<in> M" using M_def by auto 
+        qed
+        
+      next
+        case case3
+        then obtain v where "y = x \<^bold>+ v" by auto
+        then have "succ y = succ (x \<^bold>+ v)" by auto
+        then have "succ y = x \<^bold>+ succ v" using L1 by auto
+        then have "\<exists>v. succ y = x \<^bold>+ v" by metis
+        then show "succ y \<in> M" using M_def by blast
+        qed
+    } 
+    from Axiom_5 have "\<forall>y. y \<in> M" using \<open>I \<in> M\<close> \<open>\<And>y. y \<in> M \<Longrightarrow> succ y \<in> M\<close> by blast 
+      from M_def have "\<forall>y::Natnums.(x = y) \<or>  (\<exists>u. x = y \<^bold>+ u) \<or>  (\<exists>v. y = x \<^bold>+ v)" using \<open>\<forall>y. y \<in> M\<close> by blast 
+    }
+    then show ?thesis
+      by (metis \<open>\<And>y x. (\<exists>c. c = 1 \<and> x = y \<or> c = 2 \<and> (\<exists>u. x = y \<^bold>+ u) \<or> c = 3 \<and> (\<exists>v. y = x \<^bold>+ v)) \<longrightarrow> (\<exists>!c. c = 1 \<and> x = y \<or> c = 2 \<and> (\<exists>u. x = y \<^bold>+ u) \<or> c = 3 \<and> (\<exists>v. y = x \<^bold>+ v))\<close>) 
+  qed
+      
+
+theorem Theorem_9_a:
+  "\<forall>x y. (x = y) \<or> (\<exists>!u. x = y \<^bold>+ u) \<or> (\<exists>!v. y = x \<^bold>+ v)"
+proof -
+  {
+    from Theorem_9 have "\<forall>x y. (x = y) \<or> (\<exists>!u. x = y \<^bold>+ u) \<or> (\<exists>!v. y = x \<^bold>+ v)"
+      by (meson Theorem_8)
+    then show ?thesis
+      by simp
+  }
+qed
+
 end
