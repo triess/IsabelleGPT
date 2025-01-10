@@ -10,8 +10,6 @@ import Utils
 import shutil
 from deprecated import deprecated
 
-from GPTStuff import startup
-
 proofs = []
 proof_counter = 0
 client = None
@@ -361,4 +359,4 @@ def read_params():
 if __name__ == '__main__':
     starts_with_comment = read_params()
     print(f"starting command line module. (skip?{starts_with_comment})")
-    main(skip_first=not starts_with_comment)
+    main(skip_first=starts_with_comment)
