@@ -165,15 +165,15 @@ def main_loop(start, shell_process, output_queue):
             # user checks translation of theorem
             trans, retries = user_interaction(translation, next_proof)
             print(f"retires: {retries}")
-            proof_without_theorem = "\n".join(next_proof.split("\n")[1:]) #Todo split has to be proof
+            proof_without_theorem = "".join(next_proof.split("Proof:")[1:])
             if retries != 0:
-                trans_without_theorem = GPTStuff.chat_call(client, proof_without_theorem) #todo translates wrong
+                trans_without_theorem = GPTStuff.chat_call(client, proof_without_theorem, err_mess=trans)
                 #print(trans_without_theorem)
                 if not trans_without_theorem.startswith("theorem "):
                     trans += "\n" + trans_without_theorem
                 else:
                     if trans != trans_without_theorem.split("proof")[0].strip():
-                        trans = trans + "\n" + trans_without_theorem[trans_without_theorem.find("proof")+1:]
+                        trans = trans + "\n" + trans_without_theorem[trans_without_theorem.find("proof"):]
                     else:
                         trans = trans_without_theorem
             # writing translation and "end" if needed
@@ -189,7 +189,7 @@ def main_loop(start, shell_process, output_queue):
             status = {}
             Utils.change_namespace("Landau_GPT4", "temp", TEMP_THY_FILE)
             startup_done = True
-            next_proof = get_next_proof(-1)
+            next_proof = get_next_proof(1)
         # repeat command line calls and fix isabelle code until it runs fine
         while True:
             command = get_next_command(status)
@@ -203,13 +203,14 @@ def main_loop(start, shell_process, output_queue):
             print(status.get("status"))
             #act appropriately on status
             status = parse_status(status)
-            if not status.get("cheating_success"):
+            if status.get("status") == Utils.StatusCode.OK:
+                break
+            if status.get("status")==Utils.StatusCode.SLEDGEHAMMER_NEEDED and not status.get("cheating_success"):
                 print("trying step by step translation")
                 Utils.cut_comment(TEMP_THY_FILE)
                 sbs_trans = step_by_step_translation(next_proof)
                 Utils.write_correction(sbs_trans, TEMP_THY_FILE, keep_theorem=True)
-            if status.get("status") == Utils.StatusCode.OK:
-                break
+
 
 def parse_status(status):
     if status.get("status") == Utils.StatusCode.OK:
@@ -243,13 +244,15 @@ def step_by_step_translation(proof):
     GPTStuff.stop_step_by_step()
     return trans
 
-def get_next_proof(offset=0):
+def get_next_proof(offset=None):
     global proof_counter
     if proof_counter >= len(proofs):
         return None
-    ret = proofs[proof_counter+offset]
-    if offset == 0:
+    if offset is None:
+        ret = proofs[proof_counter]
         proof_counter += 1
+    else:
+        ret = proofs[proof_counter + offset]
     return ret
 
 
@@ -288,13 +291,14 @@ def read_proofs(proof_file,paper=False):
             proofs.append(curr_proof)
 
 
+
 def find_current_proof():
     global proof_counter
     last_theo = ""
     last_def = ""
     with open(TEMP_THY_FILE, 'r') as f:
         for line in f:
-            if line.startswith("theorem"):
+            if line.startswith("(* Theorem"):
                 last_theo = line
             elif line.startswith("(* Definition"):
                 last_def = line
@@ -308,7 +312,7 @@ def find_current_proof():
         theo = int(theo.group())
     else:
         theo = 0
-    proof_counter = theo + gr
+    proof_counter = theo + gr - 1
 
 
 #TODO refactor to Utils (GPT stuff needs to stay here)
@@ -344,7 +348,7 @@ def read_params():
     Utils.change_namespace("Landau_GPT4", "temp", TEMP_THY_FILE)
     print("initializing GPT module")
     client = GPTStuff.initialise(seed=int(parameters.get('seed')), model=parameters.get('model'), few_shot=int(parameters.get('few_shot')))
-    GPTStuff.startup(theory_file)
+    GPTStuff.startup(TEMP_THY_FILE)
     print("reading natural language proofs")
     read_proofs(parameters["proof"])
     print(f"found:{len(proofs)} proofs")

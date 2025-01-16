@@ -533,18 +533,18 @@ proof -
     proof
       assume "(x = y) \<and> (\<exists>v. y = x \<^bold>+ v)"
       then show False
-        using Theorem_6 Theorem_7 by auto 
+        using Theorem_6 Theorem_7 by auto
     qed
     moreover have "\<not>((\<exists>u. x = y \<^bold>+ u) \<and> (\<exists>v. y = x \<^bold>+ v))"
     proof
       assume "(\<exists>u. x = y \<^bold>+ u) \<and> (\<exists>v. y = x \<^bold>+ v)"
       then show False
-        by (metis Theorem_5 Theorem_6 Theorem_7) 
+        by (metis Theorem_5 Theorem_6 Theorem_7)
     qed
   hence "(\<exists>c.(c = 1 \<and> x = y) \<or> (c = 2 \<and> (\<exists>u. x = y \<^bold>+ u)) \<or> (c = 3 \<and> (\<exists>v. y = x \<^bold>+ v)))\<longrightarrow>(\<exists>!c.(c = 1 \<and> x = y) \<or> (c = 2 \<and> (\<exists>u. x = y \<^bold>+ u)) \<or> (c = 3 \<and> (\<exists>v. y = x \<^bold>+ v)))"
-    by metis 
+    by metis
   }
- 
+
   {
     fix x::Natnums
     define M where "M \<equiv> {y::Natnums.(x = y) \<or>  (\<exists>u. x = y \<^bold>+ u) \<or>  (\<exists>v. y = x \<^bold>+ v)}"
@@ -555,9 +555,9 @@ proof -
         then show ?thesis by auto
       next
         case False
-        then obtain u where "x = succ u" using Theorem_3 by blast 
-        then have "x = I \<^bold>+ u" using L1 by (metis Theorem_6) 
-        show ?thesis using \<open>x = I \<^bold>+ u\<close> by auto 
+        then obtain u where "x = succ u" using Theorem_3 by blast
+        then have "x = I \<^bold>+ u" using L1 by (metis Theorem_6)
+        show ?thesis using \<open>x = I \<^bold>+ u\<close> by auto
       qed
       hence "I \<in> M" using M_def by blast
     }
@@ -565,14 +565,14 @@ proof -
     {
       fix y::Natnums assume "y \<in> M"
       then have "(x = y) \<or> (\<exists>u. x = y \<^bold>+ u) \<or> (\<exists>v. y = x \<^bold>+ v)" by (simp add: M_def)
-      then consider (case1) "x = y" | (case2) "(\<exists>u. x = y \<^bold>+ u)" | (case3) "(\<exists>v. y = x \<^bold>+ v)" by blast 
+      then consider (case1) "x = y" | (case2) "(\<exists>u. x = y \<^bold>+ u)" | (case3) "(\<exists>v. y = x \<^bold>+ v)" by blast
       then have "succ y \<in> M"
       proof (cases)
         case case1
         then have "succ y = y \<^bold>+ I" using L1 by auto
-        then have "succ y = x \<^bold>+ I" by (simp add: \<open>x = y\<close>) 
-        then have "\<exists>v. succ y = x \<^bold>+ v" by blast 
-        then show ?thesis using M_def by blast 
+        then have "succ y = x \<^bold>+ I" by (simp add: \<open>x = y\<close>)
+        then have "\<exists>v. succ y = x \<^bold>+ v" by blast
+        then show ?thesis using M_def by blast
       next
         case case2
         then obtain u where "x = y \<^bold>+ u" by auto
@@ -584,14 +584,14 @@ proof -
           then show "succ y \<in> M" by (simp add: M_def)
         next
           case False
-          then obtain w where "u = succ w" using Theorem_3 by blast 
+          then obtain w where "u = succ w" using Theorem_3 by blast
           then have "x = y \<^bold>+ succ w" using \<open>x = y \<^bold>+ u\<close> by auto
           then have "x = succ (y \<^bold>+ w)" using L1 by auto
           then have "x = succ y \<^bold>+ w" using Theorem_6 by (simp add: L1)
-          then have "\<exists>u. x = succ y \<^bold>+ u" using Theorem_8 by blast 
-          then show "succ y \<in> M" using M_def by auto 
+          then have "\<exists>u. x = succ y \<^bold>+ u" using Theorem_8 by blast
+          then show "succ y \<in> M" using M_def by auto
         qed
-        
+
       next
         case case3
         then obtain v where "y = x \<^bold>+ v" by auto
@@ -600,14 +600,14 @@ proof -
         then have "\<exists>v. succ y = x \<^bold>+ v" by metis
         then show "succ y \<in> M" using M_def by blast
         qed
-    } 
-    from Axiom_5 have "\<forall>y. y \<in> M" using \<open>I \<in> M\<close> \<open>\<And>y. y \<in> M \<Longrightarrow> succ y \<in> M\<close> by blast 
-      from M_def have "\<forall>y::Natnums.(x = y) \<or>  (\<exists>u. x = y \<^bold>+ u) \<or>  (\<exists>v. y = x \<^bold>+ v)" using \<open>\<forall>y. y \<in> M\<close> by blast 
+    }
+    from Axiom_5 have "\<forall>y. y \<in> M" using \<open>I \<in> M\<close> \<open>\<And>y. y \<in> M \<Longrightarrow> succ y \<in> M\<close> by blast
+      from M_def have "\<forall>y::Natnums.(x = y) \<or>  (\<exists>u. x = y \<^bold>+ u) \<or>  (\<exists>v. y = x \<^bold>+ v)" using \<open>\<forall>y. y \<in> M\<close> by blast
     }
     then show ?thesis
-      by (metis \<open>\<And>y x. (\<exists>c. c = 1 \<and> x = y \<or> c = 2 \<and> (\<exists>u. x = y \<^bold>+ u) \<or> c = 3 \<and> (\<exists>v. y = x \<^bold>+ v)) \<longrightarrow> (\<exists>!c. c = 1 \<and> x = y \<or> c = 2 \<and> (\<exists>u. x = y \<^bold>+ u) \<or> c = 3 \<and> (\<exists>v. y = x \<^bold>+ v))\<close>) 
+      by (metis \<open>\<And>y x. (\<exists>c. c = 1 \<and> x = y \<or> c = 2 \<and> (\<exists>u. x = y \<^bold>+ u) \<or> c = 3 \<and> (\<exists>v. y = x \<^bold>+ v)) \<longrightarrow> (\<exists>!c. c = 1 \<and> x = y \<or> c = 2 \<and> (\<exists>u. x = y \<^bold>+ u) \<or> c = 3 \<and> (\<exists>v. y = x \<^bold>+ v))\<close>)
   qed
-      
+
 
 theorem Theorem_9_a:
   "\<forall>x y. (x = y) \<or> (\<exists>!u. x = y \<^bold>+ u) \<or> (\<exists>!v. y = x \<^bold>+ v)"
@@ -618,6 +618,382 @@ proof -
     then show ?thesis
       by simp
   }
+qed
+
+(* Definition 2: If
+x = y + u
+then
+x > y.
+(> to be read "is greater than.")
+ *)
+definition greater_than (infix "\<^bold>>" 50) where
+  "x \<^bold>> y \<equiv> (\<exists>u. x = y \<^bold>+ u)"
+
+(* Definition 3: If
+y = x + v
+then
+x < y.
+(< to be read "is less than.")
+
+ *)
+definition less_than (infix "\<^bold><" 50) where
+  "x \<^bold>< y \<equiv> (\<exists>v. y = x \<^bold>+ v)"
+(* Theorem 10: For any given x, y, we have exactly one of the cases
+x = y, x > y, x < y.
+Proof: Theorem 9, Definition 2 and Definition 3.
+
+ *)
+theorem Theorem_10: "\<forall>x y. \<exists>!c::nat. (c = 1 \<and> x = y) \<or> (c = 2 \<and> x \<^bold>> y) \<or> (c = 3 \<and> x \<^bold>< y)"
+proof -
+  {
+    fix x y::Natnums
+    have "\<not>((x = y) \<and> (x \<^bold>> y))"
+    proof
+      assume "(x = y) \<and> (x \<^bold>> y)"
+      then show False
+        using greater_than_def Theorem_7
+        using Theorem_6 by force
+    qed
+    moreover have "\<not>((x = y) \<and> (x \<^bold>< y))"
+    proof
+      assume "(x = y) \<and> (x \<^bold>< y)"
+      then show False
+        using less_than_def Theorem_7
+        using Theorem_6 by auto
+    qed
+    moreover have "\<not>((x \<^bold>> y) \<and> (x \<^bold>< y))"
+    proof
+      assume "(x \<^bold>> y) \<and> (x \<^bold>< y)"
+      then show False
+        by (metis Theorem_5 Theorem_6 Theorem_7 greater_than_def less_than_def)
+    qed
+    ultimately have "(\<exists>c. (c = 1 \<and> x = y) \<or> (c = 2 \<and> x \<^bold>> y) \<or> (c = 3 \<and> x \<^bold>< y)) \<longrightarrow> (\<exists>!c. (c = 1 \<and> x = y) \<or> (c = 2 \<and> x \<^bold>> y) \<or> (c = 3 \<and> x \<^bold>< y))"
+      by metis
+  }
+  {
+    fix x y::Natnums
+    from Theorem_9 have "(x = y) \<or> (x \<^bold>> y) \<or> (x \<^bold>< y)"
+      by (metis greater_than_def less_than_def)
+    then have "\<exists>c. (c = 1 \<and> x = y) \<or> (c = 2 \<and> x \<^bold>> y) \<or> (c = 3 \<and> x \<^bold>< y)"
+      by auto
+  }
+  thus "\<forall>x y. \<exists>!c::nat. (c = 1 \<and> x = y) \<or> (c = 2 \<and> x \<^bold>> y) \<or> (c = 3 \<and> x \<^bold>< y)"
+    by (metis (no_types, lifting) \<open>\<And>x y. (\<exists>c. c = 1 \<and> x = y \<or> c = 2 \<and> x \<^bold>> y \<or> c = 3 \<and> x \<^bold>< y) \<longrightarrow> (\<exists>!c. c = 1 \<and> x = y \<or> c = 2 \<and> x \<^bold>> y \<or> c = 3 \<and> x \<^bold>< y)\<close>)
+qed
+
+(* Theorem 11: If
+x > y
+then
+y < x.
+Proof: Each of these means that
+x = y + u
+for some suitable u.
+
+ *)
+theorem Theorem_11: "\<forall>x y. x \<^bold>> y \<longrightarrow> y \<^bold>< x"
+proof -
+  {
+    fix x y::Natnums
+    assume "x \<^bold>> y"
+    then obtain u where "x = y \<^bold>+ u" using greater_than_def by auto
+    hence "y \<^bold>< x" using less_than_def by auto
+  }
+  thus "\<forall>x y. x \<^bold>> y \<longrightarrow> y \<^bold>< x" by auto
+qed
+
+
+(* Theorem 12: If
+x < y
+then
+y > x.
+Proof: Each of these means that
+y = x + v
+for some suitable v.
+
+ *)
+theorem Theorem_12: "\<forall>x y. x \<^bold>< y \<longrightarrow> y \<^bold>> x"
+proof -
+  {
+    fix x y::Natnums
+    assume "x \<^bold>< y"
+    then obtain v where "y = x \<^bold>+ v" using less_than_def by auto
+    hence "y \<^bold>> x" using greater_than_def by auto
+  }
+  thus "\<forall>x y. x \<^bold>< y \<longrightarrow> y \<^bold>> x" by auto
+qed
+
+
+(* Definition 4: x \<ge> y
+means
+x > y or x = y.
+(\<ge> to be read "is greater than or equal to.")
+
+ *)
+definition greater_than_or_equal (infix "\<^bold>\<ge>" 50) where
+  "x \<^bold>\<ge> y \<equiv> (x \<^bold>> y) \<or> (x = y)"
+
+(* Definition 5: x \<le> y
+means
+x < y or x = y.
+(\<le> to be read "is less than or equal to.")
+
+ *)
+definition less_than_or_equal (infix "\<^bold>\<le>" 50) where
+  "x \<^bold>\<le> y \<equiv> (x \<^bold>< y) \<or> (x = y)"
+
+
+(* Theorem 13: If
+x \<ge> y
+then
+y \<le> x.
+Proof: Theorem 11.
+
+ *)
+theorem Theorem_13: "\<forall>x y. x \<^bold>\<ge> y \<longrightarrow> y \<^bold>\<le> x"
+proof -
+  {
+    fix x y::Natnums
+    assume "x \<^bold>\<ge> y"
+    then have "x \<^bold>> y \<or> x = y" using greater_than_or_equal_def by auto
+    then have "y \<^bold>< x \<or> y = x"
+    proof
+      assume "x \<^bold>> y"
+      then have "y \<^bold>< x" using Theorem_11 by auto
+      thus "y \<^bold>< x \<or> y = x" by auto
+    next
+      assume "x = y"
+      thus "y \<^bold>< x \<or> y = x" by auto
+    qed
+    hence "y \<^bold>\<le> x" using less_than_or_equal_def by auto
+  }
+  thus "\<forall>x y. x \<^bold>\<ge> y \<longrightarrow> y \<^bold>\<le> x" by auto
+qed
+
+
+(* Theorem 14: If
+x \<le> y
+then
+y \<ge> x.
+Proof: Theorem 12.
+
+ *)
+theorem Theorem_14: "\<forall>x y. x \<^bold>\<le> y \<longrightarrow> y \<^bold>\<ge> x"
+proof -
+  {
+    fix x y::Natnums
+    assume "x \<^bold>\<le> y"
+    then have "x \<^bold>< y \<or> x = y" using less_than_or_equal_def by auto
+    then have "y \<^bold>> x \<or> y = x"
+    proof
+      assume "x \<^bold>< y"
+      then have "y \<^bold>> x" using Theorem_12 by auto
+      thus "y \<^bold>> x \<or> y = x" by auto
+    next
+      assume "x = y"
+      thus "y \<^bold>> x \<or> y = x" by auto
+    qed
+    hence "y \<^bold>\<ge> x" using greater_than_or_equal_def by auto
+  }
+  thus "\<forall>x y. x \<^bold>\<le> y \<longrightarrow> y \<^bold>\<ge> x" by auto
+qed
+
+
+(* Theorem 15 (Transitivity of Ordering): If
+x < y, y < z,
+then
+x < z.
+Preliminary Remark: Thus if
+x > y, y > z,
+then
+x > z,
+since
+z < y, y < x,
+z < x;
+but in what follows I will not even bother to write down such
+statements, which are obtained trivially by simply reading the
+formulas backwards.
+Proof: With suitable v, w, we have
+y = x + v, z = y + w,
+hence
+z = (x + v) + w = x + (v + w),
+x < z.
+
+ *)
+theorem Theorem_15: "\<forall>x y z. (x \<^bold>< y \<and> y \<^bold>< z) \<longrightarrow> x \<^bold>< z"
+proof -
+  {
+    fix x y z::Natnums
+    assume "x \<^bold>< y" and "y \<^bold>< z"
+    then obtain v w where "y = x \<^bold>+ v" and "z = y \<^bold>+ w" using less_than_def by auto
+    hence "z = (x \<^bold>+ v) \<^bold>+ w" by auto
+    hence "z = x \<^bold>+ (v \<^bold>+ w)" using Theorem_5 by auto
+    hence "x \<^bold>< z" using less_than_def by auto
+  }
+  thus "\<forall>x y z. (x \<^bold>< y \<and> y \<^bold>< z) \<longrightarrow> x \<^bold>< z" by auto
+qed
+
+
+(* Theorem 16: If
+x \<le> y, y < z or x < y, y \<le> z,
+then
+x < z.
+Proof: Obvious if an equality sign holds in the hypothesis:
+otherwise, Theorem 15 does it.
+
+ *)
+theorem Theorem_16: "\<forall>x y z. (x \<^bold>\<le> y \<and> y \<^bold>< z) \<or> (x \<^bold>< y \<and> y \<^bold>\<le> z) \<longrightarrow> x \<^bold>< z"
+proof -
+  {
+    fix x y z::Natnums
+    assume "(x \<^bold>\<le> y \<and> y \<^bold>< z) \<or> (x \<^bold>< y \<and> y \<^bold>\<le> z)"
+    then have "x \<^bold>< z"
+    proof
+      assume "x \<^bold>\<le> y \<and> y \<^bold>< z"
+      then have "x \<^bold>< y \<or> x = y" using less_than_or_equal_def by auto
+      then show "x \<^bold>< z"
+      proof
+        assume "x \<^bold>< y"
+        then show "x \<^bold>< z" using Theorem_15
+          using \<open>x \<^bold>\<le> y \<and> y \<^bold>< z\<close> by blast 
+      next
+        assume "x = y"
+        then show "x \<^bold>< z" using less_than_def
+          using \<open>x \<^bold>\<le> y \<and> y \<^bold>< z\<close> by force 
+      qed
+    next
+      assume "x \<^bold>< y \<and> y \<^bold>\<le> z"
+      then have "y \<^bold>< z \<or> y = z" using less_than_or_equal_def by auto
+      then show "x \<^bold>< z"
+      proof
+        assume "y \<^bold>< z"
+        then show "x \<^bold>< z" using Theorem_15
+          using \<open>x \<^bold>< y \<and> y \<^bold>\<le> z\<close> by blast 
+      next
+        assume "y = z"
+        then show "x \<^bold>< z" using less_than_def
+          using \<open>x \<^bold>< y \<and> y \<^bold>\<le> z\<close> by blast 
+      qed
+    qed
+  }
+  thus "\<forall>x y z. (x \<^bold>\<le> y \<and> y \<^bold>< z) \<or> (x \<^bold>< y \<and> y \<^bold>\<le> z) \<longrightarrow> x \<^bold>< z"
+    by blast 
+qed
+
+
+(* Theorem 17: If
+x \<le> y, y \<le> z,
+then
+x \<le> z.
+Proof: Obvious if two equality signs hold in the hypothesis;
+otherwise, Theorem 16 does it.
+A notation such as
+a < b \<le> c < d
+is justified on the basis of Theorems 15 and 17. While its
+immediate meaning is
+a < b, b \<le> c, c < d,
+it also implies, according to these theorems, that, say
+a < c, a < d, b < d.
+(Similarly in the later chapters.)
+
+ *)
+theorem Theorem_17: "\<forall>x y z. (x \<^bold>\<le> y \<and> y \<^bold>\<le> z) \<longrightarrow> x \<^bold>\<le> z"
+proof -
+  {
+    fix x y z::Natnums
+    assume "x \<^bold>\<le> y \<and> y \<^bold>\<le> z"
+    then have "x \<^bold>< y \<or> x = y" and "y \<^bold>< z \<or> y = z" using less_than_or_equal_def by auto
+    then have "x \<^bold>< z \<or> x = z"
+    proof (cases "x = y")
+      case True
+      then show "x \<^bold>< z \<or> x = z" using \<open>y \<^bold>< z \<or> y = z\<close> less_than_def by auto
+    next
+      case False
+      then have "x \<^bold>< y" using \<open>x \<^bold>< y \<or> x = y\<close> by auto
+      then show "x \<^bold>< z \<or> x = z"
+      proof (cases "y = z")
+        case True
+        then show "x \<^bold>< z \<or> x = z" using \<open>x \<^bold>< y\<close> less_than_def by auto
+      next
+        case False
+        then have "y \<^bold>< z" using \<open>y \<^bold>< z \<or> y = z\<close> by auto
+        then have "x \<^bold>< z" using Theorem_15 \<open>x \<^bold>< y\<close>
+          by blast 
+        then show "x \<^bold>< z \<or> x = z" by auto
+      qed
+    qed
+    hence "x \<^bold>\<le> z" using less_than_or_equal_def by auto
+  }
+  thus "\<forall>x y z. (x \<^bold>\<le> y \<and> y \<^bold>\<le> z) \<longrightarrow> x \<^bold>\<le> z"
+    by argo 
+qed
+
+
+(* Theorem 18: x + y > x.
+Proof: x + y = x + y.
+
+ *)
+theorem Theorem_18: "\<forall>x y. x \<^bold>+ y \<^bold>> x"
+proof -
+  {
+    fix x y::Natnums
+    have "x \<^bold>+ y = x \<^bold>+ y" by auto
+    hence "x \<^bold>+ y \<^bold>> x" using greater_than_def by auto
+  }
+  thus "\<forall>x y. x \<^bold>+ y \<^bold>> x" by auto
+qed
+
+
+(* Theorem 19: If
+x > y, or x = y, or x < y,
+then
+x + z > y + z, or x + z = y + z, or x + z < y + z,
+respectively.
+Proof: 1) If
+x > y
+then
+x = y + u,
+x + z = (y + u) + z = (u + y) + z = u + (y + z) = (y + z) + u,
+x + z > y + z.
+2) If
+x = y
+then clearly
+x + z = y + z.
+3) If
+x < y
+then
+y > x,
+hence, by 1),
+y + z > x + z,
+x + z < y + z.
+
+ *)
+theorem Theorem_19: "\<forall>x y z. (x \<^bold>> y \<longrightarrow> x \<^bold>+ z \<^bold>> y \<^bold>+ z) \<and> (x = y \<longrightarrow> x \<^bold>+ z = y \<^bold>+ z) \<and> (x \<^bold>< y \<longrightarrow> x \<^bold>+ z \<^bold>< y \<^bold>+ z)"
+proof -
+  {
+    fix x y z::Natnums
+    have "(x \<^bold>> y \<longrightarrow> x \<^bold>+ z \<^bold>> y \<^bold>+ z) \<and> (x = y \<longrightarrow> x \<^bold>+ z = y \<^bold>+ z) \<and> (x \<^bold>< y \<longrightarrow> x \<^bold>+ z \<^bold>< y \<^bold>+ z)"
+    proof
+      assume "x \<^bold>> y"
+      then obtain u where "x = y \<^bold>+ u" using greater_than_def by auto
+      hence "x \<^bold>+ z = (y \<^bold>+ u) \<^bold>+ z" by auto
+      hence "x \<^bold>+ z = (u \<^bold>+ y) \<^bold>+ z" using Theorem_6 by auto
+      hence "x \<^bold>+ z = u \<^bold>+ (y \<^bold>+ z)" using Theorem_5 by auto
+      hence "x \<^bold>+ z = (y \<^bold>+ z) \<^bold>+ u" using Theorem_6 by auto
+      hence "x \<^bold>+ z \<^bold>> y \<^bold>+ z" using greater_than_def by auto
+      thus "x \<^bold>> y \<longrightarrow> x \<^bold>+ z \<^bold>> y \<^bold>+ z" by auto
+    next
+      assume "x = y"
+      hence "x \<^bold>+ z = y \<^bold>+ z" by auto
+      thus "x = y \<longrightarrow> x \<^bold>+ z = y \<^bold>+ z" by auto
+    next
+      assume "x \<^bold>< y"
+      hence "y \<^bold>> x" using Theorem_11 by auto
+      hence "y \<^bold>+ z \<^bold>> x \<^bold>+ z" using `x \<^bold>> y \<longrightarrow> x \<^bold>+ z \<^bold>> y \<^bold>+ z` by auto
+      hence "x \<^bold>+ z \<^bold>< y \<^bold>+ z" using Theorem_12 by auto
+      thus "x \<^bold>< y \<longrightarrow> x \<^bold>+ z \<^bold>< y \<^bold>+ z" by auto
+    qed
+  }
+  thus "\<forall>x y z. (x \<^bold>> y \<longrightarrow> x \<^bold>+ z \<^bold>> y \<^bold>+ z) \<and> (x = y \<longrightarrow> x \<^bold>+ z = y \<^bold>+ z) \<and> (x \<^bold>< y \<longrightarrow> x \<^bold>+ z \<^bold>< y \<^bold>+ z)" by auto
 qed
 
 end

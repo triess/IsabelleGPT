@@ -72,16 +72,16 @@ def get_error_lines(lines):
     return list(set(line_numbers))
 
 
+#deletes the last line until "end" was deleted
 def delete_last_line(file):
     with open(file, 'r+') as f:
-        f.seek(0, 2)
-        pos = f.tell()
-        while pos > 0:
-            pos -= 1
-            f.seek(pos)
-            if f.read(1) == '\n':
-                break
-        f.truncate(pos)
+        lines = f.readlines()
+    while True:
+        last_line = lines.pop().strip()
+        if last_line == "end":
+            break
+    with open(file, 'w') as f:
+        f.writelines(lines)
 
 #returns False if the file ends with isabelle code and True if it ends with a comment
 def check_temp_status(temp_file):
@@ -224,21 +224,19 @@ def get_only_isabelle_code(message):
     except ValueError:
         return message
 
-
+#eliminates extra "end"s from the file
 def fix_malformation(file):
     with open(file, 'r') as f:
         lines = f.readlines()
-    last_comment = 0
-    code_start = -1
-    code_end = -1
+    second_theory = -1
     for i in range(len(lines)):
-        if lines[i].strip().endswith("*)"):
-            last_comment = i
-        if lines[i].strip().startswith("```") and code_start == -1:
-            code_start = i
-        if lines[i].strip().startswith("```") and code_start != -1:
-            code_end = i
-    lines = lines[:last_comment + 1] + lines[code_start+1:code_end]
+        if lines[i].strip().startswith("theory"):
+            if second_theory==-1:
+                second_theory = i
+            else:
+                lines = lines[:i]
+                break
+    lines = [l for l in lines if not l.strip().startswith("end")]
     lines.append("\nend\n")
     with open(file, 'w') as f:
         f.writelines(lines)
