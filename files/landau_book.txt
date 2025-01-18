@@ -402,3 +402,164 @@ hence, by Theorem 25,
 m + 1 \<le> n;
 thus m + 1 would belong to \<MM>, contradicting the statement above
 by which m was introduced.
+
+Theorem 28 and at the same time Definition 6: To every pair 
+of numbers x, y, we may assign in exactly one way a natural num- 
+number, called x ⋅ y ( ⋅ to be read "times"; however, the dot is usually 
+omitted), such that 
+1) x ⋅ 1 = x             for every x, 
+2) x ⋅ y' = x ⋅ y + x    for every x and every y. 
+x ⋅ y is called the product of x and y, or the number obtained 
+from multiplication of x by y. 
+Proof (mutatis mutandis, word for word the same as that of 
+Theorem 4): A) We will first show that for each fixed x there 
+is at most one possibility of defining xy for all y in such a way that 
+x ⋅ 1 = x 
+and 
+xy' = xy + x for every y. 
+Let a_y and b_y be defined for all y and be such that 
+a_1 = x, b_1 = x, 
+a_y' = a_y + x, b_y' = b_y + x for every y. 
+Let \<MM> be the set of all y for which 
+a_y = b_y. 
+I) a_1 = x = b_1; 
+hence 1 belongs to \<MM>. 
+II) If y belongs to \<MM>, then 
+a_y = b_y, 
+hence 
+a_y' = a_y + x = b_y + x = b_y', 
+so that y' belongs to \<MM>. 
+Hence \<MM> is the set of all natural numbers; i.e. for every y we 
+have 
+a_y = b_y. 
+B) Now we will show that for each x, it is actually possible to 
+define xy for all y in such a way that 
+x ⋅ 1 = x 
+and 
+xy' = xy + x for every y. 
+Let \<MM> be the set of all x for which this is possible (in exactly 
+one way, by A)). 
+I) For 
+x = l, 
+the number 
+xy = y 
+is as required, since 
+x ⋅ 1 = 1 = x, 
+xy' = y' = y + 1 = xy + x. 
+Hence 1 belongs to \<MM>. 
+II) Let x belong to \<MM>, so that there exists an xy for all y. Then 
+the number 
+x'y = xy + y 
+is the required number for x' since
+x' ⋅ 1 = x ⋅ 1 + 1 = x + 1 = x'
+and 
+x'y' = xy' y' = (xy + x) + y' = xy + (x + y') = xy + (x + y)'
+  = xy + (x' + y) = xy + (y + x') = (xy + y) + x' = x'y + x'.
+Hence x' belongs to \<MM>. 
+Therefore \<MM> contains all x.
+
+Theorem 29 (Commutative Law of Multiplication): 
+xy = yx. 
+Proof: Fix y, and let \<MM> be the set of all x for which the assertion holds. 
+I) We have 
+y ⋅ 1 = y,
+and furthermore, by the construction in the proof of Theorem 28, 
+1 ⋅ y = y, 
+hence 
+1 ⋅ y = y ⋅ 1, 
+so that 1 belongs to \<MM>. 
+II) If x belongs to \<MM>, then 
+xy = yx, 
+hence 
+xy + y = yx + y = yx'. 
+By the construction in the proof of Theorem 28, we have 
+x'y = xy + y, 
+hence 
+x'y = yx', 
+so that x' belongs to \<MM>. 
+The assertion therefore holds for all x.
+
+Theorem 30 (Distributive Law): 
+x(y + z) = xy + xz. 
+Preliminary Remark: The formula 
+(y + z)x = yx + zx 
+which results from Theorem 30 and Theorem 29, and similar 
+analogues later on, need not be specifically formulated as theorems, 
+nor even be set down. 
+Proof: Fix x and y, and let \<MM> be the set of all z for which the 
+assertion holds true. 
+I) x(y + 1) = xtf = xy + x = xy + x ⋅ 1; 
+1 belongs to \<MM>. 
+II) If z belongs to \<MM>, then 
+x(y + z) = xy + xz,
+hence 
+x(y + z') x((y + z)') = x(y + z) + x = (xy + xz) +x
+  = xy + (xz + x) = xy + xz' 
+so that z' belongs to \<MM>. 
+Therefore, the assertion always holds.
+
+Theorem 31 (Associative Law of Multiplication): 
+(xy)z = x(yz). 
+Proof: Fix x and y, and let \<MM> be the set of all z for which the 
+assertion holds true. 
+I) (xy) ⋅ l = xy = x(y ⋅ 1) ; 
+hence 1 belongs to \<MM>. 
+II) Let z belong to \<MM>. Then 
+(xy)z = x(yz), 
+and therefore, using Theorem 30, 
+(xy)z' = (xy)z + xy = x(yz) + xy = x(yz + y) = x(yz'), 
+so that z' belongs to \<MM>. 
+Therefore \<MM> contains all natural numbers. 
+
+Theorem 32: If 
+x > y, or x = y, or x < y, 
+then 
+xz > yz, or xz = yz, or xz < yz, respectively. 
+Proof: 1) If 
+x > y 
+then 
+x = y + u, 
+xz = (y + u)z = yz + uz > yz. 
+2) If 
+x = y
+then clearly
+xz = yz.
+3) If 
+x < y
+then 
+y > x,
+hence by 1),
+yz > xz,
+xz < yz.
+
+Theorem 33: If
+xz > yz, or xz = yz, or xz < yz, 
+then 
+x > y, or x = y, or x < y, respectively. 
+Proof: Follows from Theorem 32, since the three cases are, in 
+both instances, mutually exclusive and exhaust all possibilities. 
+
+Theorem 34: If 
+x > y, z> u, 
+then 
+xz > yu. 
+Proof: By Theorem 32, we have 
+xz > yz 
+and 
+yz = zy > uy = yu, 
+hence 
+xz > yu. 
+
+Theorem 35: If
+x \<ge> y, z > u or x > y, z \<ge> u, 
+then 
+xz > yu. 
+Proof: Follows from Theorem 32 if an equality sign holds in 
+the hypothesis; otherwise from Theorem 34. 
+
+Theorem 36: If 
+x \<ge> y, z \<ge> u, 
+then 
+xz \<ge> yu. 
+Proof: Obvious if two equality signs hold in the hypothesis; 
+otherwise Theorem 35 does it. 
