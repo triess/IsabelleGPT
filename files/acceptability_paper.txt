@@ -5,6 +5,11 @@ attacks \<subseteq> AR x AR.
 For two arguments A and B, the meaning of attacks(A, B) is that A represents
 an attack against B.
 §
+Example 3 (Continuation of Example 1). The exchange between I and A can be
+represented by an argumentation framework (AR, attacks) as follows: AR =
+{i_1, i_2, a} and attacks = {(i_1, a), (a, i_1), (i_2, a)} with i_1 and i_2 denoting the first and
+the second argument of I, respectively, and a denoting the argument of A. 
+§
 Definition 5. A set S of arguments is said to be conflict-free if there are no
 arguments A and B in S such that A attacks B.
 §
