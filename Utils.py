@@ -44,7 +44,8 @@ def parse_output(output_lines, old_status):
         return ret
     if any("Failed to refine any pending" in string for string in output_lines):
         ret["status"] = StatusCode.GPT_CORRECTION
-        ret["error_lines"] = get_error_lines(lines)
+        ret["error_lines"] = (get_error_lines(lines))
+        ret["lines"] += "\nPlease try to use the \"consider (case1)...|(case2)...\" syntax to restructure the proof"
         return ret
     if any("At command \"by\"" in string for string in output_lines):
         ret["status"] = StatusCode.SLEDGEHAMMER_NEEDED

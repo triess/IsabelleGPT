@@ -942,4 +942,333 @@ proof -
   thus "\<forall>x y. x \<^bold>+ y \<^bold>> x" by auto
 qed
 
+
+(* Theorem 19: If
+x > y, or x = y, or x < y,
+then
+x + z > y + z, or x + z = y + z, or x + z < y + z,
+respectively.
+Proof: 1) If
+x > y
+then
+x = y + u,
+x + z = (y + u) + z = (u + y) + z = u + (y + z) = (y + z) + u,
+x + z > y + z.
+2) If
+x = y
+then clearly
+x + z = y + z.
+3) If
+x < y
+then
+y > x,
+hence, by 1),
+y + z > x + z,
+x + z < y + z.
+
+ *)
+theorem Theorem_19: "\<forall>x y z. (x \<^bold>> y \<longrightarrow> x \<^bold>+ z \<^bold>> y \<^bold>+ z) \<and> (x = y \<longrightarrow> x \<^bold>+ z = y \<^bold>+ z) \<and> (x \<^bold>< y \<longrightarrow> x \<^bold>+ z \<^bold>< y \<^bold>+ z)"
+proof -
+  {
+    fix x y z::Natnums
+    have "(x \<^bold>> y \<longrightarrow> x \<^bold>+ z \<^bold>> y \<^bold>+ z) \<and> (x = y \<longrightarrow> x \<^bold>+ z = y \<^bold>+ z) \<and> (x \<^bold>< y \<longrightarrow> x \<^bold>+ z \<^bold>< y \<^bold>+ z)"
+    proof (cases "x \<^bold>> y")
+      case True
+      then obtain u where "x = y \<^bold>+ u" using greater_than_def by auto
+      hence "x \<^bold>+ z = (y \<^bold>+ u) \<^bold>+ z" by auto
+      hence "x \<^bold>+ z = (u \<^bold>+ y) \<^bold>+ z" using Theorem_6 by auto
+      hence "x \<^bold>+ z = u \<^bold>+ (y \<^bold>+ z)" using Theorem_5 by auto
+      hence "x \<^bold>+ z = (y \<^bold>+ z) \<^bold>+ u" using Theorem_6 by auto
+      hence "x \<^bold>+ z \<^bold>> y \<^bold>+ z" using greater_than_def by auto
+      thus ?thesis
+        using Theorem_5 Theorem_6 Landau_GPT4.less_than_def by auto 
+    next
+      case False
+      then consider (eq) "x = y" | (lt) "x \<^bold>< y" using Theorem_10 by blast
+      then show ?thesis
+      proof cases
+        case eq
+        hence "x \<^bold>+ z = y \<^bold>+ z" by auto
+        thus ?thesis
+          using False Theorem_12 eq by blast 
+      next
+        case lt
+        hence "y \<^bold>> x" using Theorem_11
+          using Theorem_12 by blast 
+        hence "y \<^bold>+ z \<^bold>> x \<^bold>+ z"
+          using Theorem_5 Theorem_6 greater_than_def by auto 
+        hence "x \<^bold>+ z \<^bold>< y \<^bold>+ z" using Theorem_12
+          using Theorem_11 by blast 
+        thus ?thesis
+          using False by blast 
+      qed
+    qed
+  }
+  thus "\<forall>x y z. (x \<^bold>> y \<longrightarrow> x \<^bold>+ z \<^bold>> y \<^bold>+ z) \<and> (x = y \<longrightarrow> x \<^bold>+ z = y \<^bold>+ z) \<and> (x \<^bold>< y \<longrightarrow> x \<^bold>+ z \<^bold>< y \<^bold>+ z)" by auto
+qed
+
+
+(* Theorem 20: If
+x + z > y + z, or x + z = y + z, or x + z < y + z,
+then
+x > y, or x = y, or x < y, respectively.
+Proof: Follows from Theorem 19, since the three cases are, in
+both instances, mutually exclusive and exhaust all possibilities.
+
+ *)
+theorem Theorem_20: "\<forall>x y z. (x \<^bold>+ z \<^bold>> y \<^bold>+ z \<longrightarrow> x \<^bold>> y) \<and> (x \<^bold>+ z = y \<^bold>+ z \<longrightarrow> x = y) \<and> (x \<^bold>+ z \<^bold>< y \<^bold>+ z \<longrightarrow> x \<^bold>< y)"
+proof -
+  {
+    fix x y z::Natnums
+    have "(x \<^bold>+ z \<^bold>> y \<^bold>+ z \<longrightarrow> x \<^bold>> y) \<and> (x \<^bold>+ z = y \<^bold>+ z \<longrightarrow> x = y) \<and> (x \<^bold>+ z \<^bold>< y \<^bold>+ z \<longrightarrow> x \<^bold>< y)"
+    proof (cases "x \<^bold>+ z \<^bold>> y \<^bold>+ z")
+      case True
+      then obtain u where "x \<^bold>+ z = (y \<^bold>+ z) \<^bold>+ u" using greater_than_def by auto
+      hence "x \<^bold>+ z = y \<^bold>+ (z \<^bold>+ u)" using Theorem_5 by auto
+      hence "x \<^bold>+ z = y \<^bold>+ (u \<^bold>+ z)" using Theorem_6 by auto
+      hence "x \<^bold>+ z = (y \<^bold>+ u) \<^bold>+ z" using Theorem_5 by auto
+      hence "x = y \<^bold>+ u" using Theorem_8
+        by (metis Theorem_6) 
+      hence "x \<^bold>> y" using greater_than_def by auto
+      thus ?thesis
+        using Theorem_5 Theorem_6 Landau_GPT4.less_than_def
+        by (smt (verit, ccfv_threshold) Theorem_11 Theorem_7) 
+    next
+      case False
+      then consider (eq) "x \<^bold>+ z = y \<^bold>+ z" | (lt) "x \<^bold>+ z \<^bold>< y \<^bold>+ z" using Theorem_10 by blast
+      then show ?thesis
+      proof cases
+        case eq
+        hence "x = y" using Theorem_8
+          by (metis Theorem_6) 
+        thus ?thesis
+          using False Theorem_12 eq by blast
+      next
+        case lt
+        hence "y \<^bold>+ z \<^bold>> x \<^bold>+ z" using Theorem_11
+          using Theorem_12 by blast
+        hence "y \<^bold>> x"
+          by (metis False Theorem_10 Theorem_12 Theorem_19) 
+        hence "x \<^bold>< y" using Theorem_12
+          using Theorem_11 by blast
+        thus ?thesis
+          using False
+          using \<open>y \<^bold>+ z \<^bold>> x \<^bold>+ z\<close> by fastforce 
+      qed
+    qed
+  }
+  thus "\<forall>x y z. (x \<^bold>+ z \<^bold>> y \<^bold>+ z \<longrightarrow> x \<^bold>> y) \<and> (x \<^bold>+ z = y \<^bold>+ z \<longrightarrow> x = y) \<and> (x \<^bold>+ z \<^bold>< y \<^bold>+ z \<longrightarrow> x \<^bold>< y)" by auto
+qed
+
+
+(* Theorem 21: If
+x > y, z > u,
+then
+x + z > y + u.
+Proof: By Theorem 19, we have
+x + z > y + z
+and
+y + z = z + y > u + y = y + u,
+hence
+x + z > y + u.
+
+ *)
+theorem Theorem_21: "\<forall>x y z u. (x \<^bold>> y \<and> z \<^bold>> u) \<longrightarrow> x \<^bold>+ z \<^bold>> y \<^bold>+ u"
+proof -
+  {
+    fix x y z u::Natnums
+    assume "x \<^bold>> y" and "z \<^bold>> u"
+    then have "x \<^bold>+ z \<^bold>> y \<^bold>+ z" using Theorem_19 by auto
+    moreover have "y \<^bold>+ z = z \<^bold>+ y" using Theorem_6 by auto
+    moreover have "z \<^bold>+ y \<^bold>> u \<^bold>+ y" using Theorem_19 \<open>z \<^bold>> u\<close> by auto
+    hence "y \<^bold>+ z \<^bold>> y \<^bold>+ u" using Theorem_6 by auto
+    ultimately have "x \<^bold>+ z \<^bold>> y \<^bold>+ u" using Theorem_20
+      by (meson Theorem_11 Theorem_12 Theorem_15) 
+  }
+  thus "\<forall>x y z u. (x \<^bold>> y \<and> z \<^bold>> u) \<longrightarrow> x \<^bold>+ z \<^bold>> y \<^bold>+ u" by auto
+qed
+
+
+
+(* Theorem 22: If
+x \<ge> y, z > u or x > y, z \<ge> u,
+then
+x + z > y + u.
+Proof: Follows from Theorem 19 if an equality sign holds in
+the hypothesis, otherwise from Theorem 21.
+
+ *)
+theorem Theorem_22: "\<forall>x y z u. (x \<^bold>\<ge> y \<and> z \<^bold>> u) \<or> (x \<^bold>> y \<and> z \<^bold>\<ge> u) \<longrightarrow> x \<^bold>+ z \<^bold>> y \<^bold>+ u"
+proof -
+  {
+    fix x y z u::Natnums
+    assume "(x \<^bold>\<ge> y \<and> z \<^bold>> u) \<or> (x \<^bold>> y \<and> z \<^bold>\<ge> u)"
+    then have "x \<^bold>+ z \<^bold>> y \<^bold>+ u"
+    proof
+      assume "x \<^bold>\<ge> y \<and> z \<^bold>> u"
+      then have "x \<^bold>> y \<or> x = y" using greater_than_or_equal_def by auto
+      then show "x \<^bold>+ z \<^bold>> y \<^bold>+ u"
+      proof
+        assume "x \<^bold>> y"
+        then show "x \<^bold>+ z \<^bold>> y \<^bold>+ u"
+          by (simp add: Theorem_21 \<open>x \<^bold>\<ge> y \<and> z \<^bold>> u\<close>)
+      next
+        assume "x = y"
+        then have "x \<^bold>+ z = y \<^bold>+ z" by auto
+        moreover have "y \<^bold>+ z \<^bold>> y \<^bold>+ u"
+          using Theorem_19 Theorem_6 \<open>x \<^bold>\<ge> y \<and> z \<^bold>> u\<close> by fastforce 
+        ultimately show "x \<^bold>+ z \<^bold>> y \<^bold>+ u" by auto
+      qed
+    next
+      assume "x \<^bold>> y \<and> z \<^bold>\<ge> u"
+      then have "z \<^bold>> u \<or> z = u" using greater_than_or_equal_def by auto
+      then show "x \<^bold>+ z \<^bold>> y \<^bold>+ u"
+      proof
+        assume "z \<^bold>> u"
+        then show "x \<^bold>+ z \<^bold>> y \<^bold>+ u"
+          by (simp add: Theorem_21 \<open>x \<^bold>> y \<and> z \<^bold>\<ge> u\<close>) 
+      next
+        assume "z = u"
+        then have "x \<^bold>+ z = x \<^bold>+ u" by auto
+        moreover have "x \<^bold>+ u \<^bold>> y \<^bold>+ u"
+          using Theorem_19 \<open>x \<^bold>> y \<and> z \<^bold>\<ge> u\<close> by blast 
+        ultimately show "x \<^bold>+ z \<^bold>> y \<^bold>+ u" by auto
+      qed
+    qed
+  }
+  thus "\<forall>x y z u. (x \<^bold>\<ge> y \<and> z \<^bold>> u) \<or> (x \<^bold>> y \<and> z \<^bold>\<ge> u) \<longrightarrow> x \<^bold>+ z \<^bold>> y \<^bold>+ u" by auto
+qed
+
+
+(* Theorem 23: If
+x \<ge> y, z \<ge> u,
+then
+x + z \<ge> y + u.
+Proof: Obvious if two equality signs hold in the hypothesis;
+otherwise Theorem 22 does it.
+
+ *)
+theorem Theorem_23: "\<forall>x y z u. (x \<^bold>\<ge> y \<and> z \<^bold>\<ge> u) \<longrightarrow> x \<^bold>+ z \<^bold>\<ge> y \<^bold>+ u"
+proof -
+  {
+    fix x y z u::Natnums
+    assume "x \<^bold>\<ge> y \<and> z \<^bold>\<ge> u"
+    then have "x \<^bold>> y \<or> x = y" and "z \<^bold>> u \<or> z = u" using greater_than_or_equal_def by auto
+    then have "x \<^bold>+ z \<^bold>> y \<^bold>+ u \<or> x \<^bold>+ z = y \<^bold>+ u"
+    proof (cases "x = y")
+      case True
+      then show "x \<^bold>+ z \<^bold>> y \<^bold>+ u \<or> x \<^bold>+ z = y \<^bold>+ u"
+      proof (cases "z = u")
+        case True
+        then show "x \<^bold>+ z \<^bold>> y \<^bold>+ u \<or> x \<^bold>+ z = y \<^bold>+ u"
+          using Theorem_22 \<open>x \<^bold>> y \<or> x = y\<close> \<open>x \<^bold>\<ge> y \<and> z \<^bold>\<ge> u\<close> by blast 
+      next
+        case False
+        then have "z \<^bold>> u" using \<open>z \<^bold>> u \<or> z = u\<close> by auto
+        then have "x \<^bold>+ z \<^bold>> y \<^bold>+ u"
+          by (simp add: Theorem_22 \<open>x \<^bold>\<ge> y \<and> z \<^bold>\<ge> u\<close>) 
+        then show "x \<^bold>+ z \<^bold>> y \<^bold>+ u \<or> x \<^bold>+ z = y \<^bold>+ u" by auto
+      qed
+    next
+      case False
+      then have "x \<^bold>> y" using \<open>x \<^bold>> y \<or> x = y\<close> by auto
+      then show "x \<^bold>+ z \<^bold>> y \<^bold>+ u \<or> x \<^bold>+ z = y \<^bold>+ u"
+      proof (cases "z = u")
+        case True
+        then have "x \<^bold>+ z = x \<^bold>+ u" by auto
+        moreover have "x \<^bold>+ u \<^bold>> y \<^bold>+ u" using Theorem_19 \<open>x \<^bold>> y\<close> by auto
+        ultimately show "x \<^bold>+ z \<^bold>> y \<^bold>+ u \<or> x \<^bold>+ z = y \<^bold>+ u" by auto
+      next
+        case False
+        then have "z \<^bold>> u" using \<open>z \<^bold>> u \<or> z = u\<close> by auto
+        then have "x \<^bold>+ z \<^bold>> y \<^bold>+ u"
+          using Theorem_22 \<open>x \<^bold>\<ge> y \<and> z \<^bold>\<ge> u\<close> by blast 
+        then show "x \<^bold>+ z \<^bold>> y \<^bold>+ u \<or> x \<^bold>+ z = y \<^bold>+ u" by auto
+      qed
+    qed
+    hence "x \<^bold>+ z \<^bold>\<ge> y \<^bold>+ u" using greater_than_or_equal_def by auto
+  }
+  thus "\<forall>x y z u. (x \<^bold>\<ge> y \<and> z \<^bold>\<ge> u) \<longrightarrow> x \<^bold>+ z \<^bold>\<ge> y \<^bold>+ u" by auto
+qed
+
+
+(* Theorem 24: x \<ge> 1.
+Proof: Either
+x = 1
+or
+x = u' = u + 1 > 1.
+
+ *)
+theorem Theorem_24: "\<forall>x. x \<^bold>\<ge> I"
+proof -
+  {
+    fix x::Natnums
+    have "x = I \<or> (\<exists>u. x = succ u)" using Theorem_3 by auto
+    then have "x \<^bold>\<ge> I"
+    proof
+      assume "x = I"
+      then show "x \<^bold>\<ge> I" using greater_than_or_equal_def by auto
+    next
+      assume "\<exists>u. x = succ u"
+      then obtain u where "x = succ u" by auto
+      then have "x = u \<^bold>+ I" using L1 by auto
+      then have "x \<^bold>> I" using greater_than_def
+        using Theorem_6 by blast 
+      then show "x \<^bold>\<ge> I" using greater_than_or_equal_def by auto
+    qed
+  }
+  thus "\<forall>x. x \<^bold>\<ge> I" by auto
+qed
+
+
+
+(* Theorem 25: If y > x
+then
+y \<ge> x + 1.
+Proof: y = x + u,
+u \<ge> 1,
+hence
+y \<ge> x + 1.
+
+ *)
+theorem Theorem_25: "\<forall>x y. y \<^bold>> x \<longrightarrow> y \<^bold>\<ge> x \<^bold>+ I"
+proof -
+  {
+    fix x y::Natnums
+    assume "y \<^bold>> x"
+    then obtain u where "y = x \<^bold>+ u" using greater_than_def by auto
+    have "u \<^bold>\<ge> I" using Theorem_24 by auto
+    hence "y \<^bold>\<ge> x \<^bold>+ I" using Theorem_23
+      by (simp add: \<open>y = x \<^bold>+ u\<close> greater_than_or_equal_def) 
+  }
+  thus "\<forall>x y. y \<^bold>> x \<longrightarrow> y \<^bold>\<ge> x \<^bold>+ I" by auto
+qed
+
+
+(* Theorem 26: If
+y < x + 1
+then
+y \<le> x.
+Proof: Otherwise we would have
+y > x
+and therefore, by Theorem 25,
+y \<ge> x + 1.
+
+ *)
+theorem Theorem_26: "\<forall>x y. y \<^bold>< x \<^bold>+ I \<longrightarrow> y \<^bold>\<le> x"
+proof -
+  {
+    fix x y::Natnums
+    assume "y \<^bold>< x \<^bold>+ I"
+    {
+    assume "y \<^bold>> x"
+    then have "y \<^bold>\<ge> x \<^bold>+ I" using Theorem_25 by auto
+    then have False using \<open>y \<^bold>< x \<^bold>+ I\<close> less_than_def
+      by (metis Theorem_11 Theorem_15 Theorem_6 Theorem_7 greater_than_or_equal_def) 
+    }
+    hence "y \<^bold>\<le> x" using Theorem_10 less_than_or_equal_def by auto
+  }
+  thus "\<forall>x y. y \<^bold>< x \<^bold>+ I \<longrightarrow> y \<^bold>\<le> x" by auto
+qed
+
 end

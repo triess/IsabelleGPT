@@ -375,7 +375,7 @@ y \<ge> x + 1.
 Theorem 26: If
 y < x + 1
 then
-y \<ge> x.
+y \<le> x.
 Proof: Otherwise we would have
 y > x
 and therefore, by Theorem 25,
