@@ -1,7 +1,7 @@
 #path to .thy file of already correctly translated parts
-theory = files/Landau_GPT4.thy
+theory = files/paper.thy
 #path to a .txt file or similar of the natural language proofs
-proof = files/landau_book.txt
+proof = files/acceptability_paper.txt
 #optional seed for GPT
 seed = 12345
 #optional model to be used from OpenAI
@@ -13,4 +13,4 @@ few_shot = 7
 #optional existing temp.thy file
 temp = temp.thy
 #for completely new translations from scratch
-#fresh_start = True
+fresh_start = True

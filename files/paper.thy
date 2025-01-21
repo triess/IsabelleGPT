@@ -1,4 +1,4 @@
-theory temp
+theory paper
 imports Main
 begin
 (* Definition 2. An argumentation framework is a pair

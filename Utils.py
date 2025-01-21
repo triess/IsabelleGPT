@@ -78,6 +78,8 @@ def delete_last_line(file):
     with open(file, 'r+') as f:
         lines = f.readlines()
     while True:
+        if len(lines) < 3:
+            return
         last_line = lines.pop().strip()
         if last_line == "end":
             break
@@ -163,9 +165,18 @@ def parse_thy_file(thy_file, window=None):
         else:
             m += lines[i] + "\n"
     mess.append({"role": "assistant", "content": m[:-1]})
+
     if not window:
         return mess
     else:
+        if len(mess)/2 < window:
+            with open("files/GPT_startup_examples.txt", 'r') as file:
+                lines = file.readlines()
+                for i in range(window - (len(mess)/2)):
+                    line = lines[i]
+                    line = line.split("§")
+                    mess.append({"role": "user", "content": line[0].strip()})
+                    mess.append({"role": "assistant", "content": line[1].strip()})
         window_mess = mess[len(mess)-window * 2:len(mess)]
         cutoff_line = 1
         for me in window_mess:

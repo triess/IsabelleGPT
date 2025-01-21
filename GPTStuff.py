@@ -29,27 +29,29 @@ def chat_loop(client, initial_messages):
         pickle.dump(messages, file)
 
 
-def chat_call(client, mess, error=None, err_mess=None):
+def chat_call(client, mess, error=None, err_mess=None, cold_call=False):
     global global_messages
     messages = global_messages
-    if error == "isabelle":
-        err_mess = "The following errors occurred in your translation of the proof please fix them but do not change the theorem statement in any way:\n" + mess
-        messages.append({"role": "user", "content": err_mess})
-    elif error == "theorem":
-        if err_mess:
-            messages.append({"role": "user", "content": err_mess + "\n" + mess})
+    if not cold_call:
+        if error == "isabelle":
+            err_mess = "The following errors occurred in your translation of the proof please fix them but do not change the theorem statement in any way:\n" + mess
+            messages.append({"role": "user", "content": err_mess})
+        elif error == "theorem":
+            if err_mess:
+                messages.append({"role": "user", "content": err_mess + "\n" + mess})
+            else:
+                messages.append({"role": "user", "content": "The translation of the theorem statement is incorrect:\n" + mess})
+        elif error == "proof":
+            messages.append({"role": "user", "content": "the theorem statement has been manually corrected to: \n" + err_mess + "\nPlease retranslate the proof to match the new theorem:\n" + mess})
         else:
-            messages.append({"role": "user", "content": "The translation of the theorem statement is incorrect:\n" + mess})
-    elif error == "proof":
-        messages.append({"role": "user", "content": "the theorem statement has been manually corrected to: \n" + err_mess + "\nPlease retranslate the proof to match the new theorem:\n" + mess})
-    else:
-        messages.append({"role": "user", "content": mess})
+            messages.append({"role": "user", "content": mess})
     chat = client.chat.completions.create(model=MODEL, seed=SEED, temperature=0, messages=messages)
     reply = chat.choices[0].message.content
     reply = Utils.get_only_isabelle_code(reply)
     messages.append({"role": "assistant", "content": reply})
     global_messages = messages
     return reply
+
 
 def start_step_by_step():
     global global_messages
@@ -78,26 +80,21 @@ def initialise(seed=None, model=None, few_shot=None):
     client = OpenAI(api_key=API_KEY)
     return client
 
-def fresh_start(examples=None):
+def system_message(message):
     global global_messages
+    global_messages.append({"role":"system", "content":message})
+
+def fresh_start(examples=None, seed=None, model=None, few_shot=None):
+    global global_messages
+    initialise(seed=seed, model=model, few_shot=few_shot)
     messages = []
-    with open("files/GPT_startup_messages.txt", 'r') as file:
+    with open("files/fresh_start.txt", 'r') as file:
         for line in file:
-            line = line.strip()
-            messages.append({"role": "system", "content": line})
+            line = line.strip().split("§")
+            messages.append({"role": line[0], "content": line[1]})
         file.close()
-    with open("files/GPT_startup_examples.txt", 'r') as file:
-        lines = file.readlines()
-    if  not examples:
-        ex = range(len(lines))
-    else:
-        ex = examples
-    for i in ex:
-        line = lines[i]
-        line = line.split("§")
-        messages.append({"role": "user", "content": line[0].strip()})
-        messages.append({"role": "assistant", "content": line[1].strip()})
     global_messages += messages
+    return initialise(seed=seed, model=model, few_shot=few_shot)
 
 def log_messages():
     global global_messages
@@ -109,6 +106,7 @@ def log_messages():
 def startup(theory_file):
     global global_messages, WORKING_FILE
     WORKING_FILE = theory_file
+
     try:
         mess, theory = Utils.parse_thy_file(theory_file, window=FEW_SHOT_NO)
     except ValueError:

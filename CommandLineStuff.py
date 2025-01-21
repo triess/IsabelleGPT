@@ -15,7 +15,7 @@ proof_counter = 0
 client = None
 TEMP_THY_FILE = ""
 theory_file = ''
-
+NAMESPACE = ""
 
 def enqueue_output(out, queue):
     while True:
@@ -183,11 +183,11 @@ def main_loop(start, shell_process, output_queue):
                     file.write('\nend')
                 file.close()
             status = {}
-            Utils.change_namespace("Landau_GPT4", "temp", TEMP_THY_FILE)
+            Utils.change_namespace(NAMESPACE, "temp", TEMP_THY_FILE)
         else:
             print("skipping first translation")
             status = {}
-            Utils.change_namespace("Landau_GPT4", "temp", TEMP_THY_FILE)
+            Utils.change_namespace(NAMESPACE, "temp", TEMP_THY_FILE)
             startup_done = True
             next_proof = get_next_proof(1)
         # repeat command line calls and fix isabelle code until it runs fine
@@ -215,7 +215,7 @@ def main_loop(start, shell_process, output_queue):
 def parse_status(status):
     if status.get("status") == Utils.StatusCode.OK:
         shutil.copyfile(TEMP_THY_FILE, theory_file)
-        Utils.change_namespace("temp", "Landau_GPT4", theory_file)
+        Utils.change_namespace("temp", NAMESPACE, theory_file)
         GPTStuff.startup(theory_file)
     elif status.get("status") == Utils.StatusCode.SLEDGEHAMMER_NEEDED:
         if status.get("error_lines") is not None:
@@ -273,8 +273,9 @@ def read_proofs(proof_file,paper=False):
     if paper:
         with open(proof_file,'r') as file:
             lines = file.readlines()
-            full_text = '\n'.join(lines)
+            full_text = ''.join(lines)
             proofs = full_text.split('§')
+            return
     curr_proof = ""
     with open(proof_file, 'r') as f:
         for line in f:
@@ -317,9 +318,10 @@ def find_current_proof():
 
 #TODO refactor to Utils (GPT stuff needs to stay here)
 def read_params():
-    global theory_file, client, proof_counter, TEMP_THY_FILE
+    global theory_file, client, proof_counter, TEMP_THY_FILE, NAMESPACE
     parameters = {}
     isa_start = False
+    #read parameters
     with open("files/config", "r") as f:
         for line in f:
             line = line.strip()
@@ -330,7 +332,12 @@ def read_params():
     print("Parameters loaded")
     print(parameters)
     theory_file = parameters['theory']
+    if "paper" in theory_file:
+        NAMESPACE = "paper"
+    else:
+        NAMESPACE = "Landau_GPT4"
     temp_file = parameters.get("temp")
+    #read temp file or make new one
     if temp_file:
         print("loading temp file")
         TEMP_THY_FILE = temp_file.strip()
@@ -338,25 +345,33 @@ def read_params():
     else:
         TEMP_THY_FILE = "temp.thy"
         shutil.copyfile(theory_file, TEMP_THY_FILE)
-    if parameters.get("fresh_start"):
-        #TODO figure out what to do with empty file
-        print("reading natural language proofs")
-        read_proofs(parameters["proof"],paper=True)
-    else:
-        print("reading natural language proofs")
-        read_proofs(parameters["proof"])
-    Utils.change_namespace("Landau_GPT4", "temp", TEMP_THY_FILE)
-    print("initializing GPT module")
-    client = GPTStuff.initialise(seed=int(parameters.get('seed')), model=parameters.get('model'), few_shot=int(parameters.get('few_shot')))
-    GPTStuff.startup(TEMP_THY_FILE)
+    #check for fresh start
     print("reading natural language proofs")
-    read_proofs(parameters["proof"])
+    read_proofs(parameters["proof"], paper=NAMESPACE=="paper")
     print(f"found:{len(proofs)} proofs")
+    if parameters.get("fresh_start") == "True":
+        print("initializing GPT module")
+        client = GPTStuff.fresh_start()
+        thy_setup = GPTStuff.chat_call(client, None, cold_call=True)
+        with open(TEMP_THY_FILE, 'w') as f:
+            f.write(thy_setup)
+        GPTStuff.system_message("")
+    else:
+        print("initializing GPT module")
+        client = GPTStuff.initialise(seed=int(parameters.get('seed')), model=parameters.get('model'),
+                                     few_shot=int(parameters.get('few_shot')))
+
+    Utils.change_namespace(NAMESPACE, "temp", TEMP_THY_FILE)
+    GPTStuff.startup(TEMP_THY_FILE)
+    #initialize proof counter
     proof_counter = int(parameters.get("starting_proof"))
     if not proof_counter:
         proof_counter = 0
     elif proof_counter == -1:
         find_current_proof()
+        if proof_counter == -1:
+            proof_counter = 0
+        print(f"current proof: {proof_counter}")
     return isa_start
 
 
