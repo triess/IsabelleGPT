@@ -146,7 +146,11 @@ def parse_thy_file(thy_file, window=None):
         lines = f.readlines()
     axioms = [idx for idx, s in enumerate(lines) if s.strip().startswith("Axiom")]
     m = ""
-    for i in range(max(axioms), len(lines)):
+    if not axioms:
+        s = 0
+    else:
+        s = max(axioms)
+    for i in range(s, len(lines)):
         lines[i] = lines[i].rstrip(" \n\r")
         if lines[i].strip().startswith("(*") and lines[i].strip().endswith("*)"):
             if m.strip():
@@ -171,17 +175,19 @@ def parse_thy_file(thy_file, window=None):
     else:
         if len(mess)/2 < window:
             with open("files/GPT_startup_examples.txt", 'r') as file:
-                lines = file.readlines()
-                for i in range(window - (len(mess)/2)):
-                    line = lines[i]
+                liness = file.readlines()
+                for i in range(window - int((len(mess)/2))):
+                    line = liness[i]
                     line = line.split("§")
                     mess.append({"role": "user", "content": line[0].strip()})
                     mess.append({"role": "assistant", "content": line[1].strip()})
         window_mess = mess[len(mess)-window * 2:len(mess)]
         cutoff_line = 1
-        for me in window_mess:
-            cutoff_line += me["content"].count("\n")
-        return window_mess, lines[0:len(lines) - cutoff_line]
+        for i in range(len(lines)):
+            if lines[i] in window_mess[0]["content"]:
+                cutoff_line = i
+                break
+        return window_mess, lines[0:cutoff_line]
 
 
 def change_namespace(namespace_before, namespace_after, file):

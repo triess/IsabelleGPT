@@ -293,27 +293,22 @@ def read_proofs(proof_file,paper=False):
 
 
 
-def find_current_proof():
+def find_current_proof(paper=False):
     global proof_counter
-    last_theo = ""
-    last_def = ""
-    with open(TEMP_THY_FILE, 'r') as f:
-        for line in f:
-            if line.startswith("(* Theorem"):
-                last_theo = line
-            elif line.startswith("(* Definition"):
-                last_def = line
-    gr = re.search(r'\d+', last_def)
-    if gr is not None:
-        gr = int(gr.group())
-    else:
-        gr = 0
-    theo = re.search(r'\d+', last_theo)
-    if theo is not None:
-        theo = int(theo.group())
-    else:
-        theo = 0
-    proof_counter = theo + gr - 1
+    last_input = ""
+    mess = GPTStuff.get_messages()
+    mess.reverse()
+    for m in mess:
+        if m["role"] == "user":
+            last_input = m["content"]
+            break
+    for i in range(len(proofs)):
+        line_one = proofs[i].strip().split("\n")[0]
+        if not line_one:
+            continue
+        if line_one in last_input:
+            proof_counter = i
+            break
 
 
 #TODO refactor to Utils (GPT stuff needs to stay here)
@@ -368,7 +363,7 @@ def read_params():
     if not proof_counter:
         proof_counter = 0
     elif proof_counter == -1:
-        find_current_proof()
+        find_current_proof(paper=NAMESPACE=="paper")
         if proof_counter == -1:
             proof_counter = 0
         print(f"current proof: {proof_counter}")

@@ -9,8 +9,8 @@ model = gpt-4o
 #optional starting count of the number of proofs that are already translated or -1 to automatically determine last translated proof
 starting_proof = -1
 #The size of the sliding window of proofs that should be kept in the GPT chat history
-few_shot = 7
+few_shot = 2
 #optional existing temp.thy file
 temp = temp.thy
 #for completely new translations from scratch
-fresh_start = True
+fresh_start = False

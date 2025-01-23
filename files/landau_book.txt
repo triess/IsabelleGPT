@@ -6,6 +6,7 @@ Proof: Otherwise, we would have
 x' = y'
 and hence, by Axiom 4,
 x = y.
+
 Theorem 2: x' \<noteq> x.
 Proof: Let \<MM> be the set of all x for which this holds true.
 I) By Axiom 1 and Axiom 3,
@@ -19,6 +20,7 @@ so that x' belongs to \<MM>.
 By Axiom 5, \<MM> therefore contains all the natural numbers, i.e.
 we have for each x that
 x' \<noteq> x.
+
 Theorem 3: If
 x \<noteq> 1,
 then there exists one (hence, by Axiom 4, exactly one) u such that
@@ -29,8 +31,6 @@ of necessity that
 x \<noteq> 1
 by Axiom 3.)
 I) 1 belongs to \<MM>.
-
-
 II) If x belongs to \<MM>, then, with u denoting the number x,
 we have
 x' = u',
@@ -40,6 +40,7 @@ thus for each
 x \<noteq> 1
 there exists a u such that
 x = u'.
+
 Theorem 4, and at the same time Definition 1: To every pair
 of numbers x, y, we may assign in exactly one way a natural num-
 number, called x + y (+ to be read "plus"), such that

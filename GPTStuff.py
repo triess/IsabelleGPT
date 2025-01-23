@@ -112,7 +112,8 @@ def startup(theory_file):
     except ValueError:
         mess = []
         theory = []
-    theory = ''.join(theory)
+        print("error reading theory, no message history reconstructed")
+    theory = '\n'.join(theory)
     messages = []
     with open("files/GPT_startup_messages.txt", 'r') as file:
         for line in file:
@@ -124,6 +125,9 @@ def startup(theory_file):
     messages += mess
     global_messages = messages
 
+def get_messages():
+    global global_messages
+    return global_messages
 
 def read_file_to_gpt():
     messages = []
