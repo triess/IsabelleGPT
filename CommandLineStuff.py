@@ -297,8 +297,7 @@ def find_current_proof(paper=False):
     global proof_counter
     last_input = ""
     mess = GPTStuff.get_messages()
-    mess.reverse()
-    for m in mess:
+    for m in reversed(mess):
         if m["role"] == "user":
             last_input = m["content"]
             break
@@ -307,9 +306,8 @@ def find_current_proof(paper=False):
         if not line_one:
             continue
         if line_one in last_input:
-            proof_counter = i
+            proof_counter = i+1
             break
-
 
 #TODO refactor to Utils (GPT stuff needs to stay here)
 def read_params():
