@@ -22,16 +22,6 @@ acceptable with respect to S.
 Definition 7. A preferred extension of an argumentation framework AF is a
 maximal (with respect to set inclusion) admissible set of AF.
 §
-Example 8 (Continuation of Example 3). It is not difficult to see that AF has
-exactly one preferred extension E = {i_1, i_2}.
-§
-Example 9 (Nixon diamond). The well-known Nixon diamond example can be
-represented as an argumentation framework AF = (AR, attacks) with AR =
-{A, B}, and attacks = {(A, B), (B, A)} where A represents the argument “Nixon
-is anti-pacifist since he is a republican”, and B represents the argument “Nixon is
-a pacifist since he is a quaker”. This argumentation framework has two preferred
-extensions, one in which Nixon is a pacifist and one in which Nixon is a quaker.
-§
 Lemma 10 (Fundamental Lemma). Let S be an admissible set of arguments, and A
 and A’ be arguments which are acceptable with respect to S. Then
 (1) S’ = S \<union> {A} is admissible, and

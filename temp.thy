@@ -56,39 +56,80 @@ maximal (with respect to set inclusion) admissible set of AF. *)
 definition preferred_extension :: "('v) argumentation_framework \<Rightarrow> 'v set \<Rightarrow> bool" where
   "preferred_extension G S \<longleftrightarrow> admissible G S \<and> (\<forall>T. admissible G T \<and> S \<subseteq> T \<longrightarrow> S = T)"
 
-(* Example 8 (Continuation of Example 3). It is not difficult to see that AF has
-exactly one preferred extension E = {i_1, i_2}.
-*)
-definition example_af :: "(string) argumentation_framework" where
-  "example_af = \<lparr>arguments = {''i1'', ''i2'', ''i3''}, attacks = {(''i3'', ''i1''), (''i3'', ''i2'')} \<rparr>"
 
-definition example_preferred_extension :: "string set" where
-  "example_preferred_extension = {''i1'', ''i2''}"
-
-lemma example_preferred_extension_correct:
-  "preferred_extension example_af example_preferred_extension"
+(* 
+Lemma 10 (Fundamental Lemma). Let S be an admissible set of arguments, and A
+and A’ be arguments which are acceptable with respect to S. Then
+(1) S’ = S \<union> {A} is admissible, and
+(2) A’ is acceptable with respect to S’.
+Proof. (1) We need only to show that S’ is conflict-free. Assume the contrary.
+Therefore, there exists an argument B \<in> S such that either A attacks B or B
+attacks A. From the admissibility of S and the acceptability of A, there is an
+argument B’ in S such that B’ attacks B or B’ attacks A. Since S is conflict-free,
+it follows that B’ attacks A. But then there is an argument B” in S such that B”
+attacks B’. Contradiction!
+(2) Obvious. \<box>
+ *)
+lemma fundamental_lemma:
+  assumes "admissible G S" 
+    and "acceptable G A S" 
+    and "acceptable G A' S"
+  shows "admissible G (S \<union> {A})" 
+    and "acceptable G A' (S \<union> {A})"
 proof -
-  have "admissible example_af example_preferred_extension"
+  have conflict_free_SA: "conflict_free G (S \<union> {A})"
+  proof (rule ccontr)
+    assume "\<not> conflict_free G (S \<union> {A})"
+    then obtain B where "B \<in> S \<union> {A}" and "attacks G B A \<or> attacks G A B"
+      by (metis (no_types, lifting) Un_insert_right admissible_def assms(1) conflict_free_def insert_iff sup_bot_right) 
+    then consider (1) "B \<in> S" "attacks G B A" | (2) "B \<in> S" "attacks G A B" 
+      | (3) "B = A" "attacks G A B" 
+      by auto
+    then show False
+    proof cases
+      case 1
+      then obtain B' where "B' \<in> S" and "attacks G B' B" 
+        using assms(1) admissible_def acceptable_def by blast
+      moreover have "\<not> attacks G B' A" 
+        using assms(1) `B' \<in> S` conflict_free_def by blast
+      ultimately show False 
+        using 1 by blast
+    next
+      case 2
+      then obtain B' where "B' \<in> S" and "attacks G B' A" 
+        using assms(2) acceptable_def by blast
+      then obtain B'' where "B'' \<in> S" and "attacks G B'' B'" 
+        using assms(1) admissible_def acceptable_def by blast
+      moreover have "\<not> attacks G B'' B'" 
+        using assms(1) `B'' \<in> S` conflict_free_def by blast
+      ultimately show False 
+        by blast
+    next
+      case 3
+      then show False 
+        using assms(2) acceptable_def by blast
+    qed
+  qed
+  moreover have "\<forall>x\<in>S \<union> {A}. acceptable G x (S \<union> {A})"
   proof
-    show "conflict_free example_af example_preferred_extension"
-      unfolding conflict_free_def example_af_def example_preferred_extension_def
-      by auto
-  next
-    show "\<forall>A. A \<in> example_preferred_extension \<longrightarrow> acceptable example_af A example_preferred_extension"
-      unfolding acceptable_def example_af_def example_preferred_extension_def
-      by auto
+    fix x
+    assume "x \<in> S \<union> {A}"
+    then show "acceptable G x (S \<union> {A})"
+    proof
+      assume "x \<in> S"
+      then show "acceptable G x (S \<union> {A})"
+        using assms(1) admissible_def by blast
+    next
+      assume "x = A"
+      then show "acceptable G x (S \<union> {A})"
+        using assms(2) by blast
+    qed
   qed
-  moreover have "\<forall>T. admissible example_af T \<and> example_preferred_extension \<subseteq> T \<longrightarrow> example_preferred_extension = T"
-  proof (intro allI impI)
-    fix T
-    assume "admissible example_af T" and "example_preferred_extension \<subseteq> T"
-    then show "example_preferred_extension = T"
-      unfolding admissible_def conflict_free_def acceptable_def example_af_def example_preferred_extension_def
-      by auto
-  qed
-  ultimately show ?thesis
-    unfolding preferred_extension_def
-    by auto
+  ultimately show "admissible G (S \<union> {A})"
+    by (simp add: admissible_def)
+  moreover have "acceptable G A' (S \<union> {A})"
+    using assms(3) by blast
+  ultimately show "acceptable G A' (S \<union> {A})"
+    by simp
 qed
-
 end
