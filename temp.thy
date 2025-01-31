@@ -143,4 +143,59 @@ proof -
   moreover show "acceptable G A' (S \<union> {A})" sorry
 qed
 
+
+(* 
+###
+Theorem 11. Let AF be an argumentation framework.
+(1) The set of all admissible sets of AF form a complete partial order with
+respect to set inclusion.
+(2) For each admissible set S of AF, there exists a preferred extension E of AF
+such that S \<subseteq> E.
+
+Corollary 12. Every argumentation framework possesses at least one preferred
+extension.
+###
+ *)
+theorem admissible_cpo:
+  shows "complete_partial_order (admissible G) (\<subseteq>)"
+proof -
+  have "partial_order (admissible G) (\<subseteq>)"
+    by (simp add: partial_order_def admissible_def)
+  moreover have "\<forall>c. chain c \<longrightarrow> (\<exists>u. upper_bound c u \<and> admissible G u)"
+  proof (rule allI, rule impI)
+    fix c
+    assume "chain c"
+    then have "\<forall>S T. S \<in> c \<and> T \<in> c \<longrightarrow> S \<subseteq> T \<or> T \<subseteq> S"
+      by (simp add: chain_def)
+    then have "\<exists>u. upper_bound c u \<and> admissible G u"
+      by (metis (mono_tags, lifting) Union_upper admissible_def upper_bound_def)
+    then show "\<exists>u. upper_bound c u \<and> admissible G u"
+      by blast
+  qed
+  ultimately show ?thesis
+    by (simp add: complete_partial_order_def)
+qed
+
+theorem exists_preferred_extension:
+  assumes "admissible G S"
+  shows "\<exists>E. preferred_extension G E \<and> S \<subseteq> E"
+proof -
+  have "\<exists>E. maximal (admissible G) E \<and> S \<subseteq> E"
+    using admissible_cpo assms complete_partial_order_def maximal_def
+    by blast
+  then show ?thesis
+    by (simp add: preferred_extension_def)
+qed
+
+corollary exists_preferred_extension_for_all:
+  shows "\<exists>E. preferred_extension G E"
+proof -
+  have "\<exists>S. admissible G S"
+    by (simp add: admissible_def)
+  then obtain S where "admissible G S"
+    by blast
+  then show ?thesis
+    using exists_preferred_extension by blast
+qed
+
 end
