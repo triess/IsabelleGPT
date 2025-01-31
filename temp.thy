@@ -150,37 +150,55 @@ definition complete_partial_order :: "'a set set \<Rightarrow> bool" where
   "complete_partial_order P \<longleftrightarrow> 
     (\<forall>C. C \<subseteq> P \<and> (\<forall>A B. A \<in> C \<and> B \<in> C \<longrightarrow> (A \<subseteq> B \<or> B \<subseteq> A)) \<longrightarrow> (\<Union>C \<in> P))"
 
+
 (* 
-###
 Theorem 11. Let AF be an argumentation framework.
 (1) The set of all admissible sets of AF form a complete partial order with
 respect to set inclusion.
 (2) For each admissible set S of AF, there exists a preferred extension E of AF
 such that S \<subseteq> E.
-
-Corollary 12. Every argumentation framework possesses at least one preferred
-extension.
-###
  *)
+theorem admissible_sets_cpo:
+  shows "complete_partial_order {S. admissible G S}"
 
-
-theorem admissible_cpo:
-  shows "complete_partial_order (admissible G) (\<subseteq>)"
 proof -
-  have "partial_order (admissible G) (\<subseteq>)"
-    by (simp add: partial_order_def admissible_def)
-  moreover have "\<forall>c. chain c \<longrightarrow> (\<exists>u. upper_bound c u \<and> admissible G u)"
-  proof (rule allI, rule impI)
-    fix c
-    assume "chain c"
-    then have "\<forall>S T. S \<in> c \<and> T \<in> c \<longrightarrow> S \<subseteq> T \<or> T \<subseteq> S"
-      by (simp add: chain_def)
-    then have "\<exists>u. upper_bound c u \<and> admissible G u"
-      by (metis (mono_tags, lifting) Union_upper admissible_def upper_bound_def)
-    then show "\<exists>u. upper_bound c u \<and> admissible G u"
+  have "\<forall>C. C \<subseteq> {S. admissible G S} \<and> (\<forall>A B. A \<in> C \<and> B \<in> C \<longrightarrow> (A \<subseteq> B \<or> B \<subseteq> A)) \<longrightarrow> (\<Union>C \<in> {S. admissible G S})"
+  proof
+    fix C
+    assume "C \<subseteq> {S. admissible G S}" and "\<forall>A B. A \<in> C \<and> B \<in> C \<longrightarrow> (A \<subseteq> B \<or> B \<subseteq> A)"
+    then have "\<Union>C \<subseteq> arguments G"
+      by (meson Union_subsetI admissible_def subsetCE)
+    moreover have "conflict_free G (\<Union>C)"
+    proof (rule ccontr)
+      assume "\<not> conflict_free G (\<Union>C)"
+      then obtain a b where "a \<in> \<Union>C" and "b \<in> \<Union>C" and "attacks G a b"
+        by (meson conflict_free_def)
+      then obtain A B where "A \<in> C" and "B \<in> C" and "a \<in> A" and "b \<in> B"
+        by blast
+      then have "A \<subseteq> B \<or> B \<subseteq> A"
+        using \<open>\<forall>A B. A \<in> C \<and> B \<in> C \<longrightarrow> (A \<subseteq> B \<or> B \<subseteq> A)\<close> by blast
+      then have "a \<in> B \<and> b \<in> B \<or> a \<in> A \<and> b \<in> A"
+        using \<open>a \<in> A\<close> \<open>b \<in> B\<close> by blast
+      then show False
+        using \<open>B \<in> C\<close> \<open>attacks G a b\<close> admissible_def conflict_free_def by blast
+    qed
+    moreover have "\<forall>a. a \<in> \<Union>C \<longrightarrow> acceptable G a (\<Union>C)"
+    proof
+      fix a
+      assume "a \<in> \<Union>C"
+      then obtain A where "A \<in> C" and "a \<in> A"
+        by blast
+      then have "acceptable G a A"
+        using \<open>C \<subseteq> {S. admissible G S}\<close> admissible_def by blast
+      then show "acceptable G a (\<Union>C)"
+        by (metis (no_types, lifting) Union_iff \<open>C \<subseteq> {S. admissible G S}\<close> \<open>a \<in> \<Union>C\<close> \<open>admissible G A\<close> admissible_def subsetCE)
+    qed
+    ultimately have "admissible G (\<Union>C)"
+      by (simp add: admissible_def)
+    then show "\<Union>C \<in> {S. admissible G S}"
       by blast
   qed
-  ultimately show ?thesis
+  then show ?thesis
     by (simp add: complete_partial_order_def)
 qed
 
@@ -188,22 +206,17 @@ theorem exists_preferred_extension:
   assumes "admissible G S"
   shows "\<exists>E. preferred_extension G E \<and> S \<subseteq> E"
 proof -
-  have "\<exists>E. maximal (admissible G) E \<and> S \<subseteq> E"
-    using admissible_cpo assms complete_partial_order_def maximal_def
+  let ?P = "{T. admissible G T \<and> S \<subseteq> T}"
+  have "\<exists>M. M \<in> ?P \<and> (\<forall>T. T \<in> ?P \<longrightarrow> M \<subseteq> T \<longrightarrow> M = T)"
+    using Zorn_subset[of ?P] by blast
+  then obtain E where "E \<in> ?P" and "\<forall>T. T \<in> ?P \<longrightarrow> E \<subseteq> T \<longrightarrow> E = T"
     by blast
-  then show ?thesis
-    by (simp add: preferred_extension_def)
-qed
-
-corollary exists_preferred_extension_for_all:
-  shows "\<exists>E. preferred_extension G E"
-proof -
-  have "\<exists>S. admissible G S"
-    by (simp add: admissible_def)
-  then obtain S where "admissible G S"
-    by blast
-  then show ?thesis
-    using exists_preferred_extension by blast
+  then have "admissible G E" and "S \<subseteq> E"
+    by auto
+  moreover have "\<forall>T. admissible G T \<and> E \<subseteq> T \<longrightarrow> E = T"
+    using \<open>\<forall>T. T \<in> ?P \<longrightarrow> E \<subseteq> T \<longrightarrow> E = T\<close> by blast
+  ultimately show ?thesis
+    by (metis preferred_extension_def)
 qed
 
 end

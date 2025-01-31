@@ -34,16 +34,14 @@ it follows that B’ attacks A. But then there is an argument B” in S such tha
 attacks B’. Contradiction!
 (2) Obvious. \<box>
 §
-###
 Theorem 11. Let AF be an argumentation framework.
 (1) The set of all admissible sets of AF form a complete partial order with
 respect to set inclusion.
 (2) For each admissible set S of AF, there exists a preferred extension E of AF
 such that S \<subseteq> E.
-
+§
 Corollary 12. Every argumentation framework possesses at least one preferred
 extension.
-###
 §
 Definition 13. A conflict-free set of arguments S is called a stable extension iff S
 attacks each argument which does not belong to S.
