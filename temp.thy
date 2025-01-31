@@ -140,9 +140,15 @@ proof -
   qed
   ultimately show "admissible G (S \<union> {A})"
     by (simp add: admissible_def conflict_free_def)
-  moreover show "acceptable G A' (S \<union> {A})" sorry
+  then have "\<forall>y\<in> arguments G.(attacks G y A' \<longrightarrow> (\<exists>z\<in> S \<union> {A}.attacks G z y))"
+    by (metis Un_insert_right acceptable_def assms(3) insert_iff sup_bot_right) 
+  moreover show "acceptable G A' (S \<union> {A})"
+    by (meson \<open>admissible G (S \<union> {A})\<close> acceptable_def admissible_def assms(3) calculation) 
 qed
 
+definition complete_partial_order :: "'a set set \<Rightarrow> bool" where
+  "complete_partial_order P \<longleftrightarrow> 
+    (\<forall>C. C \<subseteq> P \<and> (\<forall>A B. A \<in> C \<and> B \<in> C \<longrightarrow> (A \<subseteq> B \<or> B \<subseteq> A)) \<longrightarrow> (\<Union>C \<in> P))"
 
 (* 
 ###
@@ -156,6 +162,8 @@ Corollary 12. Every argumentation framework possesses at least one preferred
 extension.
 ###
  *)
+
+
 theorem admissible_cpo:
   shows "complete_partial_order (admissible G) (\<subseteq>)"
 proof -
