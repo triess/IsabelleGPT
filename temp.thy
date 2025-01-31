@@ -36,7 +36,7 @@ definition example_af :: "string argumentation_framework" where
 arguments A and B in S such that A attacks B. *)
 
 definition conflict_free :: "('v) argumentation_framework \<Rightarrow> 'v set \<Rightarrow> bool" where
-  "conflict_free G S \<longleftrightarrow> (\<forall>a b. a \<in> S \<and> b \<in> S \<longrightarrow> \<not>attacks G a b)"
+  "conflict_free G S \<longleftrightarrow> S \<subseteq> arguments G \<and> (\<forall>a b. a \<in> S \<and> b \<in> S \<longrightarrow> \<not>attacks G a b)"
 
 (* Definition 6.
 (1) An argument A \<in> AR is acceptable with respect to a set S of arguments iff
@@ -45,10 +45,10 @@ for each argument B \<in> AR: if B attacks A then B is attacked by S.
 acceptable with respect to S. *)
 
 definition acceptable :: "('v) argumentation_framework \<Rightarrow> 'v \<Rightarrow> 'v set \<Rightarrow> bool" where
-  "acceptable G A S \<longleftrightarrow> (\<forall>B. B \<in> arguments G \<and> attacks G B A \<longrightarrow> (\<exists>C. C \<in> S \<and> attacks G C B))"
+  "acceptable G A S \<longleftrightarrow> S \<subseteq> arguments G \<and> A \<in> arguments G \<and> (\<forall>B. B \<in> arguments G \<and> attacks G B A \<longrightarrow> (\<exists>C. C \<in> S \<and> attacks G C B))"
 
 definition admissible :: "('v) argumentation_framework \<Rightarrow> 'v set \<Rightarrow> bool" where
-  "admissible G S \<longleftrightarrow> conflict_free G S \<and> (\<forall>A. A \<in> S \<longrightarrow> acceptable G A S)"
+  "admissible G S \<longleftrightarrow> S \<subseteq> arguments G \<and> conflict_free G S \<and> (\<forall>A. A \<in> S \<longrightarrow> acceptable G A S)"
 
 (* Definition 7. A preferred extension of an argumentation framework AF is a
 maximal (with respect to set inclusion) admissible set of AF. *)
@@ -81,14 +81,15 @@ proof -
   proof (rule ccontr)
     assume "\<not> conflict_free G (S \<union> {A})"
     then obtain B where "B \<in> S \<union> {A}" and "attacks G B A \<or> attacks G A B"
-      by (metis (no_types, lifting) Un_insert_right admissible_def assms(1) conflict_free_def insert_iff sup_bot_right) 
+      by (smt (verit, del_insts) Un_insert_right acceptable_def admissible_def assms(1) assms(2) conflict_free_def insert_iff insert_subset sup_bot_right)  
     then consider (1) "B \<in> S" "attacks G B A" | (2) "B \<in> S" "attacks G A B" 
       | (3) "B = A" "attacks G A B" 
       by auto
     then show False
     proof cases
       case 1
-      then obtain B' where "B' \<in> S" and "attacks G B' B" using acceptable_def assms(2) sorry
+      then obtain B' where "B' \<in> S" and "attacks G B' B" using acceptable_def assms(2)
+        by (metis admissible_def assms(1))
       moreover have "\<not> attacks G B' A" 
         using assms(1) `B' \<in> S` conflict_free_def
         by (metis "1"(1) admissible_def calculation(2)) 
@@ -97,9 +98,11 @@ proof -
         by (meson admissible_def assms(1) conflict_free_def) 
     next
       case 2
-      then obtain B' where "B' \<in> S" and "attacks G B' A" using assms(2) acceptable_def sorry
+      then obtain B' where "B' \<in> S" and "attacks G B' A" using assms(2) acceptable_def
+        by (metis admissible_def assms(1)) 
       then obtain B'' where "B'' \<in> S" and "attacks G B'' B'" 
-        using assms(1) admissible_def acceptable_def sorry
+        using assms(1) admissible_def acceptable_def
+        by (metis assms(2)) 
       moreover have "\<not> attacks G B'' B'" 
         using assms(1) `B'' \<in> S` conflict_free_def
         by (metis \<open>B' \<in> S\<close> admissible_def) 
@@ -108,7 +111,8 @@ proof -
     next
       case 3
       then show False 
-        using assms(2) acceptable_def sorry
+        using assms(2) acceptable_def
+        by (smt (verit) admissible_def assms(1) conflict_free_def) 
     qed
   qed
   moreover have "\<forall>x\<in>S \<union> {A}. acceptable G x (S \<union> {A})"
@@ -118,19 +122,25 @@ proof -
     then show "acceptable G x (S \<union> {A})"
     proof
       assume "x \<in> S"
+      then have "acceptable G x S"
+        by (metis admissible_def assms(1)) 
+      then have "\<forall>y\<in> arguments G.(attacks G y x \<longrightarrow> (\<exists>z\<in> S \<union> {A}.attacks G z y))"
+        by (metis Un_insert_right acceptable_def insert_iff sup_bot_right)
       then show "acceptable G x (S \<union> {A})"
-        using assms(1) admissible_def sorry
+        by (meson \<open>acceptable G x S\<close> acceptable_def conflict_free_SA conflict_free_def) 
     next
-      assume "x = A"
+      assume "x \<in> {A}"
+      then have "acceptable G x S"
+        by (simp add: assms(2)) 
+      then have "\<forall>y\<in> arguments G.(attacks G y x \<longrightarrow> (\<exists>z\<in> S \<union> {A}.attacks G z y))"
+        by (metis Un_insert_right acceptable_def insert_iff sup_bot_right) 
       then show "acceptable G x (S \<union> {A})"
-        using assms(2) by blast
+        by (meson \<open>acceptable G x S\<close> acceptable_def conflict_free_SA conflict_free_def)
     qed
   qed
   ultimately show "admissible G (S \<union> {A})"
-    by (simp add: admissible_def)
-  moreover have "acceptable G A' (S \<union> {A})"
-    using assms(3) by blast
-  ultimately show "acceptable G A' (S \<union> {A})"
-    by simp
+    by (simp add: admissible_def conflict_free_def)
+  moreover show "acceptable G A' (S \<union> {A})" sorry
 qed
+
 end
