@@ -150,7 +150,6 @@ definition complete_partial_order :: "'a set set \<Rightarrow> bool" where
   "complete_partial_order P \<longleftrightarrow> 
     (\<forall>C. C \<subseteq> P \<and> (\<forall>A B. A \<in> C \<and> B \<in> C \<longrightarrow> (A \<subseteq> B \<or> B \<subseteq> A)) \<longrightarrow> (\<Union>C \<in> P))"
 
-
 (* 
 Theorem 11. Let AF be an argumentation framework.
 (1) The set of all admissible sets of AF form a complete partial order with
@@ -160,19 +159,18 @@ such that S \<subseteq> E.
  *)
 theorem admissible_sets_cpo:
   shows "complete_partial_order {S. admissible G S}"
-
 proof -
   have "\<forall>C. C \<subseteq> {S. admissible G S} \<and> (\<forall>A B. A \<in> C \<and> B \<in> C \<longrightarrow> (A \<subseteq> B \<or> B \<subseteq> A)) \<longrightarrow> (\<Union>C \<in> {S. admissible G S})"
   proof
     fix C
     assume "C \<subseteq> {S. admissible G S}" and "\<forall>A B. A \<in> C \<and> B \<in> C \<longrightarrow> (A \<subseteq> B \<or> B \<subseteq> A)"
     then have "\<Union>C \<subseteq> arguments G"
-      by (meson Union_subsetI admissible_def subsetCE)
+      by (metis Sup_le_iff admissible_def mem_Collect_eq subsetD) 
     moreover have "conflict_free G (\<Union>C)"
     proof (rule ccontr)
       assume "\<not> conflict_free G (\<Union>C)"
       then obtain a b where "a \<in> \<Union>C" and "b \<in> \<Union>C" and "attacks G a b"
-        by (meson conflict_free_def)
+        using calculation conflict_free_def by blast 
       then obtain A B where "A \<in> C" and "B \<in> C" and "a \<in> A" and "b \<in> B"
         by blast
       then have "A \<subseteq> B \<or> B \<subseteq> A"
@@ -180,7 +178,8 @@ proof -
       then have "a \<in> B \<and> b \<in> B \<or> a \<in> A \<and> b \<in> A"
         using \<open>a \<in> A\<close> \<open>b \<in> B\<close> by blast
       then show False
-        using \<open>B \<in> C\<close> \<open>attacks G a b\<close> admissible_def conflict_free_def by blast
+        using \<open>B \<in> C\<close> \<open>attacks G a b\<close> admissible_def conflict_free_def
+        by (metis \<open>A \<in> C\<close> \<open>C \<subseteq> {S. admissible G S}\<close> mem_Collect_eq subsetD) 
     qed
     moreover have "\<forall>a. a \<in> \<Union>C \<longrightarrow> acceptable G a (\<Union>C)"
     proof
@@ -189,9 +188,10 @@ proof -
       then obtain A where "A \<in> C" and "a \<in> A"
         by blast
       then have "acceptable G a A"
-        using \<open>C \<subseteq> {S. admissible G S}\<close> admissible_def by blast
+        using \<open>C \<subseteq> {S. admissible G S}\<close> admissible_def
+        by (metis mem_Collect_eq subsetD) 
       then show "acceptable G a (\<Union>C)"
-        by (metis (no_types, lifting) Union_iff \<open>C \<subseteq> {S. admissible G S}\<close> \<open>a \<in> \<Union>C\<close> \<open>admissible G A\<close> admissible_def subsetCE)
+        by (meson UnionI \<open>A \<in> C\<close> acceptable_def calculation(1))
     qed
     ultimately have "admissible G (\<Union>C)"
       by (simp add: admissible_def)
