@@ -37,6 +37,7 @@ attacks B’. Contradiction!
 Theorem 11. Let AF be an argumentation framework.
 (1) The set of all admissible sets of AF form a complete partial order with
 respect to set inclusion.
+§
 (2) For each admissible set S of AF, there exists a preferred extension E of AF
 such that S \<subseteq> E.
 §

@@ -25,7 +25,7 @@ def chat_loop(client, initial_messages):
             reply = chat.choices[0].message.content
             print(f"reply:{reply}")
             messages.append({"role": "assistant", "content": reply})
-    with open("files/messages.pkl", 'wb') as file:
+    with open("files/save/messages.pkl", 'wb') as file:
         pickle.dump(messages, file)
 
 

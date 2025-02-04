@@ -412,8 +412,8 @@ omitted), such that
 2) x ⋅ y' = x ⋅ y + x    for every x and every y. 
 x ⋅ y is called the product of x and y, or the number obtained 
 from multiplication of x by y. 
-Proof (mutatis mutandis, word for word the same as that of 
-Theorem 4): A) We will first show that for each fixed x there 
+Proof (mutatis mutandis, word for word the same as that
+of Theorem 4): A) We will first show that for each fixed x there
 is at most one possibility of defining xy for all y in such a way that 
 x ⋅ 1 = x 
 and 

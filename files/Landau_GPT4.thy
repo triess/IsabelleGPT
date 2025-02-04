@@ -854,11 +854,11 @@ proof -
       proof
         assume "x \<^bold>< y"
         then show "x \<^bold>< z" using Theorem_15
-          using \<open>x \<^bold>\<le> y \<and> y \<^bold>< z\<close> by blast 
+          using \<open>x \<^bold>\<le> y \<and> y \<^bold>< z\<close> by blast
       next
         assume "x = y"
         then show "x \<^bold>< z" using less_than_def
-          using \<open>x \<^bold>\<le> y \<and> y \<^bold>< z\<close> by force 
+          using \<open>x \<^bold>\<le> y \<and> y \<^bold>< z\<close> by force
       qed
     next
       assume "x \<^bold>< y \<and> y \<^bold>\<le> z"
@@ -867,16 +867,16 @@ proof -
       proof
         assume "y \<^bold>< z"
         then show "x \<^bold>< z" using Theorem_15
-          using \<open>x \<^bold>< y \<and> y \<^bold>\<le> z\<close> by blast 
+          using \<open>x \<^bold>< y \<and> y \<^bold>\<le> z\<close> by blast
       next
         assume "y = z"
         then show "x \<^bold>< z" using less_than_def
-          using \<open>x \<^bold>< y \<and> y \<^bold>\<le> z\<close> by blast 
+          using \<open>x \<^bold>< y \<and> y \<^bold>\<le> z\<close> by blast
       qed
     qed
   }
   thus "\<forall>x y z. (x \<^bold>\<le> y \<and> y \<^bold>< z) \<or> (x \<^bold>< y \<and> y \<^bold>\<le> z) \<longrightarrow> x \<^bold>< z"
-    by blast 
+    by blast
 qed
 
 
@@ -917,14 +917,14 @@ proof -
         case False
         then have "y \<^bold>< z" using \<open>y \<^bold>< z \<or> y = z\<close> by auto
         then have "x \<^bold>< z" using Theorem_15 \<open>x \<^bold>< y\<close>
-          by blast 
+          by blast
         then show "x \<^bold>< z \<or> x = z" by auto
       qed
     qed
     hence "x \<^bold>\<le> z" using less_than_or_equal_def by auto
   }
   thus "\<forall>x y z. (x \<^bold>\<le> y \<and> y \<^bold>\<le> z) \<longrightarrow> x \<^bold>\<le> z"
-    by argo 
+    by argo
 qed
 
 
@@ -981,7 +981,7 @@ proof -
       hence "x \<^bold>+ z = (y \<^bold>+ z) \<^bold>+ u" using Theorem_6 by auto
       hence "x \<^bold>+ z \<^bold>> y \<^bold>+ z" using greater_than_def by auto
       thus ?thesis
-        using Theorem_5 Theorem_6 Landau_GPT4.less_than_def by auto 
+        using Theorem_5 Theorem_6 Landau_GPT4.less_than_def by auto
     next
       case False
       then consider (eq) "x = y" | (lt) "x \<^bold>< y" using Theorem_10 by blast
@@ -990,17 +990,17 @@ proof -
         case eq
         hence "x \<^bold>+ z = y \<^bold>+ z" by auto
         thus ?thesis
-          using False Theorem_12 eq by blast 
+          using False Theorem_12 eq by blast
       next
         case lt
         hence "y \<^bold>> x" using Theorem_11
-          using Theorem_12 by blast 
+          using Theorem_12 by blast
         hence "y \<^bold>+ z \<^bold>> x \<^bold>+ z"
-          using Theorem_5 Theorem_6 greater_than_def by auto 
+          using Theorem_5 Theorem_6 greater_than_def by auto
         hence "x \<^bold>+ z \<^bold>< y \<^bold>+ z" using Theorem_12
-          using Theorem_11 by blast 
+          using Theorem_11 by blast
         thus ?thesis
-          using False by blast 
+          using False by blast
       qed
     qed
   }
@@ -1028,11 +1028,11 @@ proof -
       hence "x \<^bold>+ z = y \<^bold>+ (u \<^bold>+ z)" using Theorem_6 by auto
       hence "x \<^bold>+ z = (y \<^bold>+ u) \<^bold>+ z" using Theorem_5 by auto
       hence "x = y \<^bold>+ u" using Theorem_8
-        by (metis Theorem_6) 
+        by (metis Theorem_6)
       hence "x \<^bold>> y" using greater_than_def by auto
       thus ?thesis
         using Theorem_5 Theorem_6 Landau_GPT4.less_than_def
-        by (smt (verit, ccfv_threshold) Theorem_11 Theorem_7) 
+        by (smt (verit, ccfv_threshold) Theorem_11 Theorem_7)
     next
       case False
       then consider (eq) "x \<^bold>+ z = y \<^bold>+ z" | (lt) "x \<^bold>+ z \<^bold>< y \<^bold>+ z" using Theorem_10 by blast
@@ -1040,7 +1040,7 @@ proof -
       proof cases
         case eq
         hence "x = y" using Theorem_8
-          by (metis Theorem_6) 
+          by (metis Theorem_6)
         thus ?thesis
           using False Theorem_12 eq by blast
       next
@@ -1048,12 +1048,12 @@ proof -
         hence "y \<^bold>+ z \<^bold>> x \<^bold>+ z" using Theorem_11
           using Theorem_12 by blast
         hence "y \<^bold>> x"
-          by (metis False Theorem_10 Theorem_12 Theorem_19) 
+          by (metis False Theorem_10 Theorem_12 Theorem_19)
         hence "x \<^bold>< y" using Theorem_12
           using Theorem_11 by blast
         thus ?thesis
           using False
-          using \<open>y \<^bold>+ z \<^bold>> x \<^bold>+ z\<close> by fastforce 
+          using \<open>y \<^bold>+ z \<^bold>> x \<^bold>+ z\<close> by fastforce
       qed
     qed
   }
@@ -1083,7 +1083,7 @@ proof -
     moreover have "z \<^bold>+ y \<^bold>> u \<^bold>+ y" using Theorem_19 \<open>z \<^bold>> u\<close> by auto
     hence "y \<^bold>+ z \<^bold>> y \<^bold>+ u" using Theorem_6 by auto
     ultimately have "x \<^bold>+ z \<^bold>> y \<^bold>+ u" using Theorem_20
-      by (meson Theorem_11 Theorem_12 Theorem_15) 
+      by (meson Theorem_11 Theorem_12 Theorem_15)
   }
   thus "\<forall>x y z u. (x \<^bold>> y \<and> z \<^bold>> u) \<longrightarrow> x \<^bold>+ z \<^bold>> y \<^bold>+ u" by auto
 qed
@@ -1116,7 +1116,7 @@ proof -
         assume "x = y"
         then have "x \<^bold>+ z = y \<^bold>+ z" by auto
         moreover have "y \<^bold>+ z \<^bold>> y \<^bold>+ u"
-          using Theorem_19 Theorem_6 \<open>x \<^bold>\<ge> y \<and> z \<^bold>> u\<close> by fastforce 
+          using Theorem_19 Theorem_6 \<open>x \<^bold>\<ge> y \<and> z \<^bold>> u\<close> by fastforce
         ultimately show "x \<^bold>+ z \<^bold>> y \<^bold>+ u" by auto
       qed
     next
@@ -1126,12 +1126,12 @@ proof -
       proof
         assume "z \<^bold>> u"
         then show "x \<^bold>+ z \<^bold>> y \<^bold>+ u"
-          by (simp add: Theorem_21 \<open>x \<^bold>> y \<and> z \<^bold>\<ge> u\<close>) 
+          by (simp add: Theorem_21 \<open>x \<^bold>> y \<and> z \<^bold>\<ge> u\<close>)
       next
         assume "z = u"
         then have "x \<^bold>+ z = x \<^bold>+ u" by auto
         moreover have "x \<^bold>+ u \<^bold>> y \<^bold>+ u"
-          using Theorem_19 \<open>x \<^bold>> y \<and> z \<^bold>\<ge> u\<close> by blast 
+          using Theorem_19 \<open>x \<^bold>> y \<and> z \<^bold>\<ge> u\<close> by blast
         ultimately show "x \<^bold>+ z \<^bold>> y \<^bold>+ u" by auto
       qed
     qed
@@ -1161,12 +1161,12 @@ proof -
       proof (cases "z = u")
         case True
         then show "x \<^bold>+ z \<^bold>> y \<^bold>+ u \<or> x \<^bold>+ z = y \<^bold>+ u"
-          using Theorem_22 \<open>x \<^bold>> y \<or> x = y\<close> \<open>x \<^bold>\<ge> y \<and> z \<^bold>\<ge> u\<close> by blast 
+          using Theorem_22 \<open>x \<^bold>> y \<or> x = y\<close> \<open>x \<^bold>\<ge> y \<and> z \<^bold>\<ge> u\<close> by blast
       next
         case False
         then have "z \<^bold>> u" using \<open>z \<^bold>> u \<or> z = u\<close> by auto
         then have "x \<^bold>+ z \<^bold>> y \<^bold>+ u"
-          by (simp add: Theorem_22 \<open>x \<^bold>\<ge> y \<and> z \<^bold>\<ge> u\<close>) 
+          by (simp add: Theorem_22 \<open>x \<^bold>\<ge> y \<and> z \<^bold>\<ge> u\<close>)
         then show "x \<^bold>+ z \<^bold>> y \<^bold>+ u \<or> x \<^bold>+ z = y \<^bold>+ u" by auto
       qed
     next
@@ -1182,7 +1182,7 @@ proof -
         case False
         then have "z \<^bold>> u" using \<open>z \<^bold>> u \<or> z = u\<close> by auto
         then have "x \<^bold>+ z \<^bold>> y \<^bold>+ u"
-          using Theorem_22 \<open>x \<^bold>\<ge> y \<and> z \<^bold>\<ge> u\<close> by blast 
+          using Theorem_22 \<open>x \<^bold>\<ge> y \<and> z \<^bold>\<ge> u\<close> by blast
         then show "x \<^bold>+ z \<^bold>> y \<^bold>+ u \<or> x \<^bold>+ z = y \<^bold>+ u" by auto
       qed
     qed
@@ -1213,7 +1213,7 @@ proof -
       then obtain u where "x = succ u" by auto
       then have "x = u \<^bold>+ I" using L1 by auto
       then have "x \<^bold>> I" using greater_than_def
-        using Theorem_6 by blast 
+        using Theorem_6 by blast
       then show "x \<^bold>\<ge> I" using greater_than_or_equal_def by auto
     qed
   }
@@ -1239,7 +1239,7 @@ proof -
     then obtain u where "y = x \<^bold>+ u" using greater_than_def by auto
     have "u \<^bold>\<ge> I" using Theorem_24 by auto
     hence "y \<^bold>\<ge> x \<^bold>+ I" using Theorem_23
-      by (simp add: \<open>y = x \<^bold>+ u\<close> greater_than_or_equal_def) 
+      by (simp add: \<open>y = x \<^bold>+ u\<close> greater_than_or_equal_def)
   }
   thus "\<forall>x y. y \<^bold>> x \<longrightarrow> y \<^bold>\<ge> x \<^bold>+ I" by auto
 qed
@@ -1264,11 +1264,73 @@ proof -
     assume "y \<^bold>> x"
     then have "y \<^bold>\<ge> x \<^bold>+ I" using Theorem_25 by auto
     then have False using \<open>y \<^bold>< x \<^bold>+ I\<close> less_than_def
-      by (metis Theorem_11 Theorem_15 Theorem_6 Theorem_7 greater_than_or_equal_def) 
+      by (metis Theorem_11 Theorem_15 Theorem_6 Theorem_7 greater_than_or_equal_def)
     }
     hence "y \<^bold>\<le> x" using Theorem_10 less_than_or_equal_def by auto
   }
   thus "\<forall>x y. y \<^bold>< x \<^bold>+ I \<longrightarrow> y \<^bold>\<le> x" by auto
+qed
+
+
+(* Theorem 27: In every non-empty set of natural numbers
+there is a least one (i.e. one which is less than any other number
+of the set).
+Proof: Let \<NN> be the given set, and let \<MM> be the set of all x
+which are \<le> every number of \<NN>.
+By Theorem 24, the set \<MM> contains the number 1. Not every
+x belongs to \<MM>; in fact, for each y of \<NN> the number y + 1 does
+not belong to \<MM>, since
+y + 1 > y.
+Therefore there is an m in \<MM> such that m + 1 does not belong
+to \<MM>; for otherwise, every natural number would have to belong
+to \<MM>, by Axiom 5.
+Of this m I now assert that it is \<le> every n of \<NN>, and that it belongs
+to \<NN>. The former we already know. The latter is established by an
+indirect argument, as follows: If m did not belong to \<NN> then for
+each n of \<NN> we would have
+m < n,
+hence, by Theorem 25,
+m + 1 \<le> n;
+thus m + 1 would belong to \<MM>, contradicting the statement above
+by which m was introduced.
+
+ *)
+theorem Theorem_27: 
+  assumes "\<NN> \<noteq> {}"
+  shows "\<exists>m \<in> \<NN>. \<forall>n \<in> \<NN>. m \<^bold>\<le> n"
+proof -
+  let ?\<MM> = "{x. \<forall>n \<in> \<NN>. x \<^bold>\<le> n}"
+  have "I \<in> ?\<MM>" using Theorem_24
+    using Theorem_13 by blast 
+  have "\<exists>y \<in> \<NN>. succ y \<notin> ?\<MM>"
+  proof (rule ccontr)
+    assume "\<not>(\<exists>y \<in> \<NN>. succ y \<notin> ?\<MM>)"
+    hence "\<forall>y \<in> \<NN>. succ y \<in> ?\<MM>" by auto
+    hence "\<forall>y. succ y \<in> ?\<MM>" using assms
+      by (smt (verit, ccfv_threshold) L1 Theorem_6 Theorem_7 less_than_or_equal_def mem_Collect_eq Landau_GPT4.less_than_def) 
+    hence "\<forall>y. \<forall>n \<in> \<NN>. succ y \<^bold>\<le> n" by auto
+    hence "\<forall>n \<in> \<NN>. I \<^bold>\<le> n" using Theorem_24
+      using Theorem_13 by blast 
+    hence "\<forall>n \<in> \<NN>. n = I" using Theorem_11
+      by (metis L1 Theorem_16 Theorem_6 Theorem_7 \<open>\<forall>y. \<forall>n\<in>\<NN>. succ y \<^bold>\<le> n\<close> Landau_GPT4.less_than_def) 
+    hence "\<NN> = {I}" using assms by auto
+    hence "\<exists>y \<in> \<NN>. succ y \<notin> ?\<MM>" using Theorem_3
+      by (metis L1 Theorem_7 \<open>\<forall>y. \<forall>n\<in>\<NN>. succ y \<^bold>\<le> n\<close> insert_iff less_than_or_equal_def Landau_GPT4.less_than_def) 
+    thus False using \<open>\<not>(\<exists>y \<in> \<NN>. succ y \<notin> ?\<MM>)\<close> by auto
+  qed
+  then obtain m where "m \<in> ?\<MM>" and "succ m \<notin> ?\<MM>"
+    by (metis (no_types, lifting) Axiom_5 \<open>I \<in> {x. \<forall>n\<in>\<NN>. x \<^bold>\<le> n}\<close>) 
+  have "m \<in> \<NN>"
+  proof (rule ccontr)
+    assume "m \<notin> \<NN>"
+    hence "\<forall>n \<in> \<NN>. m \<^bold>< n" using \<open>m \<in> ?\<MM>\<close> less_than_def
+      using less_than_or_equal_def by fastforce 
+    hence "\<forall>n \<in> \<NN>. succ m \<^bold>\<le> n" using Theorem_25
+      by (metis L1 Theorem_19 Theorem_26) 
+    hence "succ m \<in> ?\<MM>" by auto
+    thus False using \<open>succ m \<notin> ?\<MM>\<close> by auto
+  qed
+  thus "\<exists>m \<in> \<NN>. \<forall>n \<in> \<NN>. m \<^bold>\<le> n" using \<open>m \<in> ?\<MM>\<close> by auto
 qed
 
 end
