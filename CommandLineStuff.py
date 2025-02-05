@@ -206,10 +206,14 @@ def main_loop(start, shell_process, output_queue):
             if status.get("status") == Utils.StatusCode.OK:
                 break
             if status.get("status")==Utils.StatusCode.SLEDGEHAMMER_NEEDED and not status.get("cheating_success"):
-                print("trying step by step translation")
-                Utils.cut_comment(TEMP_THY_FILE)
-                sbs_trans = step_by_step_translation(next_proof)
-                Utils.write_correction(sbs_trans, TEMP_THY_FILE, keep_theorem=True)
+                #print("trying step by step translation")
+                #Utils.cut_comment(TEMP_THY_FILE)
+                #sbs_trans = step_by_step_translation(next_proof)
+                #Utils.write_correction(sbs_trans, TEMP_THY_FILE, keep_theorem=True)
+                print("sledge fail, prompting for alternate translation")
+                relevant_line = Utils.get_line(TEMP_THY_FILE, status.get("error_lines")[0])
+                corr = GPTStuff.chat_call(client, relevant_line, error="sledge")
+                Utils.write_correction(corr, TEMP_THY_FILE)
 
 
 def parse_status(status):

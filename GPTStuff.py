@@ -43,6 +43,8 @@ def chat_call(client, mess, error=None, err_mess=None, cold_call=False):
                 messages.append({"role": "user", "content": "The translation of the theorem statement is incorrect:\n" + mess})
         elif error == "proof":
             messages.append({"role": "user", "content": "the theorem statement has been manually corrected to: \n" + err_mess + "\nPlease retranslate the proof to match the new theorem:\n" + mess})
+        elif error == "sledge":
+            messages.append({"role": "user", "content": "The following line could not be proven by isabelle and sledgehammer. Please add mor steps or restructure the proof to elaborate.\n\n" + mess})
         else:
             messages.append({"role": "user", "content": mess})
     chat = client.chat.completions.create(model=MODEL, seed=SEED, temperature=0, messages=messages)

@@ -47,13 +47,13 @@ def parse_output(output_lines, old_status):
         ret["error_lines"] = (get_error_lines(lines))
         ret["lines"] += "\nPlease try to use the \"consider (case1)...|(case2)...\" syntax to restructure the proof"
         return ret
-    if any("Failed to apply initial proof method" in string for string in output_lines):
-        ret["status"] = StatusCode.GPT_CORRECTION
-        ret["error_lines"] = (get_error_lines(lines))
-        return ret
     if any("At command \"by\"" in string for string in output_lines):
         ret["status"] = StatusCode.SLEDGEHAMMER_NEEDED
         ret["error_lines"] = get_error_lines(lines)
+        return ret
+    if any("Failed to apply initial proof method" in string for string in output_lines):
+        ret["status"] = StatusCode.GPT_CORRECTION
+        ret["error_lines"] = (get_error_lines(lines))
         return ret
     if any("<malformed>" in s for s in output_lines):
         ret["status"] = StatusCode.MALFORMED
@@ -262,3 +262,8 @@ def fix_malformation(file):
     lines.append("\nend\n")
     with open(file, 'w') as f:
         f.writelines(lines)
+
+def get_line(file,line_number):
+    with open(file, 'r') as f:
+        lines = f.readlines()
+    return lines[line_number-1]

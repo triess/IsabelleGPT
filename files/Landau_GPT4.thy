@@ -1295,42 +1295,607 @@ thus m + 1 would belong to \<MM>, contradicting the statement above
 by which m was introduced.
 
  *)
-theorem Theorem_27: 
+theorem Theorem_27:
   assumes "\<NN> \<noteq> {}"
   shows "\<exists>m \<in> \<NN>. \<forall>n \<in> \<NN>. m \<^bold>\<le> n"
 proof -
   let ?\<MM> = "{x. \<forall>n \<in> \<NN>. x \<^bold>\<le> n}"
   have "I \<in> ?\<MM>" using Theorem_24
-    using Theorem_13 by blast 
+    using Theorem_13 by blast
   have "\<exists>y \<in> \<NN>. succ y \<notin> ?\<MM>"
   proof (rule ccontr)
     assume "\<not>(\<exists>y \<in> \<NN>. succ y \<notin> ?\<MM>)"
     hence "\<forall>y \<in> \<NN>. succ y \<in> ?\<MM>" by auto
     hence "\<forall>y. succ y \<in> ?\<MM>" using assms
-      by (smt (verit, ccfv_threshold) L1 Theorem_6 Theorem_7 less_than_or_equal_def mem_Collect_eq Landau_GPT4.less_than_def) 
+      by (smt (verit, ccfv_threshold) L1 Theorem_6 Theorem_7 less_than_or_equal_def mem_Collect_eq Landau_GPT4.less_than_def)
     hence "\<forall>y. \<forall>n \<in> \<NN>. succ y \<^bold>\<le> n" by auto
     hence "\<forall>n \<in> \<NN>. I \<^bold>\<le> n" using Theorem_24
-      using Theorem_13 by blast 
+      using Theorem_13 by blast
     hence "\<forall>n \<in> \<NN>. n = I" using Theorem_11
-      by (metis L1 Theorem_16 Theorem_6 Theorem_7 \<open>\<forall>y. \<forall>n\<in>\<NN>. succ y \<^bold>\<le> n\<close> Landau_GPT4.less_than_def) 
+      by (metis L1 Theorem_16 Theorem_6 Theorem_7 \<open>\<forall>y. \<forall>n\<in>\<NN>. succ y \<^bold>\<le> n\<close> Landau_GPT4.less_than_def)
     hence "\<NN> = {I}" using assms by auto
     hence "\<exists>y \<in> \<NN>. succ y \<notin> ?\<MM>" using Theorem_3
-      by (metis L1 Theorem_7 \<open>\<forall>y. \<forall>n\<in>\<NN>. succ y \<^bold>\<le> n\<close> insert_iff less_than_or_equal_def Landau_GPT4.less_than_def) 
+      by (metis L1 Theorem_7 \<open>\<forall>y. \<forall>n\<in>\<NN>. succ y \<^bold>\<le> n\<close> insert_iff less_than_or_equal_def Landau_GPT4.less_than_def)
     thus False using \<open>\<not>(\<exists>y \<in> \<NN>. succ y \<notin> ?\<MM>)\<close> by auto
   qed
   then obtain m where "m \<in> ?\<MM>" and "succ m \<notin> ?\<MM>"
-    by (metis (no_types, lifting) Axiom_5 \<open>I \<in> {x. \<forall>n\<in>\<NN>. x \<^bold>\<le> n}\<close>) 
+    by (metis (no_types, lifting) Axiom_5 \<open>I \<in> {x. \<forall>n\<in>\<NN>. x \<^bold>\<le> n}\<close>)
   have "m \<in> \<NN>"
   proof (rule ccontr)
     assume "m \<notin> \<NN>"
     hence "\<forall>n \<in> \<NN>. m \<^bold>< n" using \<open>m \<in> ?\<MM>\<close> less_than_def
-      using less_than_or_equal_def by fastforce 
+      using less_than_or_equal_def by fastforce
     hence "\<forall>n \<in> \<NN>. succ m \<^bold>\<le> n" using Theorem_25
-      by (metis L1 Theorem_19 Theorem_26) 
+      by (metis L1 Theorem_19 Theorem_26)
     hence "succ m \<in> ?\<MM>" by auto
     thus False using \<open>succ m \<notin> ?\<MM>\<close> by auto
   qed
   thus "\<exists>m \<in> \<NN>. \<forall>n \<in> \<NN>. m \<^bold>\<le> n" using \<open>m \<in> ?\<MM>\<close> by auto
 qed
 
+(* Theorem 28 and at the same time Definition 6: To every pair
+of numbers x, y, we may assign in exactly one way a natural
+number, called x \<cdot> y ( \<cdot> to be read "times"; however, the dot is usually
+omitted), such that
+1) x \<cdot> 1 = x             for every x,
+2) x \<cdot> y' = x \<cdot> y + x    for every x and every y.
+x \<cdot> y is called the product of x and y, or the number obtained
+from multiplication of x by y.
+Proof (mutatis mutandis, word for word the same as that
+of Theorem 4): A) We will first show that for each fixed x there
+is at most one possibility of defining xy for all y in such a way that
+x \<cdot> 1 = x
+and
+xy' = xy + x for every y.
+Let a_y and b_y be defined for all y and be such that
+a_1 = x, b_1 = x,
+a_y' = a_y + x, b_y' = b_y + x for every y.
+Let \<MM> be the set of all y for which
+a_y = b_y.
+I) a_1 = x = b_1;
+hence 1 belongs to \<MM>.
+II) If y belongs to \<MM>, then
+a_y = b_y,
+hence
+a_y' = a_y + x = b_y + x = b_y',
+so that y' belongs to \<MM>.
+Hence \<MM> is the set of all natural numbers; i.e. for every y we
+have
+a_y = b_y.
+B) Now we will show that for each x, it is actually possible to
+define xy for all y in such a way that
+x \<cdot> 1 = x
+and
+xy' = xy + x for every y.
+Let \<MM> be the set of all x for which this is possible (in exactly
+one way, by A)).
+I) For
+x = l,
+the number
+xy = y
+is as required, since
+x \<cdot> 1 = 1 = x,
+xy' = y' = y + 1 = xy + x.
+Hence 1 belongs to \<MM>.
+II) Let x belong to \<MM>, so that there exists an xy for all y. Then
+the number
+x'y = xy + y
+is the required number for x' since
+x' \<cdot> 1 = x \<cdot> 1 + 1 = x + 1 = x'
+and
+x'y' = xy' y' = (xy + x) + y' = xy + (x + y') = xy + (x + y)'
+= xy + (x' + y) = xy + (y + x') = (xy + y) + x' = x'y + x'.
+Hence x' belongs to \<MM>.
+Therefore \<MM> contains all x.
+
+*)
+
+theorem Theorem_28: "\<exists>!f :: Natnums \<Rightarrow> Natnums \<Rightarrow> Natnums. ((\<forall>x. f x I = x)  \<and> (\<forall>x y. f x (succ y) = (f x y) \<^bold>+ x))"
+proof -
+  have "\<forall>x. \<forall>a b :: Natnums \<Rightarrow> Natnums. (a I = x \<and> (\<forall>y. a (succ y) = a y \<^bold>+ x) \<and> b I = x \<and> (\<forall>y. b (succ y) = b y \<^bold>+ x) \<longrightarrow> a = b)"
+  proof -
+    {
+      fix x::Natnums
+      fix a b :: "Natnums \<Rightarrow> Natnums" assume "a I = x \<and> (\<forall>y. a(succ y) = a y \<^bold>+ x) \<and> b I = x \<and> (\<forall>y. b(succ y) = b y \<^bold>+ x)"
+      define M where "M \<equiv> {y. a y = b y}"
+      have "I \<in> M"
+        by (simp add: M_def \<open>a I = x \<and> (\<forall>y. a (succ y) = a y \<^bold>+ x) \<and> b I = x \<and> (\<forall>y. b (succ y) = b y \<^bold>+ x)\<close>) 
+      {
+        fix y::Natnums assume "y \<in> M"
+        from this have "a y = b y" using M_def by blast
+        from this have "a (succ y) = b (succ y)"
+          by (simp add: \<open>a I = x \<and> (\<forall>y. a (succ y) = a y \<^bold>+ x) \<and> b I = x \<and> (\<forall>y. b (succ y) = b y \<^bold>+ x)\<close>) 
+        from this have "succ y \<in> M" by (simp add: M_def)
+      }
+      have "\<forall>x. x \<in> M" using Axiom_5
+        using \<open>I \<in> M\<close> \<open>\<And>y. y \<in> M \<Longrightarrow> succ y \<in> M\<close> by blast 
+      from this have "\<forall>y. a y = b y" using M_def by blast
+    }
+    from this show "\<forall>x. \<forall>a b :: Natnums \<Rightarrow> Natnums. (a I = x \<and> (\<forall>y. a(succ y) = a y \<^bold>+ x) \<and> b I = x \<and> (\<forall>y. b(succ y) = b y \<^bold>+ x) \<longrightarrow> a = b)" by auto
+  qed
+  have "\<forall>x. \<exists>f :: Natnums \<Rightarrow> Natnums. (f I = x  \<and> (\<forall>y. f(succ y) = f y \<^bold>+ x))"
+  proof -
+    define M where "M \<equiv> {x. \<exists>f :: Natnums \<Rightarrow> Natnums. (f I = x  \<and> (\<forall>y. f(succ y) = f y \<^bold>+ x))}"
+    have "I \<in> M"
+      using L1 M_def by auto
+    {
+      fix x::Natnums assume  "x \<in> M"
+      from this obtain f where "f I = x  \<and> (\<forall>y. f(succ y) = f y \<^bold>+ x)" using M_def
+        by blast 
+      define f' where "f' \<equiv> \<lambda>y. f y \<^bold>+ y"
+      have "f' I = f I \<^bold>+ I" by (simp add: f'_def)
+      also have "... = x \<^bold>+ I"
+        by (simp add: \<open>f I = x \<and> (\<forall>y. f (succ y) = f y \<^bold>+ x)\<close>) 
+      also have "... = succ x"
+        by (simp add: L1) 
+      finally have "f' I = succ x" . 
+      have "\<forall>y. f'(succ y) = f' y \<^bold>+ succ x"
+      proof -
+        {
+        fix y::Natnums
+        have "f'(succ y) = (f (succ y) \<^bold>+ succ y)"
+          by (simp add: f'_def)  
+        also have "... = (f y \<^bold>+ x) \<^bold>+ succ y"
+          by (simp add: \<open>f I = x \<and> (\<forall>y. f (succ y) = f y \<^bold>+ x)\<close>) 
+        also have "... = f y \<^bold>+ (x \<^bold>+ succ y)"
+          by (simp add: Theorem_5)
+        also have "... = f y \<^bold>+ succ (x \<^bold>+ y)"
+          by (simp add: L1) 
+        also have "... = f y \<^bold>+ (succ x \<^bold>+ y)"
+          by (simp add: L1 Theorem_6)
+        also have "... = f y \<^bold>+ (y \<^bold>+ succ x)"
+          by (simp add: Theorem_6)
+        also have "... = (f y \<^bold>+ y) \<^bold>+ succ x"
+          by (simp add: Theorem_5)
+        also have "... = f' y \<^bold>+ succ x"
+          by (simp add: f'_def)
+        }
+        show ?thesis
+          using L1 Theorem_5 Theorem_6 \<open>f I = x \<and> (\<forall>y. f (succ y) = f y \<^bold>+ x)\<close> f'_def by force 
+      qed
+      have "succ x \<in> M" using M_def
+        using \<open>\<forall>y. f' (succ y) = f' y \<^bold>+ succ x\<close> \<open>f' I = succ x\<close> by auto 
+    }
+    have "\<forall>x. x \<in> M" using Axiom_5
+      using \<open>I \<in> M\<close> \<open>\<And>x. x \<in> M \<Longrightarrow> succ x \<in> M\<close> by blast 
+    from this show "\<forall>x. \<exists>f :: Natnums \<Rightarrow> Natnums. (f I = x  \<and> (\<forall>y. f(succ y) = f y \<^bold>+ x))"
+      by (simp add: M_def) 
+  qed
+  have "\<exists>f :: Natnums \<Rightarrow> Natnums \<Rightarrow> Natnums. ((\<forall>x. f x I = x)  \<and> (\<forall>x y. f x (succ y) = f x y \<^bold>+ x))"
+    by (meson \<open>\<forall>x. \<exists>f. f I = x \<and> (\<forall>y. f (succ y) = f y \<^bold>+ x)\<close>) 
+  from this show "\<exists>!f :: Natnums \<Rightarrow> Natnums \<Rightarrow> Natnums. ((\<forall>x. f x I = x)  \<and> (\<forall>x y. f x (succ y) = f x y \<^bold>+ x))"
+    using \<open>\<forall>x a b. a I = x \<and> (\<forall>y. a (succ y) = a y \<^bold>+ x) \<and> b I = x \<and> (\<forall>y. b (succ y) = b y \<^bold>+ x) \<longrightarrow> a = b\<close> by auto 
+qed
+
+definition mult :: "Natnums \<Rightarrow> Natnums \<Rightarrow> Natnums" (infixl "\<^bold>\<cdot>" 70) where
+  "mult \<equiv> THE f. ((\<forall>x. f x I = x) \<and> (\<forall>x y. f x (succ y) = (f x y) \<^bold>+ x ))"
+
+lemma L2: "((\<forall>x. mult x I = x) \<and> (\<forall>x y. mult x (succ y) = (mult x y) \<^bold>+ x))"
+proof -
+  from Theorem_28 obtain f where "((\<forall>x. f x I = x) \<and> (\<forall>x y. f x (succ y) = (f x y) \<^bold>+ x))"
+    by auto 
+  define P where "P \<equiv> (\<lambda>f.((\<forall>x. f x I = x) \<and> (\<forall>x y. f x (succ y) = (f x y) \<^bold>+ x)))"
+  from this P_def have "P f"
+    by (simp add: \<open>(\<forall>x. f x I = x) \<and> (\<forall>x y. f x (succ y) = f x y \<^bold>+ x)\<close>)
+  from this Theorem_28 have "\<And>g. P g \<Longrightarrow> g = f"
+    using P_def by auto
+  from this have "P (THE f. P f)"
+    by (metis \<open>P f\<close> theI)
+  then show ?thesis
+    using P_def mult_def by auto 
+qed
+
+lemma L3: "\<forall>x. I \<^bold>\<cdot> x = x"
+proof -
+  define M where "M \<equiv> {x. I \<^bold>\<cdot> x = x}"
+  have "I\<in>M"
+    by (simp add: L2 M_def)
+  {
+    assume "y\<in>M"
+    have "succ y \<in>M"
+      using L1 L2 M_def \<open>y \<in> M\<close> by fastforce 
+  }
+  show ?thesis
+    by (smt (z3) Axiom_5 L1 L2 M_def mem_Collect_eq)
+qed
+
+(* Theorem 29 (Commutative Law of Multiplication):
+xy = yx.
+Proof: Fix y, and let \<MM> be the set of all x for which the assertion holds.
+I) We have
+y \<cdot> 1 = y,
+and furthermore, by the construction in the proof of Theorem 28,
+1 \<cdot> y = y,
+hence
+1 \<cdot> y = y \<cdot> 1,
+so that 1 belongs to \<MM>.
+II) If x belongs to \<MM>, then
+xy = yx,
+hence
+xy + y = yx + y = yx'.
+By the construction in the proof of Theorem 28, we have
+x'y = xy + y,
+hence
+x'y = yx',
+so that x' belongs to \<MM>.
+The assertion therefore holds for all x.
+ *)
+theorem Theorem_29: "\<forall>x y. x \<^bold>\<cdot> y = y \<^bold>\<cdot> x"
+proof -
+  {
+    fix y::Natnums
+    define M where "M \<equiv> {x. x \<^bold>\<cdot> y = y \<^bold>\<cdot> x}"
+    have "I \<in> M"
+    proof -
+      have "I \<^bold>\<cdot> y = (THE f. (\<forall>x. f x I = x) \<and> (\<forall>x y. f x (succ y) = f x y \<^bold>+ x)) I y"
+        by (simp add: mult_def)
+      also have "... = (THE f. (\<forall>x. f x I = x) \<and> (\<forall>x y. f x (succ y) = f x y \<^bold>+ x)) I y"
+        by (simp add: mult_def)
+      also have "... = y"
+        using L3 \<open>I \<^bold>\<cdot> y = (THE f. (\<forall>x. f x I = x) \<and> (\<forall>x y. f x (succ y) = f x y \<^bold>+ x)) I y\<close> by auto
+      have "I \<^bold>\<cdot> y = y"
+        by (simp add: L3)
+      moreover have "y \<^bold>\<cdot> I = y" using L2 by auto
+      ultimately show "I \<in> M" using M_def by auto
+    qed
+    {
+      fix x::Natnums assume "x \<in> M"
+      then have "x \<^bold>\<cdot> y = y \<^bold>\<cdot> x" using M_def by auto
+      then have "x \<^bold>\<cdot> y \<^bold>+ y = y \<^bold>\<cdot> x \<^bold>+ y" by auto
+      then have "y \<^bold>\<cdot> succ x = y \<^bold>\<cdot> x \<^bold>+ y" using L2 by auto
+      then have "y \<^bold>\<cdot> succ x = x \<^bold>\<cdot> y \<^bold>+ y" using \<open>x \<^bold>\<cdot> y = y \<^bold>\<cdot> x\<close> by auto
+      have "(succ x) \<^bold>\<cdot> y = (x \<^bold>\<cdot> y) \<^bold>+ y"
+        using L2 sorry
+      then have "succ x \<^bold>\<cdot> y = y \<^bold>\<cdot> succ x" using \<open>y \<^bold>\<cdot> succ x = x \<^bold>\<cdot> y \<^bold>+ y\<close> by auto
+      then have "succ x \<in> M" using M_def by auto
+    }
+    then have "\<forall>x. x \<in> M" using Axiom_5 \<open>I \<in> M\<close> by blast
+    then have "\<forall>x. x \<^bold>\<cdot> y = y \<^bold>\<cdot> x" using M_def by auto
+  }
+  thus "\<forall>x y. x \<^bold>\<cdot> y = y \<^bold>\<cdot> x" by auto
+qed
+
+
+(* Theorem 30 (Distributive Law):
+x(y + z) = xy + xz.
+Preliminary Remark: The formula
+(y + z)x = yx + zx
+which results from Theorem 30 and Theorem 29, and similar
+analogues later on, need not be specifically formulated as theorems,
+nor even be set down.
+Proof: Fix x and y, and let \<MM> be the set of all z for which the
+assertion holds true.
+I) x(y + 1) = xtf = xy + x = xy + x \<cdot> 1;
+1 belongs to \<MM>.
+II) If z belongs to \<MM>, then
+x(y + z) = xy + xz,
+hence
+x(y + z') x((y + z)') = x(y + z) + x = (xy + xz) +x
+= xy + (xz + x) = xy + xz'
+so that z' belongs to \<MM>.
+Therefore, the assertion always holds.
+
+ *)
+theorem Theorem_30: "\<forall>x y z. x \<^bold>\<cdot> (y \<^bold>+ z) = (x \<^bold>\<cdot> y) \<^bold>+ (x \<^bold>\<cdot> z)"
+proof -
+  {
+    fix x y::Natnums
+    define M where "M \<equiv> {z. x \<^bold>\<cdot> (y \<^bold>+ z) = (x \<^bold>\<cdot> y) \<^bold>+ (x \<^bold>\<cdot> z)}"
+    have "I \<in> M"
+    proof -
+      have "x \<^bold>\<cdot> (y \<^bold>+ I) = x \<^bold>\<cdot> (succ y)"
+        by (simp add: L1)
+      also have "... = (x \<^bold>\<cdot> y) \<^bold>+ x"
+        using L2 by auto
+      also have "... = (x \<^bold>\<cdot> y) \<^bold>+ (x \<^bold>\<cdot> I)"
+        using L3
+        by (simp add: L2) 
+      finally show "I \<in> M" using M_def by auto
+    qed
+    {
+      fix z::Natnums assume "z \<in> M"
+      then have "x \<^bold>\<cdot> (y \<^bold>+ z) = (x \<^bold>\<cdot> y) \<^bold>+ (x \<^bold>\<cdot> z)" using M_def by auto
+      then have "x \<^bold>\<cdot> (y \<^bold>+ succ z) = x \<^bold>\<cdot> (succ (y \<^bold>+ z))"
+        by (simp add: L1)
+      also have "... = (x \<^bold>\<cdot> (y \<^bold>+ z)) \<^bold>+ x"
+        using L2 by auto
+      also have "... = ((x \<^bold>\<cdot> y) \<^bold>+ (x \<^bold>\<cdot> z)) \<^bold>+ x"
+        using \<open>x \<^bold>\<cdot> (y \<^bold>+ z) = (x \<^bold>\<cdot> y) \<^bold>+ (x \<^bold>\<cdot> z)\<close> by auto
+      also have "... = (x \<^bold>\<cdot> y) \<^bold>+ ((x \<^bold>\<cdot> z) \<^bold>+ x)"
+        by (simp add: Theorem_5)
+      also have "... = (x \<^bold>\<cdot> y) \<^bold>+ (x \<^bold>\<cdot> succ z)"
+        using L2 by auto
+      finally have "succ z \<in> M" using M_def by auto
+    }
+    then have "\<forall>z. z \<in> M" using Axiom_5 \<open>I \<in> M\<close> by blast
+    then have "\<forall>z. x \<^bold>\<cdot> (y \<^bold>+ z) = (x \<^bold>\<cdot> y) \<^bold>+ (x \<^bold>\<cdot> z)" using M_def by auto
+  }
+  thus "\<forall>x y z. x \<^bold>\<cdot> (y \<^bold>+ z) = (x \<^bold>\<cdot> y) \<^bold>+ (x \<^bold>\<cdot> z)" by auto
+qed
+
+(* Theorem 31 (Associative Law of Multiplication):
+(xy)z = x(yz).
+Proof: Fix x and y, and let \<MM> be the set of all z for which the
+assertion holds true.
+I) (xy) \<cdot> l = xy = x(y \<cdot> 1) ;
+hence 1 belongs to \<MM>.
+II) Let z belong to \<MM>. Then
+(xy)z = x(yz),
+and therefore, using Theorem 30,
+(xy)z' = (xy)z + xy = x(yz) + xy = x(yz + y) = x(yz'),
+so that z' belongs to \<MM>.
+Therefore \<MM> contains all natural numbers.
+
+ *)
+theorem Theorem_31: "\<forall>x y z. (x \<^bold>\<cdot> y) \<^bold>\<cdot> z = x \<^bold>\<cdot> (y \<^bold>\<cdot> z)"
+proof -
+  {
+    fix x y::Natnums
+    define M where "M \<equiv> {z. (x \<^bold>\<cdot> y) \<^bold>\<cdot> z = x \<^bold>\<cdot> (y \<^bold>\<cdot> z)}"
+    have "I \<in> M"
+    proof -
+      have "(x \<^bold>\<cdot> y) \<^bold>\<cdot> I = x \<^bold>\<cdot> y"
+        using L2 by auto
+      also have "... = x \<^bold>\<cdot> (y \<^bold>\<cdot> I)"
+        using L3
+        by (simp add: L2) 
+      finally show "I \<in> M" using M_def by auto
+    qed
+    {
+      fix z::Natnums assume "z \<in> M"
+      then have "(x \<^bold>\<cdot> y) \<^bold>\<cdot> z = x \<^bold>\<cdot> (y \<^bold>\<cdot> z)" using M_def by auto
+      then have "(x \<^bold>\<cdot> y) \<^bold>\<cdot> (succ z) = (x \<^bold>\<cdot> y) \<^bold>\<cdot> z \<^bold>+ (x \<^bold>\<cdot> y)"
+        using L2 by auto
+      also have "... = x \<^bold>\<cdot> (y \<^bold>\<cdot> z) \<^bold>+ (x \<^bold>\<cdot> y)"
+        using \<open>(x \<^bold>\<cdot> y) \<^bold>\<cdot> z = x \<^bold>\<cdot> (y \<^bold>\<cdot> z)\<close> by auto
+      also have "... = x \<^bold>\<cdot> ((y \<^bold>\<cdot> z) \<^bold>+ y)"
+        using Theorem_30 by auto
+      also have "... = x \<^bold>\<cdot> (y \<^bold>\<cdot> (succ z))"
+        using L2 by auto
+      finally have "succ z \<in> M" using M_def by auto
+    }
+    then have "\<forall>z. z \<in> M" using Axiom_5 \<open>I \<in> M\<close> by blast
+    then have "\<forall>z. (x \<^bold>\<cdot> y) \<^bold>\<cdot> z = x \<^bold>\<cdot> (y \<^bold>\<cdot> z)" using M_def by auto
+  }
+  thus "\<forall>x y z. (x \<^bold>\<cdot> y) \<^bold>\<cdot> z = x \<^bold>\<cdot> (y \<^bold>\<cdot> z)" by auto
+qed
+
+(* Theorem 32: If
+x > y, or x = y, or x < y,
+then
+xz > yz, or xz = yz, or xz < yz, respectively.
+Proof: 1) If
+x > y
+then
+x = y + u,
+xz = (y + u)z = yz + uz > yz.
+2) If
+x = y
+then clearly
+xz = yz.
+3) If
+x < y
+then
+y > x,
+hence by 1),
+yz > xz,
+xz < yz.
+
+ *)
+theorem Theorem_32:
+  shows "\<forall>x y z. (x \<^bold>> y \<longrightarrow> x \<^bold>\<cdot> z \<^bold>> y \<^bold>\<cdot> z) \<and> (x = y \<longrightarrow> x \<^bold>\<cdot> z = y \<^bold>\<cdot> z) \<and> (x \<^bold>< y \<longrightarrow> x \<^bold>\<cdot> z \<^bold>< y \<^bold>\<cdot> z)"
+proof -
+  {
+    fix x y z::Natnums
+    {
+      assume "x \<^bold>> y"
+      then obtain u where "x = y \<^bold>+ u"
+        using greater_than_def by blast 
+      then have "x \<^bold>\<cdot> z = (y \<^bold>+ u) \<^bold>\<cdot> z"
+        by auto
+      also have "... = (y \<^bold>\<cdot> z) \<^bold>+ (u \<^bold>\<cdot> z)"
+        using Theorem_30
+        using Theorem_29 by presburger 
+      also have "... \<^bold>> y \<^bold>\<cdot> z"
+        using greater_than_def by blast
+      finally have "x \<^bold>\<cdot> z \<^bold>> y \<^bold>\<cdot> z" .
+    }
+    moreover
+    {
+      assume "x = y"
+      then have "x \<^bold>\<cdot> z = y \<^bold>\<cdot> z"
+        by auto
+    }
+    moreover
+    {
+      assume "x \<^bold>< y"
+      then have "y \<^bold>> x"
+        by (simp add: Theorem_12) 
+      then have "y \<^bold>\<cdot> z \<^bold>> x \<^bold>\<cdot> z"
+        using Theorem_29 Theorem_30 greater_than_def by force 
+      then have "x \<^bold>\<cdot> z \<^bold>< y \<^bold>\<cdot> z"
+        using Theorem_11 by auto 
+    }
+    ultimately have "(x \<^bold>> y \<longrightarrow> x \<^bold>\<cdot> z \<^bold>> y \<^bold>\<cdot> z) \<and> (x = y \<longrightarrow> x \<^bold>\<cdot> z = y \<^bold>\<cdot> z) \<and> (x \<^bold>< y \<longrightarrow> x \<^bold>\<cdot> z \<^bold>< y \<^bold>\<cdot> z)" by auto
+  }
+  thus ?thesis by auto
+qed
+
+(* Theorem 33: If
+xz > yz, or xz = yz, or xz < yz,
+then
+x > y, or x = y, or x < y, respectively.
+Proof: Follows from Theorem 32, since the three cases are, in
+both instances, mutually exclusive and exhaust all possibilities.
+
+ *)
+theorem Theorem_33:
+  shows "\<forall>x y z. (x \<^bold>\<cdot> z \<^bold>> y \<^bold>\<cdot> z \<longrightarrow> x \<^bold>> y) \<and> (x \<^bold>\<cdot> z = y \<^bold>\<cdot> z \<longrightarrow> x = y) \<and> (x \<^bold>\<cdot> z \<^bold>< y \<^bold>\<cdot> z \<longrightarrow> x \<^bold>< y)"
+proof -
+  {
+    fix x y z::Natnums
+    {
+      assume "x \<^bold>\<cdot> z \<^bold>> y \<^bold>\<cdot> z"
+      then have "\<not>(x \<^bold>\<cdot> z = y \<^bold>\<cdot> z) \<and> \<not>(x \<^bold>\<cdot> z \<^bold>< y \<^bold>\<cdot> z)"
+        using Theorem_11
+        by (metis Theorem_10 eval_nat_numeral(3) n_not_Suc_n) 
+      then have "\<not>(x = y) \<and> \<not>(x \<^bold>< y)"
+        using Theorem_32 by blast
+      then have "x \<^bold>> y"
+        using Theorem_11
+        using Theorem_10 by blast 
+    }
+    moreover
+    {
+      assume "x \<^bold>\<cdot> z = y \<^bold>\<cdot> z"
+      then have "x = y"
+        by (metis Suc_double_not_eq_double Theorem_10 Theorem_12 Theorem_32 lambda_one) 
+    }
+    moreover
+    {
+      assume "x \<^bold>\<cdot> z \<^bold>< y \<^bold>\<cdot> z"
+      then have "\<not>(x \<^bold>\<cdot> z = y \<^bold>\<cdot> z) \<and> \<not>(x \<^bold>\<cdot> z \<^bold>> y \<^bold>\<cdot> z)"
+        using Theorem_11
+        by (metis Theorem_10 Theorem_15 num.simps(5) one_eq_numeral_iff) 
+      then have "\<not>(x = y) \<and> \<not>(x \<^bold>> y)"
+        using Theorem_32 by blast
+      then have "x \<^bold>< y"
+        using Theorem_11
+        using Theorem_10 by blast 
+    }
+    ultimately have "(x \<^bold>\<cdot> z \<^bold>> y \<^bold>\<cdot> z \<longrightarrow> x \<^bold>> y) \<and> (x \<^bold>\<cdot> z = y \<^bold>\<cdot> z \<longrightarrow> x = y) \<and> (x \<^bold>\<cdot> z \<^bold>< y \<^bold>\<cdot> z \<longrightarrow> x \<^bold>< y)" by auto
+  }
+  thus ?thesis by auto
+qed
+
+(* Theorem 34: If
+x > y, z> u,
+then
+xz > yu.
+Proof: By Theorem 32, we have
+xz > yz
+and
+yz = zy > uy = yu,
+hence
+xz > yu.
+
+ *)
+theorem Theorem_34:
+  shows "\<forall>x y z u. (x \<^bold>> y \<and> z \<^bold>> u) \<longrightarrow> (x \<^bold>\<cdot> z \<^bold>> y \<^bold>\<cdot> u)"
+proof -
+  {
+    fix x y z u::Natnums
+    assume "x \<^bold>> y" and "z \<^bold>> u"
+    then have "x \<^bold>\<cdot> z \<^bold>> y \<^bold>\<cdot> z"
+      using Theorem_32 by blast
+    moreover have "y \<^bold>\<cdot> z = z \<^bold>\<cdot> y"
+      using Theorem_29 by auto
+    moreover have "z \<^bold>\<cdot> y \<^bold>> u \<^bold>\<cdot> y"
+      using Theorem_32 \<open>z \<^bold>> u\<close> by blast  
+    moreover have "u \<^bold>\<cdot> y = y \<^bold>\<cdot> u"
+      using Theorem_29 by auto
+    ultimately have "x \<^bold>\<cdot> z \<^bold>> y \<^bold>\<cdot> u"
+      by (metis (mono_tags, lifting) Theorem_11 Theorem_12 Theorem_15) 
+  }
+  thus ?thesis by auto
+qed
+
+(* Theorem 35: If
+x \<ge> y, z > u or x > y, z \<ge> u,
+then
+xz > yu.
+Proof: Follows from Theorem 32 if an equality sign holds in
+the hypothesis; otherwise from Theorem 34.
+
+ *)
+theorem Theorem_35:
+  shows "\<forall>x y z u. ((x \<^bold>\<ge> y \<and> z \<^bold>> u) \<or> (x \<^bold>> y \<and> z \<^bold>\<ge> u)) \<longrightarrow> (x \<^bold>\<cdot> z \<^bold>> y \<^bold>\<cdot> u)"
+proof -
+  {
+    fix x y z u::Natnums
+    assume "(x \<^bold>\<ge> y \<and> z \<^bold>> u) \<or> (x \<^bold>> y \<and> z \<^bold>\<ge> u)"
+    then consider
+      (case1) "x \<^bold>\<ge> y \<and> z \<^bold>> u" |
+      (case2) "x \<^bold>> y \<and> z \<^bold>\<ge> u"
+      by blast
+    then have "x \<^bold>\<cdot> z \<^bold>> y \<^bold>\<cdot> u"
+    proof cases
+      case case1
+      then have "x = y \<or> x \<^bold>> y"
+        using Theorem_11
+        using greater_than_or_equal_def by blast 
+      then show ?thesis
+      proof
+        assume "x = y"
+        then have "x \<^bold>\<cdot> z = y \<^bold>\<cdot> z"
+          by auto
+        moreover have "y \<^bold>\<cdot> z \<^bold>> y \<^bold>\<cdot> u"
+          using Theorem_32 case1
+          by (metis Theorem_29) 
+        ultimately show ?thesis
+          using Theorem_11 by auto
+      next
+        assume "x \<^bold>> y"
+        then show ?thesis
+          using Theorem_34 case1 by blast
+      qed
+    next
+      case case2
+      then have "z = u \<or> z \<^bold>> u"
+        using Theorem_11
+        using greater_than_or_equal_def by blast 
+      then show ?thesis
+      proof
+        assume "z = u"
+        then have "x \<^bold>\<cdot> z = x \<^bold>\<cdot> u"
+          by auto
+        moreover have "x \<^bold>\<cdot> u \<^bold>> y \<^bold>\<cdot> u"
+          using Theorem_32 case2 by blast
+        ultimately show ?thesis
+          using Theorem_11 by auto
+      next
+        assume "z \<^bold>> u"
+        then show ?thesis
+          using Theorem_34 case2 by blast
+      qed
+    qed
+  }
+  thus ?thesis by auto
+qed
+
+(* Theorem 36: If
+x \<ge> y, z \<ge> u,
+then
+xz \<ge> yu.
+Proof: Obvious if two equality signs hold in the hypothesis;
+otherwise Theorem 35 does it.
+ *)
+theorem Theorem_36:
+  shows "\<forall>x y z u. (x \<^bold>\<ge> y \<and> z \<^bold>\<ge> u) \<longrightarrow> (x \<^bold>\<cdot> z \<^bold>\<ge> y \<^bold>\<cdot> u)"
+proof -
+  {
+    fix x y z u::Natnums
+    assume "x \<^bold>\<ge> y \<and> z \<^bold>\<ge> u"
+    then consider
+      (case1) "x = y \<and> z = u" |
+      (case2) "x \<^bold>> y \<or> z \<^bold>> u"
+      using Theorem_11 greater_than_or_equal_def by blast
+    then have "x \<^bold>\<cdot> z \<^bold>\<ge> y \<^bold>\<cdot> u"
+    proof cases
+      case case1
+      then have "x \<^bold>\<cdot> z = y \<^bold>\<cdot> u"
+        by auto
+      then show ?thesis
+        using greater_than_or_equal_def by auto
+    next
+      case case2
+      then have "x \<^bold>\<cdot> z \<^bold>> y \<^bold>\<cdot> u"
+        using Theorem_35
+        using \<open>x \<^bold>\<ge> y \<and> z \<^bold>\<ge> u\<close> by blast 
+      then show ?thesis
+        using greater_than_or_equal_def by auto
+    qed
+  }
+  thus ?thesis by auto
+qed
 end
