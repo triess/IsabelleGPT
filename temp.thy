@@ -372,7 +372,11 @@ proof -
     then have "succ (x \<^bold>+ y) = succ (y \<^bold>+ x)" by auto
     moreover have "succ (y \<^bold>+ x) = y \<^bold>+ succ x" by (simp add: L1)
   }
-(*By the construction in the proof of Theorem 4, we have \n x'+y=(x+y)', \n hence \n x'+y=y+x' \n so that x' belongs to M *)
+(*By the construction in the proof of Theorem 4, we have 
+ x'+y=(x+y)', 
+ hence 
+ x'+y=y+x' 
+ so that x' belongs to M *)
 {
     have eq6_4: "succ x \<^bold>+ y = succ (x \<^bold>+ y)"
     by (metis (mono_tags, lifting) L1 M_def Theorem_5 \<open>I \<in> M\<close> mem_Collect_eq)
@@ -387,6 +391,7 @@ from Axiom_5 have "\<forall>x. x \<in> M" using \<open>I \<in> M\<close>
   thus "\<forall>x y. x \<^bold>+y=y \<^bold>+x"
     by simp
 qed
+
 (* Theorem 7: y \<noteq> x + y.
 Proof: Fix x, and let \<MM> be the set of all y for which the assertion holds.
 I) 1 \<noteq> x',
@@ -1499,6 +1504,45 @@ proof -
     by (smt (z3) Axiom_5 L1 L2 M_def mem_Collect_eq)
 qed
 
+
+(* Theorem 28_a (helper theorem):
+For all x,y we have:
+x'y = xy + y
+
+ *)
+theorem Theorem_28_a: "\<forall>x y. (succ x) \<^bold>\<cdot> y = (x \<^bold>\<cdot> y) \<^bold>+ y"
+proof -
+  {
+    fix x::Natnums
+    define M where "M\<equiv>{y. (succ x) \<^bold>\<cdot> y = (x \<^bold>\<cdot> y) \<^bold>+ y}"
+    have "(succ x) \<^bold>\<cdot> I = (x \<^bold>\<cdot> I) \<^bold>+ I"
+      by (simp add: L1 L2)
+    have "I\<in>M"
+      using M_def \<open>succ x \<^bold>\<cdot> I = x \<^bold>\<cdot> I \<^bold>+ I\<close> by blast 
+    moreover
+    {
+      fix y::Natnums
+      assume "y\<in>M"
+      have "(succ x) \<^bold>\<cdot> y = (x \<^bold>\<cdot> y) \<^bold>+ y"
+        using M_def \<open>y \<in> M\<close> by blast 
+      then have "(succ x) \<^bold>\<cdot> (succ y) = ((x \<^bold>\<cdot> (succ y)) \<^bold>+ (succ y))"
+        by (smt (verit, del_insts) L1 L2 Theorem_5 Theorem_6) 
+      also have "... = ((x \<^bold>\<cdot> y) \<^bold>+ x) \<^bold>+ (succ y)"
+        by (simp add: L2)
+      also have "... = ((x \<^bold>\<cdot> y) \<^bold>+ (succ y)) \<^bold>+ x"
+        using Theorem_5 Theorem_6 by auto 
+      also have "... = ((x \<^bold>\<cdot> y) \<^bold>+ y) \<^bold>+ (succ x)"
+        using L2 \<open>succ x \<^bold>\<cdot> y = x \<^bold>\<cdot> y \<^bold>+ y\<close> calculation by presburger 
+      finally have "(succ x) \<^bold>\<cdot> (succ y) = ((x \<^bold>\<cdot> y) \<^bold>+ y) \<^bold>+ (succ x)" .
+      then have "succ y \<in> M"
+        using M_def \<open>succ x \<^bold>\<cdot> succ y = x \<^bold>\<cdot> succ y \<^bold>+ succ y\<close> by blast 
+    }
+    ultimately have "\<forall>y. (succ x) \<^bold>\<cdot> y = (x \<^bold>\<cdot> y) \<^bold>+ y"
+      by (metis (mono_tags, lifting) Axiom_5 M_def mem_Collect_eq) 
+  }
+  thus "\<forall>x y. (succ x) \<^bold>\<cdot> y = (x \<^bold>\<cdot> y) \<^bold>+ y" by auto
+qed
+
 (* Theorem 29 (Commutative Law of Multiplication):
 xy = yx.
 Proof: Fix y, and let \<MM> be the set of all x for which the assertion holds.
@@ -1545,7 +1589,8 @@ proof -
       then have "y \<^bold>\<cdot> succ x = y \<^bold>\<cdot> x \<^bold>+ y" using L2 by auto
       then have "y \<^bold>\<cdot> succ x = x \<^bold>\<cdot> y \<^bold>+ y" using \<open>x \<^bold>\<cdot> y = y \<^bold>\<cdot> x\<close> by auto
       have "(succ x) \<^bold>\<cdot> y = (x \<^bold>\<cdot> y) \<^bold>+ y"
-        using L2 sorry
+        using L2
+        using Theorem_28_a by blast 
       then have "succ x \<^bold>\<cdot> y = y \<^bold>\<cdot> succ x" using \<open>y \<^bold>\<cdot> succ x = x \<^bold>\<cdot> y \<^bold>+ y\<close> by auto
       then have "succ x \<in> M" using M_def by auto
     }
@@ -1589,7 +1634,7 @@ proof -
         using L2 by auto
       also have "... = (x \<^bold>\<cdot> y) \<^bold>+ (x \<^bold>\<cdot> I)"
         using L3
-        by (simp add: L2) 
+        by (simp add: L2)
       finally show "I \<in> M" using M_def by auto
     qed
     {
@@ -1638,7 +1683,7 @@ proof -
         using L2 by auto
       also have "... = x \<^bold>\<cdot> (y \<^bold>\<cdot> I)"
         using L3
-        by (simp add: L2) 
+        by (simp add: L2)
       finally show "I \<in> M" using M_def by auto
     qed
     {
@@ -1690,12 +1735,12 @@ proof -
     {
       assume "x \<^bold>> y"
       then obtain u where "x = y \<^bold>+ u"
-        using greater_than_def by blast 
+        using greater_than_def by blast
       then have "x \<^bold>\<cdot> z = (y \<^bold>+ u) \<^bold>\<cdot> z"
         by auto
       also have "... = (y \<^bold>\<cdot> z) \<^bold>+ (u \<^bold>\<cdot> z)"
         using Theorem_30
-        using Theorem_29 by presburger 
+        using Theorem_29 by presburger
       also have "... \<^bold>> y \<^bold>\<cdot> z"
         using greater_than_def by blast
       finally have "x \<^bold>\<cdot> z \<^bold>> y \<^bold>\<cdot> z" .
@@ -1710,11 +1755,11 @@ proof -
     {
       assume "x \<^bold>< y"
       then have "y \<^bold>> x"
-        by (simp add: Theorem_12) 
+        by (simp add: Theorem_12)
       then have "y \<^bold>\<cdot> z \<^bold>> x \<^bold>\<cdot> z"
-        using Theorem_29 Theorem_30 greater_than_def by force 
+        using Theorem_29 Theorem_30 greater_than_def by force
       then have "x \<^bold>\<cdot> z \<^bold>< y \<^bold>\<cdot> z"
-        using Theorem_11 by auto 
+        using Theorem_11 by auto
     }
     ultimately have "(x \<^bold>> y \<longrightarrow> x \<^bold>\<cdot> z \<^bold>> y \<^bold>\<cdot> z) \<and> (x = y \<longrightarrow> x \<^bold>\<cdot> z = y \<^bold>\<cdot> z) \<and> (x \<^bold>< y \<longrightarrow> x \<^bold>\<cdot> z \<^bold>< y \<^bold>\<cdot> z)" by auto
   }
@@ -1738,30 +1783,30 @@ proof -
       assume "x \<^bold>\<cdot> z \<^bold>> y \<^bold>\<cdot> z"
       then have "\<not>(x \<^bold>\<cdot> z = y \<^bold>\<cdot> z) \<and> \<not>(x \<^bold>\<cdot> z \<^bold>< y \<^bold>\<cdot> z)"
         using Theorem_11
-        by (metis Theorem_10 eval_nat_numeral(3) n_not_Suc_n) 
+        by (metis Theorem_10 eval_nat_numeral(3) n_not_Suc_n)
       then have "\<not>(x = y) \<and> \<not>(x \<^bold>< y)"
         using Theorem_32 by blast
       then have "x \<^bold>> y"
         using Theorem_11
-        using Theorem_10 by blast 
+        using Theorem_10 by blast
     }
     moreover
     {
       assume "x \<^bold>\<cdot> z = y \<^bold>\<cdot> z"
       then have "x = y"
-        by (metis Suc_double_not_eq_double Theorem_10 Theorem_12 Theorem_32 lambda_one) 
+        by (metis Suc_double_not_eq_double Theorem_10 Theorem_12 Theorem_32 lambda_one)
     }
     moreover
     {
       assume "x \<^bold>\<cdot> z \<^bold>< y \<^bold>\<cdot> z"
       then have "\<not>(x \<^bold>\<cdot> z = y \<^bold>\<cdot> z) \<and> \<not>(x \<^bold>\<cdot> z \<^bold>> y \<^bold>\<cdot> z)"
         using Theorem_11
-        by (metis Theorem_10 Theorem_15 num.simps(5) one_eq_numeral_iff) 
+        by (metis Theorem_10 Theorem_15 num.simps(5) one_eq_numeral_iff)
       then have "\<not>(x = y) \<and> \<not>(x \<^bold>> y)"
         using Theorem_32 by blast
       then have "x \<^bold>< y"
         using Theorem_11
-        using Theorem_10 by blast 
+        using Theorem_10 by blast
     }
     ultimately have "(x \<^bold>\<cdot> z \<^bold>> y \<^bold>\<cdot> z \<longrightarrow> x \<^bold>> y) \<and> (x \<^bold>\<cdot> z = y \<^bold>\<cdot> z \<longrightarrow> x = y) \<and> (x \<^bold>\<cdot> z \<^bold>< y \<^bold>\<cdot> z \<longrightarrow> x \<^bold>< y)" by auto
   }
@@ -1791,11 +1836,11 @@ proof -
     moreover have "y \<^bold>\<cdot> z = z \<^bold>\<cdot> y"
       using Theorem_29 by auto
     moreover have "z \<^bold>\<cdot> y \<^bold>> u \<^bold>\<cdot> y"
-      using Theorem_32 \<open>z \<^bold>> u\<close> by blast  
+      using Theorem_32 \<open>z \<^bold>> u\<close> by blast
     moreover have "u \<^bold>\<cdot> y = y \<^bold>\<cdot> u"
       using Theorem_29 by auto
     ultimately have "x \<^bold>\<cdot> z \<^bold>> y \<^bold>\<cdot> u"
-      by (metis (mono_tags, lifting) Theorem_11 Theorem_12 Theorem_15) 
+      by (metis (mono_tags, lifting) Theorem_11 Theorem_12 Theorem_15)
   }
   thus ?thesis by auto
 qed
@@ -1823,7 +1868,7 @@ proof -
       case case1
       then have "x = y \<or> x \<^bold>> y"
         using Theorem_11
-        using greater_than_or_equal_def by blast 
+        using greater_than_or_equal_def by blast
       then show ?thesis
       proof
         assume "x = y"
@@ -1831,7 +1876,7 @@ proof -
           by auto
         moreover have "y \<^bold>\<cdot> z \<^bold>> y \<^bold>\<cdot> u"
           using Theorem_32 case1
-          by (metis Theorem_29) 
+          by (metis Theorem_29)
         ultimately show ?thesis
           using Theorem_11 by auto
       next
@@ -1843,7 +1888,7 @@ proof -
       case case2
       then have "z = u \<or> z \<^bold>> u"
         using Theorem_11
-        using greater_than_or_equal_def by blast 
+        using greater_than_or_equal_def by blast
       then show ?thesis
       proof
         assume "z = u"
@@ -1891,11 +1936,12 @@ proof -
       case case2
       then have "x \<^bold>\<cdot> z \<^bold>> y \<^bold>\<cdot> u"
         using Theorem_35
-        using \<open>x \<^bold>\<ge> y \<and> z \<^bold>\<ge> u\<close> by blast 
+        using \<open>x \<^bold>\<ge> y \<and> z \<^bold>\<ge> u\<close> by blast
       then show ?thesis
         using greater_than_or_equal_def by auto
     qed
   }
   thus ?thesis by auto
 qed
+
 end

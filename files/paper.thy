@@ -148,7 +148,42 @@
 
 	definition complete_partial_order :: "'a set set \<Rightarrow> bool" where
 	  "complete_partial_order P \<longleftrightarrow>
-		(\<forall>C. C \<subseteq> P \<and> (\<forall>A B. A \<in> C \<and> B \<in> C \<longrightarrow> (A \<subseteq> B \<or> B \<subseteq> A)) \<longrightarrow> (\<Union>C \<in> P))"
+		(\<forall>C. C \<subseteq> P \<and> C\<noteq>{} \<and> (\<forall>A B. A \<in> C \<and> B \<in> C \<longrightarrow> (A \<subseteq> B \<or> B \<subseteq> A)) \<longrightarrow> (\<Union>C \<in> P))"
+    
+lemma helper_lemma:"\<forall>P A.(complete_partial_order P \<and> A \<in> P \<longrightarrow> complete_partial_order {B\<in>P. A\<subseteq>B})"
+proof-
+  {
+  fix P
+  assume "complete_partial_order P"
+  fix A
+  assume "A \<in> P"
+  have "complete_partial_order {B\<in>P. A\<subseteq>B}" 
+  proof-
+    {
+    fix C
+    assume "C\<subseteq>{B\<in>P. A\<subseteq>B}" and "C\<noteq>{}" and "(\<forall>A B. A \<in> C \<and> B \<in> C \<longrightarrow> (A \<subseteq> B \<or> B \<subseteq> A))"
+    have "C\<subseteq>P"
+      using \<open>C \<subseteq> {B \<in> P. A \<subseteq> B}\<close> by blast
+    have "\<Union>C \<in> P"
+      by (meson \<open>C \<noteq> {}\<close> \<open>C \<subseteq> P\<close> \<open>\<forall>A B. A \<in> C \<and> B \<in> C \<longrightarrow> A \<subseteq> B \<or> B \<subseteq> A\<close> \<open>complete_partial_order P\<close> complete_partial_order_def)
+    obtain D where "D\<in>C"
+      using \<open>C \<noteq> {}\<close> by blast
+    have "A\<subseteq>D"
+      using \<open>C \<subseteq> {B \<in> P. A \<subseteq> B}\<close> \<open>D \<in> C\<close> by blast  
+    have "D\<subseteq>\<Union>C"
+      by (simp add: Union_upper \<open>D \<in> C\<close>)
+    then have "A\<subseteq>\<Union>C"
+      using \<open>A \<subseteq> D\<close> by order 
+    then have "\<Union>C\<in>{B\<in>P. A\<subseteq>B}"
+      by (simp add: \<open>\<Union> C \<in> P\<close>)
+    }
+  show "complete_partial_order {B\<in>P. A\<subseteq>B}"
+    by (metis (no_types, lifting) \<open>\<And>C. \<lbrakk>C \<subseteq> {B \<in> P. A \<subseteq> B}; C \<noteq> {}; \<forall>A B. A \<in> C \<and> B \<in> C \<longrightarrow> A \<subseteq> B \<or> B \<subseteq> A\<rbrakk> \<Longrightarrow> \<Union> C \<in> {B \<in> P. A \<subseteq> B}\<close> complete_partial_order_def)
+  qed
+  }
+  show ?thesis
+    using \<open>\<And>P A. \<lbrakk>complete_partial_order P; A \<in> P\<rbrakk> \<Longrightarrow> complete_partial_order {B \<in> P. A \<subseteq> B}\<close> by blast
+qed
 
 	(*
 	Theorem 11. Let AF be an argumentation framework.
@@ -197,15 +232,19 @@
 		by (simp add: complete_partial_order_def)
 	qed
 
+
 (*
 	(2) For each admissible set S of AF, there exists a preferred extension E of AF
 	such that S \<subseteq> E.
 *)
+
 	theorem exists_preferred_extension:
 	  assumes "admissible G S"
 	  shows "\<exists>E. preferred_extension G E \<and> S \<subseteq> E"
 	proof -
 	  let ?P = "{T. admissible G T \<and> S \<subseteq> T}"
+    have "complete_partial_order ?P"
+      using admissible_sets_cpo assms helper_lemma by fastforce 
 	  have "\<exists>M. M \<in> ?P \<and> (\<forall>T. T \<in> ?P \<and> M \<subseteq> T \<longrightarrow> M = T)" using Zorn_Lemma sorry
 	  then obtain E where "E \<in> ?P" and "\<forall>T. T \<in> ?P \<longrightarrow> E \<subseteq> T \<longrightarrow> E = T"
 	    by force
@@ -217,5 +256,6 @@
 	  ultimately show ?thesis
 		by (metis preferred_extension_def)
 	qed
+
 
 end

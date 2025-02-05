@@ -459,6 +459,10 @@ x'y' = xy' y' = (xy + x) + y' = xy + (x + y') = xy + (x + y)'
 Hence x' belongs to \<MM>. 
 Therefore \<MM> contains all x.
 
+Theorem 28_a (helper theorem):
+For all x,y we have:
+x'y = xy + y
+
 Theorem 29 (Commutative Law of Multiplication): 
 xy = yx. 
 Proof: Fix y, and let \<MM> be the set of all x for which the assertion holds. 
