@@ -564,3 +564,131 @@ then
 xz \<ge> yu. 
 Proof: Obvious if two equality signs hold in the hypothesis; 
 otherwise Theorem 35 does it. 
+
+Definition 7: By a fraction x_1/x_2 (read "x_1 over x_2") is meant the pair of natural numbers x_1, x_2 (in this order).
+
+Definition 8: 
+x_1/x_2 ~ y_1/y_2
+(~ to be read "equivalent") if
+x_1y_2 = y_1x_2.
+
+Theorem 37: x_1/x_2 ~ x_1/x_2.
+Proof: x_1x_2 = x_1x_2.
+
+Theorem 38: If
+x_1/x_2 ~ y_1/y_2
+then
+y_1/y_2 ~ x_1/x_2.
+Proof: x_1y_2 = y_1x_2,
+hence
+y_1x_2 = x_1y_2.
+
+Theorem 39: If
+x_1/x_2 ~ y_1/y_2, y_1/y_2 ~ z_1/z_2
+then
+x_1/x_2 ~ z_1/z_2.
+Proof:
+x_1y_2 = y_1x_2, y_1z_2 = z_1y_2,
+hence
+(x_1y_2)(y_1z_2) = (y_1x_2)(z_1y_2).
+We always have
+(xy)(zu) = x(y(zu)) = x((yz)u) = x(u(yz)) = (xu)(yz)
+  = (xu)(zy);
+therefore
+(x_1y_2)(y_1z_2) = (x_1z_2)(y_1y_2)
+and
+(y_1x_2)(z_1y_2) = (y_1y_2)(z_1x_2) = (z_1x_2)(y_1y_2),
+so that, by the above, we have
+(x_1z_2)(y_1y_2) = (z_1x_2)(y_1y_2),
+x_1z_2 = z_1x_2.
+
+Lemma: By Theorems 37 through 39, all fractions fall into classes, in
+such a way that 
+x_1/x_2 ~ y_1/y_2
+if and only if x_1/x_2 and y_1/y_2 belong to the same class.
+
+Theorem 40: x_1/x_2 ~ (x_1x)/(x_2x).
+Proof: x_1(x_2x) = x_1(xx_2) = (x_1x)x_2.
+
+Definition 9: x_1/x_2 > y_1/y_2
+(> to be read "is greater than") if
+x_1y_2 > y_1x_2.
+
+Definition 10: x_1/x_2 < y_1/y_2
+(< to be read "is less than") if
+x_1y_2 < y_1x_2.
+
+Theorem 41: If x_1/x_2, y_1/y_2 are arbitrary, then one of
+x_1/x_2 ~ y_1/y_2, x_1/x_2 > y_1/y_2, x_1/x_2 < y_1/y_2
+is the case.
+Proof: For our x_1, x_2, y_1, y_2, exactly one of
+x_1y_2 = y_1x_2, x_1y_2 > y_1x_2, x_1y_2 < y_1x_2
+is the case.
+
+Theorem 42: If
+x_1/x_2 > y_1/y_2
+then
+y_1/y_2 < x_1/x_2.
+Proof: If
+x_1y_2 > y_1x_2
+then
+y_1x_2 < x_1y_2.
+
+Theorem 43: If
+x_1/x_2 < y_1/y_2
+then
+y_1/y_2 > x_1/x_2.
+Proof: If
+x_1y_2 < y_1x_2
+then
+y_1x_2 > x_1y_2.
+
+Theorem 44: If
+x_1/x_2 > y_1/y_2, x_1/x_2 ~ z_1/z_2, y_1/y_2 ~ u_1/u_2
+then
+z_1/z_2 > u_1/u_2.
+Preliminary Remark: Thus if a fraction of one class is greater 
+than a fraction of another class, then the same will be true for
+all pairs of representatives of the two classes.
+Proof: y_1u_2 = u_1y_2, z_1x_2 = x_1z_2, x_1y_2 > y_1x_2,
+hence
+(y_1u_2)(z_1x_2) = (u_1y_2)(x_1z_2),
+and therefore, by Theorem 32,
+(y_1x_2)(z_1u_2) = (u_1z_2)(x_1y_2) > (u_1z_2)(y_1x_2),
+so that, by Theorem 33,
+z_1u_2 > u_1z_2.
+
+Theorem 45: If
+x_1/x_2 < y_1/y_2, x_1/x_2 ~ z_1/z_2, y_1/y_2 ~ u_1/u_2
+then
+z_1/z_2 < u_1/u_2.
+Preliminary Remark: Thus if a fraction of one class is less 
+than a fraction of another class, then the same will be true for
+all pairs of representatives of the two classes.
+Proof: By Theorem 43, we have
+y_1/y_2 > x_1/x_2;
+since
+y_1/y_2 ~ u_1/u_2, x_1/x_2 ~ z_1/z_2,
+we then have by Theorem 44 that
+u_1/u_2 > z_1/z_2,
+so that, by Theorem 42,
+z_1/z_2 < u_1/u_2.
+
+Definition 11: x_1/x_2 \<greatersim> y_1/y_2
+means
+x_1/x_2 ~ y_1/y_2 or x_1/x_2 > y_1/y_2.
+(\<greatersim> to be read "greater than or equivalent with.")
+
+Definition 12: x_1/x_2 \<lesssim> y_1/y_2
+means
+x_1/x_2 < y_1/y_2 or x_1/x_2 ~ y_1/y_2.
+(\<lesssim> to be read "less than or equivalent with.")
+
+Theorem 46: If
+x_1/x_2 \<greatersim> y_1/y_2, x_1/x_2 ~ z_1/z_2, y_1/y_2 ~ u_1/u_2
+then
+z_1/z_2 \<greatersim> u_1/u_2.
+Proof: Obious by Theorem 44 if > holds in the hypothesis;
+otherwise, we have
+z_1/z_2 ~ x_1/x_2 ~ y_1/y_2 ~ u_1/u_2.
+
