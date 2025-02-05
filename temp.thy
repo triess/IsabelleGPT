@@ -1335,16 +1335,16 @@ qed
 
 (* Theorem 28 and at the same time Definition 6: To every pair
 of numbers x, y, we may assign in exactly one way a natural
-number, called x ⋅ y ( ⋅ to be read "times"; however, the dot is usually
+number, called x \<cdot> y ( \<cdot> to be read "times"; however, the dot is usually
 omitted), such that
-1) x ⋅ 1 = x             for every x,
-2) x ⋅ y' = x ⋅ y + x    for every x and every y.
-x ⋅ y is called the product of x and y, or the number obtained
+1) x \<cdot> 1 = x             for every x,
+2) x \<cdot> y' = x \<cdot> y + x    for every x and every y.
+x \<cdot> y is called the product of x and y, or the number obtained
 from multiplication of x by y.
 Proof (mutatis mutandis, word for word the same as that
 of Theorem 4): A) We will first show that for each fixed x there
 is at most one possibility of defining xy for all y in such a way that
-x ⋅ 1 = x
+x \<cdot> 1 = x
 and
 xy' = xy + x for every y.
 Let a_y and b_y be defined for all y and be such that
@@ -1364,7 +1364,7 @@ have
 a_y = b_y.
 B) Now we will show that for each x, it is actually possible to
 define xy for all y in such a way that
-x ⋅ 1 = x
+x \<cdot> 1 = x
 and
 xy' = xy + x for every y.
 Let \<MM> be the set of all x for which this is possible (in exactly
@@ -1374,14 +1374,14 @@ x = l,
 the number
 xy = y
 is as required, since
-x ⋅ 1 = 1 = x,
+x \<cdot> 1 = 1 = x,
 xy' = y' = y + 1 = xy + x.
 Hence 1 belongs to \<MM>.
 II) Let x belong to \<MM>, so that there exists an xy for all y. Then
 the number
 x'y = xy + y
 is the required number for x' since
-x' ⋅ 1 = x ⋅ 1 + 1 = x + 1 = x'
+x' \<cdot> 1 = x \<cdot> 1 + 1 = x + 1 = x'
 and
 x'y' = xy' y' = (xy + x) + y' = xy + (x + y') = xy + (x + y)'
 = xy + (x' + y) = xy + (y + x') = (xy + y) + x' = x'y + x'.
@@ -1390,33 +1390,99 @@ Therefore \<MM> contains all x.
 
 *)
 
-definition mult :: "Natnums \<Rightarrow> Natnums \<Rightarrow> Natnums" (infixl "\<^bold>\<cdot>" 70) where
-  "mult \<equiv> THE f. ((\<forall>x. f x I = x) \<and> (\<forall>x y. f x (succ y) = (f x y) \<^bold>+ y ))"
-
-lemma Definition_6:
-  shows "\<forall>x. x \<^bold>\<cdot> I = x"
-  unfolding mult_def 
-  
-
-theorem Theorem_28:
-  shows "\<forall>x y. \<exists>!z. (z = x \<^bold>\<cdot> y)"
+theorem Theorem_28: "\<exists>!f :: Natnums \<Rightarrow> Natnums \<Rightarrow> Natnums. ((\<forall>x. f x I = x)  \<and> (\<forall>x y. f x (succ y) = (f x y) \<^bold>+ x))"
 proof -
-  {
-    fix x
-    have "\<forall>y. \<exists>!z. (z = x \<^bold>\<cdot> y)"
-    proof (induct y)
-      case I
-      then show ?case
-        by (simp add: mult_def)
-    next
-      case (succ y)
-      then obtain z where "z = x \<^bold>\<cdot> y" by auto
-      then have "z \<^bold>+ x = x \<^bold>\<cdot> (succ y)" using mult_def by auto
-      then show ?case
-        by (metis (no_types, lifting) add_commute add_left_cancel less_than_or_equal_def mult_def)
-    qed
-  }
-  thus "\<forall>x y. \<exists>!z. (z = x \<^bold>\<cdot> y)" by auto
+  have "\<forall>x. \<forall>a b :: Natnums \<Rightarrow> Natnums. (a I = x \<and> (\<forall>y. a (succ y) = a y \<^bold>+ x) \<and> b I = x \<and> (\<forall>y. b (succ y) = b y \<^bold>+ x) \<longrightarrow> a = b)"
+  proof -
+    {
+      fix x::Natnums
+      fix a b :: "Natnums \<Rightarrow> Natnums" assume "a I = x \<and> (\<forall>y. a(succ y) = a y \<^bold>+ x) \<and> b I = x \<and> (\<forall>y. b(succ y) = b y \<^bold>+ x)"
+      define M where "M \<equiv> {y. a y = b y}"
+      have "I \<in> M"
+        by (simp add: M_def \<open>a I = x \<and> (\<forall>y. a (succ y) = a y \<^bold>+ x) \<and> b I = x \<and> (\<forall>y. b (succ y) = b y \<^bold>+ x)\<close>) 
+      {
+        fix y::Natnums assume "y \<in> M"
+        from this have "a y = b y" using M_def by blast
+        from this have "a (succ y) = b (succ y)"
+          by (simp add: \<open>a I = x \<and> (\<forall>y. a (succ y) = a y \<^bold>+ x) \<and> b I = x \<and> (\<forall>y. b (succ y) = b y \<^bold>+ x)\<close>) 
+        from this have "succ y \<in> M" by (simp add: M_def)
+      }
+      have "\<forall>x. x \<in> M" using Axiom_5
+        using \<open>I \<in> M\<close> \<open>\<And>y. y \<in> M \<Longrightarrow> succ y \<in> M\<close> by blast 
+      from this have "\<forall>y. a y = b y" using M_def by blast
+    }
+    from this show "\<forall>x. \<forall>a b :: Natnums \<Rightarrow> Natnums. (a I = x \<and> (\<forall>y. a(succ y) = a y \<^bold>+ x) \<and> b I = x \<and> (\<forall>y. b(succ y) = b y \<^bold>+ x) \<longrightarrow> a = b)" by auto
+  qed
+  have "\<forall>x. \<exists>f :: Natnums \<Rightarrow> Natnums. (f I = x  \<and> (\<forall>y. f(succ y) = f y \<^bold>+ x))"
+  proof -
+    define M where "M \<equiv> {x. \<exists>f :: Natnums \<Rightarrow> Natnums. (f I = x  \<and> (\<forall>y. f(succ y) = f y \<^bold>+ x))}"
+    have "I \<in> M"
+      using L1 M_def by auto
+    {
+      fix x::Natnums assume  "x \<in> M"
+      from this obtain f where "f I = x  \<and> (\<forall>y. f(succ y) = f y \<^bold>+ x)" using M_def
+        by blast 
+      define f' where "f' \<equiv> \<lambda>y. f y \<^bold>+ y"
+      have "f' I = f I \<^bold>+ I" by (simp add: f'_def)
+      also have "... = x \<^bold>+ I"
+        by (simp add: \<open>f I = x \<and> (\<forall>y. f (succ y) = f y \<^bold>+ x)\<close>) 
+      also have "... = succ x"
+        by (simp add: L1) 
+      finally have "f' I = succ x" . 
+      have "\<forall>y. f'(succ y) = f' y \<^bold>+ succ x"
+      proof -
+        {
+        fix y::Natnums
+        have "f'(succ y) = (f (succ y) \<^bold>+ succ y)"
+          by (simp add: f'_def)  
+        also have "... = (f y \<^bold>+ x) \<^bold>+ succ y"
+          by (simp add: \<open>f I = x \<and> (\<forall>y. f (succ y) = f y \<^bold>+ x)\<close>) 
+        also have "... = f y \<^bold>+ (x \<^bold>+ succ y)"
+          by (simp add: Theorem_5)
+        also have "... = f y \<^bold>+ succ (x \<^bold>+ y)"
+          by (simp add: L1) 
+        also have "... = f y \<^bold>+ (succ x \<^bold>+ y)"
+          by (simp add: L1 Theorem_6)
+        also have "... = f y \<^bold>+ (y \<^bold>+ succ x)"
+          by (simp add: Theorem_6)
+        also have "... = (f y \<^bold>+ y) \<^bold>+ succ x"
+          by (simp add: Theorem_5)
+        also have "... = f' y \<^bold>+ succ x"
+          by (simp add: f'_def)
+        }
+        show ?thesis
+          using L1 Theorem_5 Theorem_6 \<open>f I = x \<and> (\<forall>y. f (succ y) = f y \<^bold>+ x)\<close> f'_def by force 
+      qed
+      have "succ x \<in> M" using M_def
+        using \<open>\<forall>y. f' (succ y) = f' y \<^bold>+ succ x\<close> \<open>f' I = succ x\<close> by auto 
+    }
+    have "\<forall>x. x \<in> M" using Axiom_5
+      using \<open>I \<in> M\<close> \<open>\<And>x. x \<in> M \<Longrightarrow> succ x \<in> M\<close> by blast 
+    from this show "\<forall>x. \<exists>f :: Natnums \<Rightarrow> Natnums. (f I = x  \<and> (\<forall>y. f(succ y) = f y \<^bold>+ x))"
+      by (simp add: M_def) 
+  qed
+  have "\<exists>f :: Natnums \<Rightarrow> Natnums \<Rightarrow> Natnums. ((\<forall>x. f x I = x)  \<and> (\<forall>x y. f x (succ y) = f x y \<^bold>+ x))"
+    by (meson \<open>\<forall>x. \<exists>f. f I = x \<and> (\<forall>y. f (succ y) = f y \<^bold>+ x)\<close>) 
+  from this show "\<exists>!f :: Natnums \<Rightarrow> Natnums \<Rightarrow> Natnums. ((\<forall>x. f x I = x)  \<and> (\<forall>x y. f x (succ y) = f x y \<^bold>+ x))"
+    using \<open>\<forall>x a b. a I = x \<and> (\<forall>y. a (succ y) = a y \<^bold>+ x) \<and> b I = x \<and> (\<forall>y. b (succ y) = b y \<^bold>+ x) \<longrightarrow> a = b\<close> by auto 
+qed
+
+definition mult :: "Natnums \<Rightarrow> Natnums \<Rightarrow> Natnums" (infixl "\<^bold>\<cdot>" 70) where
+  "mult \<equiv> THE f. ((\<forall>x. f x I = x) \<and> (\<forall>x y. f x (succ y) = (f x y) \<^bold>+ x ))"
+
+lemma L2: "((\<forall>x. mult x I = x) \<and> (\<forall>x y. mult x (succ y) = (mult x y) \<^bold>+ x))"
+proof -
+  from Theorem_28 obtain f where "((\<forall>x. f x I = x) \<and> (\<forall>x y. f x (succ y) = (f x y) \<^bold>+ x))"
+    by auto 
+  define P where "P \<equiv> (\<lambda>f.((\<forall>x. f x I = x) \<and> (\<forall>x y. f x (succ y) = (f x y) \<^bold>+ x)))"
+  from this P_def have "P f"
+    by (simp add: \<open>(\<forall>x. f x I = x) \<and> (\<forall>x y. f x (succ y) = f x y \<^bold>+ x)\<close>)
+  from this Theorem_28 have "\<And>g. P g \<Longrightarrow> g = f"
+    using P_def by auto
+  from this have "P (THE f. P f)"
+    by (metis \<open>P f\<close> theI)
+  then show ?thesis
+    using P_def mult_def by auto 
 qed
 
 end
