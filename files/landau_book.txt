@@ -696,3 +696,67 @@ Proof: Obious by Theorem 44 if > holds in the hypothesis;
 otherwise, we have
 z_1/z_2 ~ x_1/x_2 ~ y_1/y_2 ~ u_1/u_2.
 
+Theorem 47: If
+x_1/x_2 \<lesssim> y_1/y_2, x_1/x_2 ~ z_1/z_2, y_1/y_2 ~ u_1/u_2
+then
+z_1/z_2 \<lesssim> u_1/u_2.
+Proof: Obious by Theorem 45 if < holds in the hypothesis;
+otherwise, we have
+z_1/z_2 ~ x_1/x_2 ~ y_1/y_2 ~ u_1/u_2.
+
+Theorem 48: If
+x_1/x_2 \<greatersim> y_1/y_2
+then
+y_1/y_2 \<lesssim> x_1/x_2.
+Proof: Theorem 38 and Theorem 42.
+
+Theorem 49: If
+x_1/x_2 \<lesssim> y_1/y_2
+then
+y_1/y_2 \<greatersim> x_1/x_2.
+Proof: Theorem 38 and Theorem 43.
+
+Theorem 50 (Transitivity of Ordering): If
+x_1/x_2 < y_1/y_2, y_1/y_2 < z_1/z_2
+then
+x_1/x_2 < z_1/z_2.
+Proof: x_1y_1 < y_1x_2, y_1z_2 < z_1y_2,
+hence
+(x_1y_2)(y_1z_2) < (y_1x_2)(z_1y_2),
+(x_1z_2)(y_1y_2) < (z_1x_2)(y_1y_2),
+x_1z_2 < z_1x_2.
+
+Theorem 51. If
+x_1/x_2 \<lesssim> y_1/y_2, y_1/y_2 < z_1/z_2 or x_1/x_2 < y_1/y_2, y_1/y_2 \<lesssim> z_1/z_2,
+then
+x_1/x_2 < z_1/z_2.
+Proof: Follows from Theorem 45 if an equivalence sign holds
+in the hypothesis; otherwise from Theorem 50.
+
+Theorem 52: If
+x_1/x_2 \<lesssim> y_1/y_2, y_1/y_2 \<lesssim> z_1/z_2
+then
+x_1/x_2 \<lesssim> z_1/z_2.
+Proof: Follows from Theorem 39 if two equivalence sigs
+hold in the hypothesis; otherwise from Theorem 51.
+
+Theorem 53: Given x_1/x_2, there exists a
+z_1/z_2 > x_1/x_2.
+Proof: (x_1 + x_1)x_2 = x_1x_2 + x_1x_2 > x_1x_2,
+(x_1 + x_1)/x_2 > x_1/x_2.
+
+Theorem 54: Given x_1/x_2, there exists a
+z_1/z_2 < x_1/x_2.
+Proof: x_1x_2 < x_1x_2 + x_1x_2 = x_1(x_2 + x_2),
+x_1/(x_2 + x_2) < x_1/x_2.
+
+Theorem 55: If
+x_1/x_2 < y_1/y_2,
+then there exists a z_1/z_2 such that
+x_1/x_2 < z_1/z_2 < y_1/y_2.
+Proof: x_1y_2 < y_1x_2,
+hence
+x_1x_2 + x_1y_2 < x_1x_2 + y_1x_2, x_1y_2 + y_1y_2 < y_1x_2 + y_1y_2,
+x_1(x_2 + y_2) < (x_1 + y_1)x_2, (x_1 + y_1)y_2 < y_1(x_2 + y_2),
+x_1/x_2 < (x_1 + y_1)/(x_2 + y_2) < y_1/y_2.
+
