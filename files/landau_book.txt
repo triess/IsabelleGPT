@@ -760,3 +760,137 @@ x_1x_2 + x_1y_2 < x_1x_2 + y_1x_2, x_1y_2 + y_1y_2 < y_1x_2 + y_1y_2,
 x_1(x_2 + y_2) < (x_1 + y_1)x_2, (x_1 + y_1)y_2 < y_1(x_2 + y_2),
 x_1/x_2 < (x_1 + y_1)/(x_2 + y_2) < y_1/y_2.
 
+Definition 13: By x_1/x_2 + y_1/y_2 (+ to be read "plus") is meant
+the fraction (x_1y_2 + y_1x_2)/(x_2y_2).
+It is called the sum of x_1/x_2 and y_1/y_2, or the fraction obtained by the
+addition of y_1/y_2 to x_1/x_2.
+
+Theorem 56: If
+x_1/x_2 ~ y_1/y_2, z_1/z_2 ~ u_1/u_2
+then
+x_1/x_2 + z_1/z_2 ~ y_1/y_2 + u_1/u_2.
+Preliminary Remark: The class of the sum thus depends only
+on the classes to which the "summands" belong.
+Proof: x_1y_2 = y_1x_2, z_1u_2 = u_1z_2,
+hence
+(x_1y_2)(z_2u_2) = (y_1x_2)(z_2u_2), (z_1u_2)(x_2y_2) = (u_1z_2)(x_2y_2),
+hence
+(x_1z_2)(y_2u_2) = (y_1u_2)(x_2z_2), (z_1x_2)(y_2u_2) = (u_1y_2)(x_2z_2),
+(x_1z_2)(y_2u_2) + (z_1x_2)(y_2u_2) = (y_1u_2)(x_2z_2) + (u_1y_2)(x_2z_2),
+(x_1z_2 + z_1x_2)(y_2u_2) = (y_1u_2 + u_1y_2)(x_2z_2),
+(x_1z_2 + z_1x_2)/(x_2z_2) ~ (y_1u_2 + u_1y_2)/(y_2u_2).
+
+Theorem 57: x_1/x + x_2/x ~ (x_1 + x_2)/x.
+Proof: By Definition 13 and by Theorem 40, we have
+x_1/x + x_2/x ~ (x_1x + x_2x)/(xx) ~ ((x_1 + x_2)x)/(xx) ~ (x_1 + x_2)/x.
+
+Theorem 58 (Commutative Law of Addition):
+x_1/x_2 + y_1/y_2 ~ y_1/y_2 + x_1/x_2.
+Proof: x_1/x_2 + y_1/y_2 ~ (x_1y_2 + y_1x_2)/(x_2y_2) ~ (y_1x_2 + x_1y_2)/(y_2x_2) ~ y_1/y_2 + x_1/x_2.
+
+Theorem 59 (Associative Law of Addition):
+(x_1/x_2 + y_1/y_2) + z_1/z_2 ~ x_1/x_2 + (y_1/y_2 + z_1/z_2).
+Proof: (x_1/x_2 + y_1/y_2) + z_1/z_2 ~ (x_1y_2 + y_1x_2)/(x_2y_2) + z_1/z_2
+~ ((x_1y_2 + y_1x_2)z_2 + z_1(x_2y_2))/((x_2y_2)z_2) ~ (((x_1y_2)z_2 + (y_1x_2)z_2) + z_1(x_2y_2))/((x_2y_2)z_2)
+~ ((x_1(y_2z_2) + (x_2y_1)z_2) + (z_1y_2)x_2)/(x_2(y_2z_2)) ~ ((x_1(y_2z_2) + x_2(y_1z_2)) + (z_1y_2)x_2)/(x_2(y_2z_2))
+~ (x_1(y_2z_2) + ((y_1z_2)x_2 + (z_1y_2)x_2)/(x_2(y_2z_2)) ~ (x_1(y_2z_2) + (y_1z_2 + z_1y_2)x_2)/(x_2(y_2z_2))
+~ x_1/x_2 + (y_1z_2 + z_1y_2)/(y_2z_2) ~ x_1/x_2 + (y_1/y_2 + z_1/z_2).
+
+Theorem 60: x_1/x_2 + y_1/y_2 > x_1/x_2.
+Proof: x_1y_2 + y_1x_2 > x_1y_2,
+(x_1y_2 + y_1x_2)x_2 > (x_1y_2)x_2 = x_1(y_2x_2) = x_1(x_2y_2),
+x_1/x_2 + y_1/y_2 ~ (x_1y_2 + y_1x_2)/(x_2y_2) > x_1/x_2
+
+Theorem 61: If
+x_1/x_2 > y_1/y_2
+then
+x_1/x_2 + z_1/z_2 > y_1/y_2 + z_1/z_2.
+Proof: If
+x_1y_2 > y_1x_2
+then
+(x_1y_2)z_2 > (y_1x_2)z_2.
+Since
+(xy)z = x(yz) = x(zy) = (xz)y,
+we have
+(x_1z_2)y_2 > (y_1z_2)x_2
+and
+(z_1x_2)y_2 = (z_1y_2)x_2,
+so that
+(x_1z_2 + z_1x_2)y_2 > (y_1z_2 + z_1y_2)x_2,
+(x_1z_2 + z_1x_2)(y_2z_2) > (y_1z_2 + z_1y_2)(x_2z_2),
+x_1/x_2 + z_1/z_2 ~ (x_1z_2 + z_1x_2)/(x_2z_2) > (y_1z_2 + z_1y_2)/(y_2z_2) ~ y_1/y_2 + z_1/z_2.
+
+Theorem 62: If
+x_1/x_2 > y_1/y_2 or x_1/x_2 ~ y_1/y_2 or x_1/x_2 < y_1/y_2,
+then
+x_1/x_2 + z_1/z_2 > y_1/y_2 + z_1/z_2 or x_1/x_2 + z_1/z_2 ~ y_1/y_2 + z_1/z_2 or x_1/x_2 + z_1/z_2 < y_1/y_2 + z_1/z_2, respectively.
+Proof: The first part is Theorem 61; the second is contained in Theorem 56; and the third is a consequence of the first, since
+y_1/y_2 > x_1/x_2,
+y_1/y_2 + z_1/z_2 > x_1/x_2 + z_1/z_2,
+x_1/x_2 + z_1/z_2 < y_1/y_2 + z_1/z_2.
+
+Theorem 63: If
+x_1/x_2 + z_1/z_2 > y_1/y_2 + z_1/z_2 or x_1/x_2 + z_1/z_2 ~ y_1/y_2 + z_1/z_2
+or x_1/x_2 + z_1/z_2 < y_1/y_2 + z_1/z_2,
+then
+x_1/x_2 > y_1/y_2 or x_1/x_2 ~ y_1/y_2 or x_1/x_2 < y_1/y_2, respectively.
+Proof: Follows from Theorem 62, since the three cases, in both
+instances, are mutually exclusive and exhaust all possibilities.
+
+Theorem 64: If
+x_1/x_2 > y_1/y_2, z_1/z_2 > u_1/u_2
+then
+x_1/x_2 + z_1/z_2 > y_1/y_2 + u_1/u_2.
+Proof: By Theorem 61, we have
+x_1/x_2 + z_1/z_2 > y_1/y_2 + z_1/z_2
+and
+y_1/y_2 + z_1/z_2 ~ z_1/z_2 + y_1/y_2 > u_1/u_2 + y_1/y_2 ~ y_1/y_2 + u_1/u_2,
+so that
+x_1/x_2 + z_1/z_2 > y_1/y_2 + u_1/u_2.
+
+Theorem 65: If
+x_1/x_2 \<greatersim> y_1/y_2, z_1/z_2 > u_1/u_2 or x_1/x_2 > y_1/y_2, z_1/z_2 \<greatersim> u_1/u_2,
+then
+x_1/x_2 + z_1/z_2 > y_1/y_2 + u_1/u_2.
+Proof: Follows from Theorem 56 and 61 if the equivalence
+sign holds in the hypothesis; otherwise from Theorem 64.
+
+Theorem 66: If
+x_1/x_2 \<greatersim> y_1/y_2, z_1/z_2 \<greatersim> u_1/u_2
+then
+x_1/x_2 + z_1/z_2 \<greatersim> y_1/y_2 + u_1/u_2.
+Proof: Follows from Theorem 56 if two equivalence signs hold
+in the hypothesis; otherwise from Theorem 65.
+
+Theorem 67: If
+x_1/x_2 > y_1/y_2,
+then
+y_1/y_2 + u_1/u_2 ~ x_1/x_2
+has a solution u_1/u_2. If v_1/v_2 and w_1/w_2 are solutions, then
+v_1/v_2 ~ w_1/w_2.
+Preliminary Remark: If
+x_1/x_2 \<lesssim> y_1/y_2,
+there does not exist a solution, by Theorem 60.
+Proof: The second assertion of Theorem 67 is an immediate
+consequence of Theorem 63; for if
+y_1/y_2 + v_1/v_2 ~ y_1/y_2 + w_1/w_2
+then, by Theorem 63,
+v_1/v_2 ~ w_1/w_2.
+The existence of a u_1/u_2 (the first assertion of Theorem 67) is
+proved as follows. We are given that
+x_1y_2 > y_1x_2.
+Determine u from
+x_1y_2 = y_1x_2 + u
+and set
+u_1 = u, u_2 = x_2y_2;
+then u_1/u_2 is a solution, since
+y_1/y_2 + u_1/u_2 ~ y_1/y_2 + u/(x_2y_2) ~ (y_1x_2)/(x_2y_2) + u/(x_2x_2) ~ (y_1x_2 + u)/(x_2y_2) ~ (x_1y_2)/(x_2y_2) ~ x_1/x_2.
+
+Definition 14: The specific u_1/u_2 constructed in the proof of
+Theorem 67 is denoted by x_1/x_2 - y_1/y_2 (- to be read "minus"), and
+is called the difference x_1/x_2 minus y_1/y_2 or the fraction obtained by
+substraction of the fraction y_1/y_2 from the fraction x_1/x_2.
+Thus if
+x_1/x_2 ~ y_1/y_2 + v_1/v_2
+then
+v_1/v_2 ~ x_1/x_2 - y_1/y_2.
