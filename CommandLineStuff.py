@@ -189,7 +189,7 @@ def main_loop(start, shell_process, output_queue):
             status = {}
             Utils.change_namespace(NAMESPACE, "temp", TEMP_THY_FILE)
             startup_done = True
-            next_proof = get_next_proof(1)
+            next_proof = get_next_proof(-1)
         # repeat command line calls and fix isabelle code until it runs fine
         while True:
             command = get_next_command(status)
@@ -211,8 +211,9 @@ def main_loop(start, shell_process, output_queue):
                 #sbs_trans = step_by_step_translation(next_proof)
                 #Utils.write_correction(sbs_trans, TEMP_THY_FILE, keep_theorem=True)
                 print("sledge fail, prompting for alternate translation")
+                help_message = input("Additional info?")
                 relevant_line = Utils.get_line(TEMP_THY_FILE, status.get("error_lines")[0])
-                corr = GPTStuff.chat_call(client, relevant_line, error="sledge")
+                corr = GPTStuff.chat_call(client, relevant_line + "\n" + help_message, error="sledge")
                 Utils.write_correction(corr, TEMP_THY_FILE)
 
 

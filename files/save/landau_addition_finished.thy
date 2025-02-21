@@ -372,11 +372,7 @@ proof -
     then have "succ (x \<^bold>+ y) = succ (y \<^bold>+ x)" by auto
     moreover have "succ (y \<^bold>+ x) = y \<^bold>+ succ x" by (simp add: L1)
   }
-(*By the construction in the proof of Theorem 4, we have 
- x'+y=(x+y)', 
- hence 
- x'+y=y+x' 
- so that x' belongs to M *)
+(*By the construction in the proof of Theorem 4, we have \n x'+y=(x+y)', \n hence \n x'+y=y+x' \n so that x' belongs to M *)
 {
     have eq6_4: "succ x \<^bold>+ y = succ (x \<^bold>+ y)"
     by (metis (mono_tags, lifting) L1 M_def Theorem_5 \<open>I \<in> M\<close> mem_Collect_eq)
@@ -391,7 +387,6 @@ from Axiom_5 have "\<forall>x. x \<in> M" using \<open>I \<in> M\<close>
   thus "\<forall>x y. x \<^bold>+y=y \<^bold>+x"
     by simp
 qed
-
 (* Theorem 7: y \<noteq> x + y.
 Proof: Fix x, and let \<MM> be the set of all y for which the assertion holds.
 I) 1 \<noteq> x',
@@ -1404,16 +1399,16 @@ proof -
       fix a b :: "Natnums \<Rightarrow> Natnums" assume "a I = x \<and> (\<forall>y. a(succ y) = a y \<^bold>+ x) \<and> b I = x \<and> (\<forall>y. b(succ y) = b y \<^bold>+ x)"
       define M where "M \<equiv> {y. a y = b y}"
       have "I \<in> M"
-        by (simp add: M_def \<open>a I = x \<and> (\<forall>y. a (succ y) = a y \<^bold>+ x) \<and> b I = x \<and> (\<forall>y. b (succ y) = b y \<^bold>+ x)\<close>) 
+        by (simp add: M_def \<open>a I = x \<and> (\<forall>y. a (succ y) = a y \<^bold>+ x) \<and> b I = x \<and> (\<forall>y. b (succ y) = b y \<^bold>+ x)\<close>)
       {
         fix y::Natnums assume "y \<in> M"
         from this have "a y = b y" using M_def by blast
         from this have "a (succ y) = b (succ y)"
-          by (simp add: \<open>a I = x \<and> (\<forall>y. a (succ y) = a y \<^bold>+ x) \<and> b I = x \<and> (\<forall>y. b (succ y) = b y \<^bold>+ x)\<close>) 
+          by (simp add: \<open>a I = x \<and> (\<forall>y. a (succ y) = a y \<^bold>+ x) \<and> b I = x \<and> (\<forall>y. b (succ y) = b y \<^bold>+ x)\<close>)
         from this have "succ y \<in> M" by (simp add: M_def)
       }
       have "\<forall>x. x \<in> M" using Axiom_5
-        using \<open>I \<in> M\<close> \<open>\<And>y. y \<in> M \<Longrightarrow> succ y \<in> M\<close> by blast 
+        using \<open>I \<in> M\<close> \<open>\<And>y. y \<in> M \<Longrightarrow> succ y \<in> M\<close> by blast
       from this have "\<forall>y. a y = b y" using M_def by blast
     }
     from this show "\<forall>x. \<forall>a b :: Natnums \<Rightarrow> Natnums. (a I = x \<and> (\<forall>y. a(succ y) = a y \<^bold>+ x) \<and> b I = x \<and> (\<forall>y. b(succ y) = b y \<^bold>+ x) \<longrightarrow> a = b)" by auto
@@ -1426,26 +1421,26 @@ proof -
     {
       fix x::Natnums assume  "x \<in> M"
       from this obtain f where "f I = x  \<and> (\<forall>y. f(succ y) = f y \<^bold>+ x)" using M_def
-        by blast 
+        by blast
       define f' where "f' \<equiv> \<lambda>y. f y \<^bold>+ y"
       have "f' I = f I \<^bold>+ I" by (simp add: f'_def)
       also have "... = x \<^bold>+ I"
-        by (simp add: \<open>f I = x \<and> (\<forall>y. f (succ y) = f y \<^bold>+ x)\<close>) 
+        by (simp add: \<open>f I = x \<and> (\<forall>y. f (succ y) = f y \<^bold>+ x)\<close>)
       also have "... = succ x"
-        by (simp add: L1) 
-      finally have "f' I = succ x" . 
+        by (simp add: L1)
+      finally have "f' I = succ x" .
       have "\<forall>y. f'(succ y) = f' y \<^bold>+ succ x"
       proof -
         {
         fix y::Natnums
         have "f'(succ y) = (f (succ y) \<^bold>+ succ y)"
-          by (simp add: f'_def)  
+          by (simp add: f'_def)
         also have "... = (f y \<^bold>+ x) \<^bold>+ succ y"
-          by (simp add: \<open>f I = x \<and> (\<forall>y. f (succ y) = f y \<^bold>+ x)\<close>) 
+          by (simp add: \<open>f I = x \<and> (\<forall>y. f (succ y) = f y \<^bold>+ x)\<close>)
         also have "... = f y \<^bold>+ (x \<^bold>+ succ y)"
           by (simp add: Theorem_5)
         also have "... = f y \<^bold>+ succ (x \<^bold>+ y)"
-          by (simp add: L1) 
+          by (simp add: L1)
         also have "... = f y \<^bold>+ (succ x \<^bold>+ y)"
           by (simp add: L1 Theorem_6)
         also have "... = f y \<^bold>+ (y \<^bold>+ succ x)"
@@ -1456,20 +1451,20 @@ proof -
           by (simp add: f'_def)
         }
         show ?thesis
-          using L1 Theorem_5 Theorem_6 \<open>f I = x \<and> (\<forall>y. f (succ y) = f y \<^bold>+ x)\<close> f'_def by force 
+          using L1 Theorem_5 Theorem_6 \<open>f I = x \<and> (\<forall>y. f (succ y) = f y \<^bold>+ x)\<close> f'_def by force
       qed
       have "succ x \<in> M" using M_def
-        using \<open>\<forall>y. f' (succ y) = f' y \<^bold>+ succ x\<close> \<open>f' I = succ x\<close> by auto 
+        using \<open>\<forall>y. f' (succ y) = f' y \<^bold>+ succ x\<close> \<open>f' I = succ x\<close> by auto
     }
     have "\<forall>x. x \<in> M" using Axiom_5
-      using \<open>I \<in> M\<close> \<open>\<And>x. x \<in> M \<Longrightarrow> succ x \<in> M\<close> by blast 
+      using \<open>I \<in> M\<close> \<open>\<And>x. x \<in> M \<Longrightarrow> succ x \<in> M\<close> by blast
     from this show "\<forall>x. \<exists>f :: Natnums \<Rightarrow> Natnums. (f I = x  \<and> (\<forall>y. f(succ y) = f y \<^bold>+ x))"
-      by (simp add: M_def) 
+      by (simp add: M_def)
   qed
   have "\<exists>f :: Natnums \<Rightarrow> Natnums \<Rightarrow> Natnums. ((\<forall>x. f x I = x)  \<and> (\<forall>x y. f x (succ y) = f x y \<^bold>+ x))"
-    by (meson \<open>\<forall>x. \<exists>f. f I = x \<and> (\<forall>y. f (succ y) = f y \<^bold>+ x)\<close>) 
+    by (meson \<open>\<forall>x. \<exists>f. f I = x \<and> (\<forall>y. f (succ y) = f y \<^bold>+ x)\<close>)
   from this show "\<exists>!f :: Natnums \<Rightarrow> Natnums \<Rightarrow> Natnums. ((\<forall>x. f x I = x)  \<and> (\<forall>x y. f x (succ y) = f x y \<^bold>+ x))"
-    using \<open>\<forall>x a b. a I = x \<and> (\<forall>y. a (succ y) = a y \<^bold>+ x) \<and> b I = x \<and> (\<forall>y. b (succ y) = b y \<^bold>+ x) \<longrightarrow> a = b\<close> by auto 
+    using \<open>\<forall>x a b. a I = x \<and> (\<forall>y. a (succ y) = a y \<^bold>+ x) \<and> b I = x \<and> (\<forall>y. b (succ y) = b y \<^bold>+ x) \<longrightarrow> a = b\<close> by auto
 qed
 
 definition mult :: "Natnums \<Rightarrow> Natnums \<Rightarrow> Natnums" (infixl "\<^bold>\<cdot>" 70) where
@@ -1478,7 +1473,7 @@ definition mult :: "Natnums \<Rightarrow> Natnums \<Rightarrow> Natnums" (infixl
 lemma L2: "((\<forall>x. mult x I = x) \<and> (\<forall>x y. mult x (succ y) = (mult x y) \<^bold>+ x))"
 proof -
   from Theorem_28 obtain f where "((\<forall>x. f x I = x) \<and> (\<forall>x y. f x (succ y) = (f x y) \<^bold>+ x))"
-    by auto 
+    by auto
   define P where "P \<equiv> (\<lambda>f.((\<forall>x. f x I = x) \<and> (\<forall>x y. f x (succ y) = (f x y) \<^bold>+ x)))"
   from this P_def have "P f"
     by (simp add: \<open>(\<forall>x. f x I = x) \<and> (\<forall>x y. f x (succ y) = f x y \<^bold>+ x)\<close>)
@@ -1487,7 +1482,7 @@ proof -
   from this have "P (THE f. P f)"
     by (metis \<open>P f\<close> theI)
   then show ?thesis
-    using P_def mult_def by auto 
+    using P_def mult_def by auto
 qed
 
 lemma L3: "\<forall>x. I \<^bold>\<cdot> x = x"
@@ -1498,49 +1493,10 @@ proof -
   {
     assume "y\<in>M"
     have "succ y \<in>M"
-      using L1 L2 M_def \<open>y \<in> M\<close> by fastforce 
+      using L1 L2 M_def \<open>y \<in> M\<close> by fastforce
   }
   show ?thesis
     by (smt (z3) Axiom_5 L1 L2 M_def mem_Collect_eq)
-qed
-
-
-(* Theorem 28_a (helper theorem):
-For all x,y we have:
-x'y = xy + y
-
- *)
-theorem Theorem_28_a: "\<forall>x y. (succ x) \<^bold>\<cdot> y = (x \<^bold>\<cdot> y) \<^bold>+ y"
-proof -
-  {
-    fix x::Natnums
-    define M where "M\<equiv>{y. (succ x) \<^bold>\<cdot> y = (x \<^bold>\<cdot> y) \<^bold>+ y}"
-    have "(succ x) \<^bold>\<cdot> I = (x \<^bold>\<cdot> I) \<^bold>+ I"
-      by (simp add: L1 L2)
-    have "I\<in>M"
-      using M_def \<open>succ x \<^bold>\<cdot> I = x \<^bold>\<cdot> I \<^bold>+ I\<close> by blast 
-    moreover
-    {
-      fix y::Natnums
-      assume "y\<in>M"
-      have "(succ x) \<^bold>\<cdot> y = (x \<^bold>\<cdot> y) \<^bold>+ y"
-        using M_def \<open>y \<in> M\<close> by blast 
-      then have "(succ x) \<^bold>\<cdot> (succ y) = ((x \<^bold>\<cdot> (succ y)) \<^bold>+ (succ y))"
-        by (smt (verit, del_insts) L1 L2 Theorem_5 Theorem_6) 
-      also have "... = ((x \<^bold>\<cdot> y) \<^bold>+ x) \<^bold>+ (succ y)"
-        by (simp add: L2)
-      also have "... = ((x \<^bold>\<cdot> y) \<^bold>+ (succ y)) \<^bold>+ x"
-        using Theorem_5 Theorem_6 by auto 
-      also have "... = ((x \<^bold>\<cdot> y) \<^bold>+ y) \<^bold>+ (succ x)"
-        using L2 \<open>succ x \<^bold>\<cdot> y = x \<^bold>\<cdot> y \<^bold>+ y\<close> calculation by presburger 
-      finally have "(succ x) \<^bold>\<cdot> (succ y) = ((x \<^bold>\<cdot> y) \<^bold>+ y) \<^bold>+ (succ x)" .
-      then have "succ y \<in> M"
-        using M_def \<open>succ x \<^bold>\<cdot> succ y = x \<^bold>\<cdot> succ y \<^bold>+ succ y\<close> by blast 
-    }
-    ultimately have "\<forall>y. (succ x) \<^bold>\<cdot> y = (x \<^bold>\<cdot> y) \<^bold>+ y"
-      by (metis (mono_tags, lifting) Axiom_5 M_def mem_Collect_eq) 
-  }
-  thus "\<forall>x y. (succ x) \<^bold>\<cdot> y = (x \<^bold>\<cdot> y) \<^bold>+ y" by auto
 qed
 
 (* Theorem 29 (Commutative Law of Multiplication):
@@ -1589,8 +1545,7 @@ proof -
       then have "y \<^bold>\<cdot> succ x = y \<^bold>\<cdot> x \<^bold>+ y" using L2 by auto
       then have "y \<^bold>\<cdot> succ x = x \<^bold>\<cdot> y \<^bold>+ y" using \<open>x \<^bold>\<cdot> y = y \<^bold>\<cdot> x\<close> by auto
       have "(succ x) \<^bold>\<cdot> y = (x \<^bold>\<cdot> y) \<^bold>+ y"
-        using L2
-        using Theorem_28_a by blast 
+        using L2 sorry
       then have "succ x \<^bold>\<cdot> y = y \<^bold>\<cdot> succ x" using \<open>y \<^bold>\<cdot> succ x = x \<^bold>\<cdot> y \<^bold>+ y\<close> by auto
       then have "succ x \<in> M" using M_def by auto
     }
@@ -1943,853 +1898,4 @@ proof -
   }
   thus ?thesis by auto
 qed
-
-
-(* Definition 7: By a fraction x_1/x_2 (read "x_1 over x_2") is meant the pair of natural numbers x_1, x_2 (in this order).
-
- *)
-definition fraction :: "Natnums \<Rightarrow> Natnums \<Rightarrow> Natnums \<times> Natnums" 
-  where "fraction x1 x2 = (x1, x2)"
-
-(* Definition 8:
-x_1/x_2 ~ y_1/y_2
-(~ to be read "equivalent") if
-x_1y_2 = y_1x_2.
-
- *)
-definition equivalent_fraction :: "Natnums \<times> Natnums \<Rightarrow> Natnums \<times> Natnums \<Rightarrow> bool"
-  where "equivalent_fraction f1 f2 \<longleftrightarrow> (let (x1, x2) = f1; (y1, y2) = f2 in x1 \<^bold>\<cdot> y2 = y1 \<^bold>\<cdot> x2)"
-
-(* Theorem 37: x_1/x_2 ~ x_1/x_2.
-Proof: x_1x_2 = x_1x_2.
-
- *)
-theorem Theorem_37:
-  shows "equivalent_fraction (x1, x2) (x1, x2)"
-proof -
-  have "x1 \<^bold>\<cdot> x2 = x1 \<^bold>\<cdot> x2"
-    by auto
-  thus ?thesis
-    using equivalent_fraction_def by auto
-qed
-
-(* Theorem 38: If
-x_1/x_2 ~ y_1/y_2
-then
-y_1/y_2 ~ x_1/x_2.
-Proof: x_1y_2 = y_1x_2,
-hence
-y_1x_2 = x_1y_2.
-
- *)
-theorem Theorem_38:
-  assumes "equivalent_fraction (x1, x2) (y1, y2)"
-  shows "equivalent_fraction (y1, y2) (x1, x2)"
-proof -
-  from assms have "x1 \<^bold>\<cdot> y2 = y1 \<^bold>\<cdot> x2"
-    using equivalent_fraction_def by auto
-  hence "y1 \<^bold>\<cdot> x2 = x1 \<^bold>\<cdot> y2"
-    by auto
-  thus ?thesis
-    using equivalent_fraction_def by auto
-qed
-
-(* Theorem 39: If
-x_1/x_2 ~ y_1/y_2, y_1/y_2 ~ z_1/z_2
-then
-x_1/x_2 ~ z_1/z_2.
-Proof:
-x_1y_2 = y_1x_2, y_1z_2 = z_1y_2,
-hence
-(x_1y_2)(y_1z_2) = (y_1x_2)(z_1y_2).
-We always have
-(xy)(zu) = x(y(zu)) = x((yz)u) = x(u(yz)) = (xu)(yz)
-= (xu)(zy);
-therefore
-(x_1y_2)(y_1z_2) = (x_1z_2)(y_1y_2)
-and
-(y_1x_2)(z_1y_2) = (y_1y_2)(z_1x_2) = (z_1x_2)(y_1y_2),
-so that, by the above, we have
-(x_1z_2)(y_1y_2) = (z_1x_2)(y_1y_2),
-x_1z_2 = z_1x_2.
-
-Lemma: By Theorems 37 through 39, all fractions fall into classes, in
-such a way that
-x_1/x_2 ~ y_1/y_2
-if and only if x_1/x_2 and y_1/y_2 belong to the same class.
-
- *)
-theorem Theorem_39:
-  assumes "equivalent_fraction (x1, x2) (y1, y2)" 
-      and "equivalent_fraction (y1, y2) (z1, z2)"
-  shows "equivalent_fraction (x1, x2) (z1, z2)"
-proof -
-  from assms have "x1 \<^bold>\<cdot> y2 = y1 \<^bold>\<cdot> x2" 
-    and "y1 \<^bold>\<cdot> z2 = z1 \<^bold>\<cdot> y2"
-    using equivalent_fraction_def by auto
-  hence "(x1 \<^bold>\<cdot> y2) \<^bold>\<cdot> (y1 \<^bold>\<cdot> z2) = (y1 \<^bold>\<cdot> x2) \<^bold>\<cdot> (z1 \<^bold>\<cdot> y2)"
-    by auto
-  also have "(x1 \<^bold>\<cdot> y2) \<^bold>\<cdot> (y1 \<^bold>\<cdot> z2) = (x1 \<^bold>\<cdot> z2) \<^bold>\<cdot> (y1 \<^bold>\<cdot> y2)"
-    using Theorem_29 Theorem_31 by presburger 
-  also have "(y1 \<^bold>\<cdot> x2) \<^bold>\<cdot> (z1 \<^bold>\<cdot> y2) = (z1 \<^bold>\<cdot> x2) \<^bold>\<cdot> (y1 \<^bold>\<cdot> y2)"
-    using Theorem_29 Theorem_31 by presburger 
-  finally have "(x1 \<^bold>\<cdot> z2) \<^bold>\<cdot> (y1 \<^bold>\<cdot> y2) = (z1 \<^bold>\<cdot> x2) \<^bold>\<cdot> (y1 \<^bold>\<cdot> y2)"
-    by auto
-  hence "x1 \<^bold>\<cdot> z2 = z1 \<^bold>\<cdot> x2"
-    using Theorem_33 by blast 
-  thus ?thesis
-    using equivalent_fraction_def by auto
-qed
-
-lemma fractions_equivalence_classes:
-  shows "equivalent_fraction (x1, x2) (y1, y2) \<longleftrightarrow> (\<exists>c. equivalent_fraction (x1, x2) c \<and> equivalent_fraction (y1, y2) c)"
-proof
-  assume "equivalent_fraction (x1, x2) (y1, y2)"
-  then show "\<exists>c. equivalent_fraction (x1, x2) c \<and> equivalent_fraction (y1, y2) c"
-    using Theorem_37 by auto
-next
-  assume "\<exists>c. equivalent_fraction (x1, x2) c \<and> equivalent_fraction (y1, y2) c"
-  then obtain c where "equivalent_fraction (x1, x2) c" and "equivalent_fraction (y1, y2) c"
-    by auto
-  thus "equivalent_fraction (x1, x2) (y1, y2)"
-    using Theorem_38 Theorem_39
-    by (metis prod.collapse) 
-qed
-
-
-(* Theorem 40: x_1/x_2 ~ (x_1x)/(x_2x).
-Proof: x_1(x_2x) = x_1(xx_2) = (x_1x)x_2.
-
- *)
-theorem Theorem_40:
-  shows "equivalent_fraction (x1, x2) (x1 \<^bold>\<cdot> x, x2 \<^bold>\<cdot> x)"
-proof -
-  have "x1 \<^bold>\<cdot> (x2 \<^bold>\<cdot> x) = x1 \<^bold>\<cdot> (x \<^bold>\<cdot> x2)"
-    using Theorem_31
-    by (simp add: Theorem_29) 
-  also have "... = (x1 \<^bold>\<cdot> x) \<^bold>\<cdot> x2"
-    using Theorem_29
-    using Theorem_31 by presburger 
-  finally show ?thesis
-    using equivalent_fraction_def by auto
-qed
-
-(* Definition 9: x_1/x_2 > y_1/y_2
-(> to be read "is greater than") if
-x_1y_2 > y_1x_2.
-
- *)
-definition greater_fraction :: "Natnums \<times> Natnums \<Rightarrow> Natnums \<times> Natnums \<Rightarrow> bool"
-  where "greater_fraction f1 f2 \<longleftrightarrow> (let (x1, x2) = f1; (y1, y2) = f2 in x1 \<^bold>\<cdot> y2 \<^bold>> y1 \<^bold>\<cdot> x2)"
-
-
-
-(* Definition 10: x_1/x_2 < y_1/y_2
-(< to be read "is less than") if
-x_1y_2 < y_1x_2.
-
- *)
-definition less_fraction :: "Natnums \<times> Natnums \<Rightarrow> Natnums \<times> Natnums \<Rightarrow> bool"
-  where "less_fraction f1 f2 \<longleftrightarrow> (let (x1, x2) = f1; (y1, y2) = f2 in x1 \<^bold>\<cdot> y2 \<^bold>< y1 \<^bold>\<cdot> x2)"
-
-(* Theorem 41: If x_1/x_2, y_1/y_2 are arbitrary, then one of
-x_1/x_2 ~ y_1/y_2, x_1/x_2 > y_1/y_2, x_1/x_2 < y_1/y_2
-is the case.
-Proof: For our x_1, x_2, y_1, y_2, exactly one of
-x_1y_2 = y_1x_2, x_1y_2 > y_1x_2, x_1y_2 < y_1x_2
-is the case.
-
- *)
-theorem Theorem_41:
-  shows "\<forall>x1 x2 y1 y2. equivalent_fraction (x1, x2) (y1, y2) \<or> greater_fraction (x1, x2) (y1, y2) \<or> less_fraction (x1, x2) (y1, y2)"
-proof (intro allI)
-  fix x1 x2 y1 y2
-  have "x1 \<^bold>\<cdot> y2 = y1 \<^bold>\<cdot> x2 \<or> x1 \<^bold>\<cdot> y2 \<^bold>> y1 \<^bold>\<cdot> x2 \<or> x1 \<^bold>\<cdot> y2 \<^bold>< y1 \<^bold>\<cdot> x2"
-    using Theorem_10 by blast 
-  moreover have "\<not>(x1 \<^bold>\<cdot> y2 = y1 \<^bold>\<cdot> x2 \<and> x1 \<^bold>\<cdot> y2 \<^bold>> y1 \<^bold>\<cdot> x2) \<and> \<not>(x1 \<^bold>\<cdot> y2 = y1 \<^bold>\<cdot> x2 \<and> x1 \<^bold>\<cdot> y2 \<^bold>< y1 \<^bold>\<cdot> x2) \<and> \<not>(x1 \<^bold>\<cdot> y2 \<^bold>> y1 \<^bold>\<cdot> x2 \<and> x1 \<^bold>\<cdot> y2 \<^bold>< y1 \<^bold>\<cdot> x2)"
-    by (metis Theorem_11 Theorem_15 Theorem_6 Theorem_7 Landau_GPT4.less_than_def) 
-  ultimately show "equivalent_fraction (x1, x2) (y1, y2) \<or> greater_fraction (x1, x2) (y1, y2) \<or> less_fraction (x1, x2) (y1, y2)"
-    using equivalent_fraction_def greater_fraction_def less_fraction_def by auto
-qed
-
-(* Theorem 42: If
-x_1/x_2 > y_1/y_2
-then
-y_1/y_2 < x_1/x_2.
-Proof: If
-x_1y_2 > y_1x_2
-then
-y_1x_2 < x_1y_2.
-
- *)
-theorem Theorem_42:
-  assumes "greater_fraction (x1, x2) (y1, y2)"
-  shows "less_fraction (y1, y2) (x1, x2)"
-proof -
-  from assms have "x1 \<^bold>\<cdot> y2 \<^bold>> y1 \<^bold>\<cdot> x2"
-    using greater_fraction_def by auto
-  hence "y1 \<^bold>\<cdot> x2 \<^bold>< x1 \<^bold>\<cdot> y2"
-    using Theorem_15
-    using Theorem_11 by blast 
-  thus ?thesis
-    using less_fraction_def by auto
-qed
-
-
-(* Theorem 43: If
-x_1/x_2 < y_1/y_2
-then
-y_1/y_2 > x_1/x_2.
-Proof: If
-x_1y_2 < y_1x_2
-then
-y_1x_2 > x_1y_2.
-
- *)
-theorem Theorem_43:
-  assumes "less_fraction (x1, x2) (y1, y2)"
-  shows "greater_fraction (y1, y2) (x1, x2)"
-proof -
-  from assms have "x1 \<^bold>\<cdot> y2 \<^bold>< y1 \<^bold>\<cdot> x2"
-    using less_fraction_def by auto
-  hence "y1 \<^bold>\<cdot> x2 \<^bold>> x1 \<^bold>\<cdot> y2"
-    using Theorem_12 by blast 
-  thus ?thesis
-    using greater_fraction_def by auto
-qed
-
-
-(* Theorem 44: If
-x_1/x_2 > y_1/y_2, x_1/x_2 ~ z_1/z_2, y_1/y_2 ~ u_1/u_2
-then
-z_1/z_2 > u_1/u_2.
-Preliminary Remark: Thus if a fraction of one class is greater
-than a fraction of another class, then the same will be true for
-all pairs of representatives of the two classes.
-Proof: y_1u_2 = u_1y_2, z_1x_2 = x_1z_2, x_1y_2 > y_1x_2,
-hence
-(y_1u_2)(z_1x_2) = (u_1y_2)(x_1z_2),
-and therefore, by Theorem 32,
-(y_1x_2)(z_1u_2) = (u_1z_2)(x_1y_2) > (u_1z_2)(y_1x_2),
-so that, by Theorem 33,
-z_1u_2 > u_1z_2.
-
- *)
-theorem Theorem_44:
-  assumes "greater_fraction (x1, x2) (y1, y2)"
-    and "equivalent_fraction (x1, x2) (z1, z2)"
-    and "equivalent_fraction (y1, y2) (u1, u2)"
-  shows "greater_fraction (z1, z2) (u1, u2)"
-proof -
-  from assms(2) have "z1 \<^bold>\<cdot> x2 = x1 \<^bold>\<cdot> z2"
-    using equivalent_fraction_def by auto
-  moreover from assms(3) have "y1 \<^bold>\<cdot> u2 = u1 \<^bold>\<cdot> y2"
-    using equivalent_fraction_def by auto
-  moreover from assms(1) have "x1 \<^bold>\<cdot> y2 \<^bold>> y1 \<^bold>\<cdot> x2"
-    using greater_fraction_def by auto
-  ultimately have "(y1 \<^bold>\<cdot> u2) \<^bold>\<cdot> (z1 \<^bold>\<cdot> x2) = (u1 \<^bold>\<cdot> y2) \<^bold>\<cdot> (x1 \<^bold>\<cdot> z2)"
-    by (simp add: mult.assoc)
-  hence "(y1 \<^bold>\<cdot> x2) \<^bold>\<cdot> (z1 \<^bold>\<cdot> u2) = (u1 \<^bold>\<cdot> z2) \<^bold>\<cdot> (x1 \<^bold>\<cdot> y2)"
-    using Theorem_32
-    by (metis Theorem_29 Theorem_31) 
-  moreover have "(u1 \<^bold>\<cdot> z2) \<^bold>\<cdot> (x1 \<^bold>\<cdot> y2) \<^bold>> (u1 \<^bold>\<cdot> z2) \<^bold>\<cdot> (y1 \<^bold>\<cdot> x2)"
-    using Theorem_35 \<open>x1 \<^bold>\<cdot> y2 \<^bold>> y1 \<^bold>\<cdot> x2\<close> greater_than_or_equal_def by presburger 
-  ultimately show "greater_fraction (z1, z2) (u1, u2)"
-    using greater_fraction_def
-    by (metis (no_types, lifting) Theorem_29 Theorem_33 old.prod.case) 
-qed
-
-(* Theorem 45: If
-x_1/x_2 < y_1/y_2, x_1/x_2 ~ z_1/z_2, y_1/y_2 ~ u_1/u_2
-then
-z_1/z_2 < u_1/u_2.
-Preliminary Remark: Thus if a fraction of one class is less
-than a fraction of another class, then the same will be true for
-all pairs of representatives of the two classes.
-Proof: By Theorem 43, we have
-y_1/y_2 > x_1/x_2;
-since
-y_1/y_2 ~ u_1/u_2, x_1/x_2 ~ z_1/z_2,
-we then have by Theorem 44 that
-u_1/u_2 > z_1/z_2,
-so that, by Theorem 42,
-z_1/z_2 < u_1/u_2.
-
- *)
-theorem Theorem_45:
-  assumes "less_fraction (x1, x2) (y1, y2)"
-    and "equivalent_fraction (x1, x2) (z1, z2)"
-    and "equivalent_fraction (y1, y2) (u1, u2)"
-  shows "less_fraction (z1, z2) (u1, u2)"
-proof -
-  from assms(1) have "greater_fraction (y1, y2) (x1, x2)"
-    using Theorem_43 by auto
-  moreover from assms(3) and this have "greater_fraction (u1, u2) (x1, x2)"
-    using Theorem_44 assms(2)
-    using Theorem_37 by blast 
-  hence "greater_fraction (u1, u2) (z1, z2)"
-    using Theorem_44 assms(2)
-    using assms(3) calculation by blast 
-  thus "less_fraction (z1, z2) (u1, u2)"
-    using Theorem_42 by auto
-qed
-
-
-(* Definition 11: x_1/x_2 \<greatersim> y_1/y_2
-means
-x_1/x_2 ~ y_1/y_2 or x_1/x_2 > y_1/y_2.
-(\<greatersim> to be read "greater than or equivalent with.")
-
- *)
-definition greater_or_equivalent_fraction :: "Natnums \<times> Natnums \<Rightarrow> Natnums \<times> Natnums \<Rightarrow> bool" (infix "\<greatersim>" 50) where
-  "greater_or_equivalent_fraction xy1 xy2 \<equiv> equivalent_fraction xy1 xy2 \<or> greater_fraction xy1 xy2"
-
-(* Definition 12: x_1/x_2 \<lesssim> y_1/y_2
-means
-x_1/x_2 < y_1/y_2 or x_1/x_2 ~ y_1/y_2.
-(\<lesssim> to be read "less than or equivalent with.")
-
- *)
-definition less_or_equivalent_fraction :: "Natnums \<times> Natnums \<Rightarrow> Natnums \<times> Natnums \<Rightarrow> bool" (infix "\<lesssim>" 50) where
-  "less_or_equivalent_fraction xy1 xy2 \<equiv> less_fraction xy1 xy2 \<or> equivalent_fraction xy1 xy2"
-
-
-(* Theorem 46: If
-x_1/x_2 \<greatersim> y_1/y_2, x_1/x_2 ~ z_1/z_2, y_1/y_2 ~ u_1/u_2
-then
-z_1/z_2 \<greatersim> u_1/u_2.
-Proof: Obious by Theorem 44 if > holds in the hypothesis;
-otherwise, we have
-z_1/z_2 ~ x_1/x_2 ~ y_1/y_2 ~ u_1/u_2.
-
- *)
-theorem Theorem_46:
-  assumes "greater_or_equivalent_fraction (x1, x2) (y1, y2)"
-    and "equivalent_fraction (x1, x2) (z1, z2)"
-    and "equivalent_fraction (y1, y2) (u1, u2)"
-  shows "greater_or_equivalent_fraction (z1, z2) (u1, u2)"
-proof (cases "greater_fraction (x1, x2) (y1, y2)")
-  case True
-  then have "greater_fraction (z1, z2) (u1, u2)"
-    using Theorem_44 assms(2) assms(3) by blast
-  thus ?thesis
-    using greater_or_equivalent_fraction_def by auto
-next
-  case False
-  then have "equivalent_fraction (x1, x2) (y1, y2)"
-    using assms(1) greater_or_equivalent_fraction_def by auto
-  hence "equivalent_fraction (z1, z2) (u1, u2)"
-    using assms(2) assms(3)
-    by (meson Theorem_38 Theorem_39) 
-  thus ?thesis
-    using greater_or_equivalent_fraction_def by auto
-qed
-
-(* Theorem 47: If
-x_1/x_2 \<lesssim> y_1/y_2, x_1/x_2 ~ z_1/z_2, y_1/y_2 ~ u_1/u_2
-then
-z_1/z_2 \<lesssim> u_1/u_2.
-Proof: Obious by Theorem 45 if < holds in the hypothesis;
-otherwise, we have
-z_1/z_2 ~ x_1/x_2 ~ y_1/y_2 ~ u_1/u_2.
-
- *)
-theorem Theorem_47:
-  assumes "less_or_equivalent_fraction (x1, x2) (y1, y2)"
-    and "equivalent_fraction (x1, x2) (z1, z2)"
-    and "equivalent_fraction (y1, y2) (u1, u2)"
-  shows "less_or_equivalent_fraction (z1, z2) (u1, u2)"
-proof (cases "less_fraction (x1, x2) (y1, y2)")
-  case True
-  then have "less_fraction (z1, z2) (u1, u2)"
-    using Theorem_45 assms(2) assms(3) by blast
-  thus ?thesis
-    using less_or_equivalent_fraction_def by auto
-next
-  case False
-  then have "equivalent_fraction (x1, x2) (y1, y2)"
-    using assms(1) less_or_equivalent_fraction_def by auto
-  hence "equivalent_fraction (z1, z2) (u1, u2)"
-    using assms(2) assms(3)
-    by (meson Theorem_38 Theorem_39)
-  thus ?thesis
-    using less_or_equivalent_fraction_def by auto
-qed
-
-(* Theorem 48: If
-x_1/x_2 \<greatersim> y_1/y_2
-then
-y_1/y_2 \<lesssim> x_1/x_2.
-Proof: Theorem 38 and Theorem 42.
-
- *)
-theorem Theorem_48:
-  assumes "greater_or_equivalent_fraction (x1, x2) (y1, y2)"
-  shows "less_or_equivalent_fraction (y1, y2) (x1, x2)"
-proof (cases "greater_fraction (x1, x2) (y1, y2)")
-  case True
-  then have "less_fraction (y1, y2) (x1, x2)"
-    using Theorem_42 by auto
-  thus ?thesis
-    using less_or_equivalent_fraction_def by auto
-next
-  case False
-  then have "equivalent_fraction (x1, x2) (y1, y2)"
-    using assms greater_or_equivalent_fraction_def by auto
-  hence "equivalent_fraction (y1, y2) (x1, x2)"
-    using Theorem_38 by auto
-  thus ?thesis
-    using less_or_equivalent_fraction_def by auto
-qed
-
-
-(* Theorem 49: If
-x_1/x_2 \<lesssim> y_1/y_2
-then
-y_1/y_2 \<greatersim> x_1/x_2.
-Proof: Theorem 38 and Theorem 43.
-
- *)
-theorem Theorem_49:
-  assumes "less_or_equivalent_fraction (x1, x2) (y1, y2)"
-  shows "greater_or_equivalent_fraction (y1, y2) (x1, x2)"
-proof (cases "less_fraction (x1, x2) (y1, y2)")
-  case True
-  then have "greater_fraction (y1, y2) (x1, x2)"
-    using Theorem_43 by auto
-  thus ?thesis
-    using greater_or_equivalent_fraction_def by auto
-next
-  case False
-  then have "equivalent_fraction (x1, x2) (y1, y2)"
-    using assms less_or_equivalent_fraction_def by auto
-  hence "equivalent_fraction (y1, y2) (x1, x2)"
-    using Theorem_38 by auto
-  thus ?thesis
-    using greater_or_equivalent_fraction_def by auto
-qed
-
-
-(* Theorem 50 (Transitivity of Ordering): If
-x_1/x_2 < y_1/y_2, y_1/y_2 < z_1/z_2
-then
-x_1/x_2 < z_1/z_2.
-Proof: x_1y_1 < y_1x_2, y_1z_2 < z_1y_2,
-hence
-(x_1y_2)(y_1z_2) < (y_1x_2)(z_1y_2),
-(x_1z_2)(y_1y_2) < (z_1x_2)(y_1y_2),
-x_1z_2 < z_1x_2.
-
- *)
-theorem Theorem_50:
-  assumes "less_fraction (x1, x2) (y1, y2)"
-    and "less_fraction (y1, y2) (z1, z2)"
-  shows "less_fraction (x1, x2) (z1, z2)"
-proof -
-  have "x1 \<^bold>\<cdot> y2 \<^bold>< y1 \<^bold>\<cdot> x2"
-    using assms(1) less_fraction_def by auto 
-  moreover have "y1 \<^bold>\<cdot> z2 \<^bold>< z1 \<^bold>\<cdot> y2"
-    using assms(2) less_fraction_def by auto
-  ultimately have "(x1 \<^bold>\<cdot> y2) \<^bold>\<cdot> (y1 \<^bold>\<cdot> z2) \<^bold>< (y1 \<^bold>\<cdot> x2) \<^bold>\<cdot> (z1 \<^bold>\<cdot> y2)"
-    using Theorem_11 Theorem_12 Theorem_34 by presburger 
-  hence "(x1 \<^bold>\<cdot> z2) \<^bold>\<cdot> (y1 \<^bold>\<cdot> y2) \<^bold>< (z1 \<^bold>\<cdot> x2) \<^bold>\<cdot> (y1 \<^bold>\<cdot> y2)"
-    using Theorem_29 Theorem_31 by auto 
-  thus ?thesis
-    using less_fraction_def
-    by (meson Theorem_33 case_prodI) 
-qed
-
-
-
-(* Theorem 51. If
-x_1/x_2 \<lesssim> y_1/y_2, y_1/y_2 < z_1/z_2 or x_1/x_2 < y_1/y_2, y_1/y_2 \<lesssim> z_1/z_2,
-then
-x_1/x_2 < z_1/z_2.
-Proof: Follows from Theorem 45 if an equivalence sign holds
-in the hypothesis; otherwise from Theorem 50.
-
- *)
-theorem Theorem_51:
-  assumes "less_or_equivalent_fraction (x1, x2) (y1, y2)"
-    and "less_fraction (y1, y2) (z1, z2)"
-  shows "less_fraction (x1, x2) (z1, z2)"
-proof (cases "equivalent_fraction (x1, x2) (y1, y2)")
-  case True
-  then have "less_fraction (x1, x2) (z1, z2)"
-    using assms(2) Theorem_45
-    using Theorem_37 Theorem_38 by blast 
-  thus ?thesis by auto
-next
-  case False
-  then have "less_fraction (x1, x2) (y1, y2)"
-    using assms(1) less_or_equivalent_fraction_def by auto
-  thus ?thesis
-    using assms(2) Theorem_50
-    by blast 
-qed
-
-theorem Theorem_51_alt:
-  assumes "less_fraction (x1, x2) (y1, y2)"
-    and "less_or_equivalent_fraction (y1, y2) (z1, z2)"
-  shows "less_fraction (x1, x2) (z1, z2)"
-proof (cases "equivalent_fraction (y1, y2) (z1, z2)")
-  case True
-  then have "less_fraction (x1, x2) (z1, z2)"
-    using assms(1) Theorem_45
-    using Theorem_37 by blast 
-  thus ?thesis by auto
-next
-  case False
-  then have "less_fraction (y1, y2) (z1, z2)"
-    using assms(2) less_or_equivalent_fraction_def by auto
-  thus ?thesis
-    using assms(1) Theorem_50 by blast
-qed
-
-
-(* Theorem 52: If
-x_1/x_2 \<lesssim> y_1/y_2, y_1/y_2 \<lesssim> z_1/z_2
-then
-x_1/x_2 \<lesssim> z_1/z_2.
-Proof: Follows from Theorem 39 if two equivalence sigs
-hold in the hypothesis; otherwise from Theorem 51.
-
- *)
-theorem Theorem_52:
-  assumes "less_or_equivalent_fraction (x1, x2) (y1, y2)"
-    and "less_or_equivalent_fraction (y1, y2) (z1, z2)"
-  shows "less_or_equivalent_fraction (x1, x2) (z1, z2)"
-proof (cases "equivalent_fraction (x1, x2) (y1, y2) \<and> equivalent_fraction (y1, y2) (z1, z2)")
-  case True
-  then have "equivalent_fraction (x1, x2) (z1, z2)"
-    using assms Theorem_39 by blast
-  thus ?thesis
-    using less_or_equivalent_fraction_def by auto
-next
-  case False
-  then show ?thesis
-  proof (cases "less_fraction (x1, x2) (y1, y2) \<or> less_fraction (y1, y2) (z1, z2)")
-    case True
-    then show ?thesis
-      using assms Theorem_51 Theorem_51_alt
-      using less_or_equivalent_fraction_def by blast 
-  next
-    case False
-    then have "equivalent_fraction (x1, x2) (y1, y2)"
-      and "equivalent_fraction (y1, y2) (z1, z2)"
-      using assms less_or_equivalent_fraction_def by auto
-    hence "equivalent_fraction (x1, x2) (z1, z2)"
-      using Theorem_39 by blast
-    thus ?thesis
-      using less_or_equivalent_fraction_def by auto
-  qed
-qed
-
-(* Theorem 53: Given x_1/x_2, there exists a
-z_1/z_2 > x_1/x_2.
-Proof: (x_1 + x_1)x_2 = x_1x_2 + x_1x_2 > x_1x_2,
-(x_1 + x_1)/x_2 > x_1/x_2.
-
- *)
-theorem Theorem_53:
-  fixes x1 x2 :: Natnums
-  shows "\<exists>z1 z2. greater_fraction (z1, z2) (x1, x2)"
-proof -
-  let ?z1 = "x1 \<^bold>+ x1"
-  let ?z2 = "x2"
-  have "(x1 \<^bold>+ x1) \<^bold>\<cdot> x2 = x1 \<^bold>\<cdot> x2 \<^bold>+ x1 \<^bold>\<cdot> x2"
-    using Theorem_29 Theorem_30 by presburger
-  also have "... \<^bold>> x1 \<^bold>\<cdot> x2"
-    by (simp add: Theorem_18)
-  finally have "greater_fraction (?z1, ?z2) (x1, x2)"
-    using greater_fraction_def by auto
-  thus ?thesis
-    by auto
-qed
-
-
-(* Theorem 54: Given x_1/x_2, there exists a
-z_1/z_2 < x_1/x_2.
-Proof: x_1x_2 < x_1x_2 + x_1x_2 = x_1(x_2 + x_2),
-x_1/(x_2 + x_2) < x_1/x_2.
-
- *)
-theorem Theorem_54:
-  fixes x1 x2 :: Natnums
-  shows "\<exists>z1 z2. less_fraction (z1, z2) (x1, x2)"
-proof -
-  let ?z1 = "x1"
-  let ?z2 = "x2 \<^bold>+ x2"
-  have "x1 \<^bold>\<cdot> x2 \<^bold>< x1 \<^bold>\<cdot> x2 \<^bold>+ x1 \<^bold>\<cdot> x2"
-    using Landau_GPT4.less_than_def by blast 
-  also have "... = x1 \<^bold>\<cdot> (x2 \<^bold>+ x2)"
-    using Theorem_29 Theorem_30 by presburger
-  finally have "less_fraction (?z1, ?z2) (x1, x2)"
-    using less_fraction_def by auto
-  thus ?thesis
-    by auto
-qed
-
-
-(* Theorem 55: If
-x_1/x_2 < y_1/y_2,
-then there exists a z_1/z_2 such that
-x_1/x_2 < z_1/z_2 < y_1/y_2.
-Proof: x_1y_2 < y_1x_2,
-hence
-x_1x_2 + x_1y_2 < x_1x_2 + y_1x_2, x_1y_2 + y_1y_2 < y_1x_2 + y_1y_2,
-x_1(x_2 + y_2) < (x_1 + y_1)x_2, (x_1 + y_1)y_2 < y_1(x_2 + y_2),
-x_1/x_2 < (x_1 + y_1)/(x_2 + y_2) < y_1/y_2.
-
- *)
-theorem Theorem_55:
-  assumes "less_fraction (x1, x2) (y1, y2)"
-  shows "\<exists>z1 z2. less_fraction (x1, x2) (z1, z2) \<and> less_fraction (z1, z2) (y1, y2)"
-proof -
-  have "x1 \<^bold>\<cdot> y2 \<^bold>< y1 \<^bold>\<cdot> x2"
-    using assms less_fraction_def by auto
-  then have "x1 \<^bold>\<cdot> x2 \<^bold>+ x1 \<^bold>\<cdot> y2 \<^bold>< x1 \<^bold>\<cdot> x2 \<^bold>+ y1 \<^bold>\<cdot> x2"
-    by (metis Theorem_19 Theorem_6) 
-  moreover have "x1 \<^bold>\<cdot> y2 \<^bold>+ y1 \<^bold>\<cdot> y2 \<^bold>< y1 \<^bold>\<cdot> x2 \<^bold>+ y1 \<^bold>\<cdot> y2"
-    using Theorem_19 \<open>x1 \<^bold>\<cdot> y2 \<^bold>< y1 \<^bold>\<cdot> x2\<close> by blast 
-  ultimately have "x1 \<^bold>\<cdot> (x2 \<^bold>+ y2) \<^bold>< (x1 \<^bold>+ y1) \<^bold>\<cdot> x2"
-    using Theorem_29 Theorem_30
-    by auto 
-  moreover have "(x1 \<^bold>+ y1) \<^bold>\<cdot> y2 \<^bold>< y1 \<^bold>\<cdot> (x2 \<^bold>+ y2)"
-    using Theorem_29 Theorem_30
-    using \<open>x1 \<^bold>\<cdot> y2 \<^bold>+ y1 \<^bold>\<cdot> y2 \<^bold>< y1 \<^bold>\<cdot> x2 \<^bold>+ y1 \<^bold>\<cdot> y2\<close> by presburger 
-  ultimately have "less_fraction (x1, x2) (x1 \<^bold>+ y1, x2 \<^bold>+ y2) \<and> less_fraction (x1 \<^bold>+ y1, x2 \<^bold>+ y2) (y1, y2)"
-    using less_fraction_def by auto
-  thus ?thesis
-    by auto
-qed
-
-
-(* Definition 13: By x_1/x_2 + y_1/y_2 (+ to be read "plus") is meant
-the fraction (x_1y_2 + y_1x_2)/(x_2y_2).
-It is called the sum of x_1/x_2 and y_1/y_2, or the fraction obtained by the
-addition of y_1/y_2 to x_1/x_2.
-*)
-
-definition plus_fraction :: "Natnums \<times> Natnums \<Rightarrow> Natnums \<times> Natnums \<Rightarrow> Natnums \<times> Natnums" (infixl "\<oplus>" 65) where
-  "plus_fraction f1 f2 = (let (x1,x2) = f1; (y1,y2) = f2 in ((x1 \<^bold>\<cdot> y2) \<^bold>+ (y1 \<^bold>\<cdot> x2), x2 \<^bold>\<cdot> y2))"
-
-
-(* Theorem 56: If
-x_1/x_2 ~ y_1/y_2, z_1/z_2 ~ u_1/u_2
-then
-x_1/x_2 + z_1/z_2 ~ y_1/y_2 + u_1/u_2.
-Preliminary Remark: The class of the sum thus depends only
-on the classes to which the "summands" belong.
-Proof: x_1y_2 = y_1x_2, z_1u_2 = u_1z_2,
-hence
-(x_1y_2)(z_2u_2) = (y_1x_2)(z_2u_2), (z_1u_2)(x_2y_2) = (u_1z_2)(x_2y_2),
-hence
-(x_1z_2)(y_2u_2) = (y_1u_2)(x_2z_2), (z_1x_2)(y_2u_2) = (u_1y_2)(x_2z_2),
-(x_1z_2)(y_2u_2) + (z_1x_2)(y_2u_2) = (y_1u_2)(x_2z_2) + (u_1y_2)(x_2z_2),
-(x_1z_2 + z_1x_2)(y_2u_2) = (y_1u_2 + u_1y_2)(x_2z_2),
-(x_1z_2 + z_1x_2)/(x_2z_2) ~ (y_1u_2 + u_1y_2)/(y_2u_2).
-
- *)
-theorem Theorem_56:
-  assumes "equivalent_fraction (x1, x2) (y1, y2)"
-    and "equivalent_fraction (z1, z2) (u1, u2)"
-  shows "equivalent_fraction (plus_fraction (x1, x2) (z1, z2)) (plus_fraction (y1, y2) (u1, u2))"
-proof -
-  have "x1 \<^bold>\<cdot> y2 = y1 \<^bold>\<cdot> x2"
-    using assms(1) equivalent_fraction_def by auto
-  moreover have "z1 \<^bold>\<cdot> u2 = u1 \<^bold>\<cdot> z2"
-    using assms(2) equivalent_fraction_def by auto
-  ultimately have "(x1 \<^bold>\<cdot> y2) \<^bold>\<cdot> (z2 \<^bold>\<cdot> u2) = (y1 \<^bold>\<cdot> x2) \<^bold>\<cdot> (z2 \<^bold>\<cdot> u2)"
-    and "(z1 \<^bold>\<cdot> u2) \<^bold>\<cdot> (x2 \<^bold>\<cdot> y2) = (u1 \<^bold>\<cdot> z2) \<^bold>\<cdot> (x2 \<^bold>\<cdot> y2)"
-    by (simp_all add: Theorem_29)
-  hence "(x1 \<^bold>\<cdot> z2) \<^bold>\<cdot> (y2 \<^bold>\<cdot> u2) = (y1 \<^bold>\<cdot> u2) \<^bold>\<cdot> (x2 \<^bold>\<cdot> z2)"
-    using Theorem_29 Theorem_31 by force 
-  hence  "(z1 \<^bold>\<cdot> x2) \<^bold>\<cdot> (y2 \<^bold>\<cdot> u2) = (u1 \<^bold>\<cdot> y2) \<^bold>\<cdot> (x2 \<^bold>\<cdot> z2)"
-    by (metis Theorem_29 Theorem_31 \<open>z1 \<^bold>\<cdot> u2 = u1 \<^bold>\<cdot> z2\<close>) 
-  hence "(x1 \<^bold>\<cdot> z2) \<^bold>\<cdot> (y2 \<^bold>\<cdot> u2) \<^bold>+ (z1 \<^bold>\<cdot> x2) \<^bold>\<cdot> (y2 \<^bold>\<cdot> u2) = (y1 \<^bold>\<cdot> u2) \<^bold>\<cdot> (x2 \<^bold>\<cdot> z2) \<^bold>+ (u1 \<^bold>\<cdot> y2) \<^bold>\<cdot> (x2 \<^bold>\<cdot> z2)"
-    using \<open>x1 \<^bold>\<cdot> z2 \<^bold>\<cdot> (y2 \<^bold>\<cdot> u2) = y1 \<^bold>\<cdot> u2 \<^bold>\<cdot> (x2 \<^bold>\<cdot> z2)\<close> by presburger 
-  hence "(x1 \<^bold>\<cdot> z2 \<^bold>+ z1 \<^bold>\<cdot> x2) \<^bold>\<cdot> (y2 \<^bold>\<cdot> u2) = (y1 \<^bold>\<cdot> u2 \<^bold>+ u1 \<^bold>\<cdot> y2) \<^bold>\<cdot> (x2 \<^bold>\<cdot> z2)"
-    by (simp add: Theorem_29 Theorem_30) 
-  thus ?thesis
-    using equivalent_fraction_def plus_fraction_def by auto
-qed
-
-
-(* Theorem 57: x_1/x + x_2/x ~ (x_1 + x_2)/x.
-Proof: By Definition 13 and by Theorem 40, we have
-x_1/x + x_2/x ~ (x_1x + x_2x)/(xx) ~ ((x_1 + x_2)x)/(xx) ~ (x_1 + x_2)/x.
-
- *)
-theorem Theorem_57:
-  fixes x1 x2 x :: Natnums
-  shows "equivalent_fraction (plus_fraction (x1, x) (x2, x)) (x1 \<^bold>+ x2, x)"
-proof -
-  have "plus_fraction (x1, x) (x2, x) = (x1 \<^bold>\<cdot> x \<^bold>+ x2 \<^bold>\<cdot> x, x \<^bold>\<cdot> x)"
-    by (simp add: plus_fraction_def)
-  also have "equivalent_fraction (x1 \<^bold>\<cdot> x \<^bold>+ x2 \<^bold>\<cdot> x, x \<^bold>\<cdot> x) ((x1 \<^bold>+ x2) \<^bold>\<cdot> x, x \<^bold>\<cdot> x)"
-    using Theorem_40 equivalent_fraction_def
-    using Theorem_29 Theorem_30 Theorem_37 by presburger 
-  also have "equivalent_fraction ((x1 \<^bold>+ x2) \<^bold>\<cdot> x, x \<^bold>\<cdot> x) (x1 \<^bold>+ x2, x)"
-    using Theorem_40 equivalent_fraction_def by auto
-  show ?thesis
-    using Theorem_29 Theorem_30 \<open>(x1, x) \<oplus> (x2, x) = (x1 \<^bold>\<cdot> x \<^bold>+ x2 \<^bold>\<cdot> x, x \<^bold>\<cdot> x)\<close> \<open>equivalent_fraction ((x1 \<^bold>+ x2) \<^bold>\<cdot> x, x \<^bold>\<cdot> x) (x1 \<^bold>+ x2, x)\<close> by presburger 
-qed
-
-
-
-(* Theorem 58 (Commutative Law of Addition):
-x_1/x_2 + y_1/y_2 ~ y_1/y_2 + x_1/x_2.
-Proof: x_1/x_2 + y_1/y_2 ~ (x_1y_2 + y_1x_2)/(x_2y_2) ~ (y_1x_2 + x_1y_2)/(y_2x_2) ~ y_1/y_2 + x_1/x_2.
-
- *)
-theorem Theorem_58:
-  fixes x1 x2 y1 y2 :: Natnums
-  shows "equivalent_fraction (plus_fraction (x1, x2) (y1, y2)) (plus_fraction (y1, y2) (x1, x2))"
-proof -
-  have "plus_fraction (x1, x2) (y1, y2) = (x1 \<^bold>\<cdot> y2 \<^bold>+ y1 \<^bold>\<cdot> x2, x2 \<^bold>\<cdot> y2)"
-    by (simp add: plus_fraction_def)
-  also have "equivalent_fraction (x1 \<^bold>\<cdot> y2 \<^bold>+ y1 \<^bold>\<cdot> x2, x2 \<^bold>\<cdot> y2) (y1 \<^bold>\<cdot> x2 \<^bold>+ x1 \<^bold>\<cdot> y2, y2 \<^bold>\<cdot> x2)"
-    using Theorem_40 equivalent_fraction_def
-    using Theorem_29 Theorem_37 Theorem_6 by presburger 
-  also have "(y1 \<^bold>\<cdot> x2 \<^bold>+ x1 \<^bold>\<cdot> y2, y2 \<^bold>\<cdot> x2) = plus_fraction (y1, y2) (x1, x2)"
-    by (simp add: plus_fraction_def)
-  finally show ?thesis
-    by auto
-qed
-
-
-
-(* Theorem 59 (Associative Law of Addition):
-(x_1/x_2 + y_1/y_2) + z_1/z_2 ~ x_1/x_2 + (y_1/y_2 + z_1/z_2).
-Proof: (x_1/x_2 + y_1/y_2) + z_1/z_2 ~ (x_1y_2 + y_1x_2)/(x_2y_2) + z_1/z_2
-~ ((x_1y_2 + y_1x_2)z_2 + z_1(x_2y_2))/((x_2y_2)z_2) ~ (((x_1y_2)z_2 + (y_1x_2)z_2) + z_1(x_2y_2))/((x_2y_2)z_2)
-~ ((x_1(y_2z_2) + (x_2y_1)z_2) + (z_1y_2)x_2)/(x_2(y_2z_2)) ~ ((x_1(y_2z_2) + x_2(y_1z_2)) + (z_1y_2)x_2)/(x_2(y_2z_2))
-~ (x_1(y_2z_2) + ((y_1z_2)x_2 + (z_1y_2)x_2)/(x_2(y_2z_2)) ~ (x_1(y_2z_2) + (y_1z_2 + z_1y_2)x_2)/(x_2(y_2z_2))
-~ x_1/x_2 + (y_1z_2 + z_1y_2)/(y_2z_2) ~ x_1/x_2 + (y_1/y_2 + z_1/z_2).
-
- *)
-theorem Theorem_59:
-  fixes x1 x2 y1 y2 z1 z2 :: Natnums
-  shows "equivalent_fraction (plus_fraction (plus_fraction (x1, x2) (y1, y2)) (z1, z2)) (plus_fraction (x1, x2) (plus_fraction (y1, y2) (z1, z2)))"
-proof -
-  have "plus_fraction (plus_fraction (x1, x2) (y1, y2)) (z1, z2) = plus_fraction (x1 \<^bold>\<cdot> y2 \<^bold>+ y1 \<^bold>\<cdot> x2, x2 \<^bold>\<cdot> y2) (z1, z2)"
-    by (simp add: plus_fraction_def)
-  also have "plus_fraction (x1 \<^bold>\<cdot> y2 \<^bold>+ y1 \<^bold>\<cdot> x2, x2 \<^bold>\<cdot> y2) (z1, z2) = ((x1 \<^bold>\<cdot> y2 \<^bold>+ y1 \<^bold>\<cdot> x2) \<^bold>\<cdot> z2 \<^bold>+ z1 \<^bold>\<cdot> (x2 \<^bold>\<cdot> y2), (x2 \<^bold>\<cdot> y2) \<^bold>\<cdot> z2)"
-    by (simp add: plus_fraction_def)
-  also have "equivalent_fraction ((x1 \<^bold>\<cdot> y2 \<^bold>+ y1 \<^bold>\<cdot> x2) \<^bold>\<cdot> z2 \<^bold>+ z1 \<^bold>\<cdot> (x2 \<^bold>\<cdot> y2), (x2 \<^bold>\<cdot> y2) \<^bold>\<cdot> z2) (x1 \<^bold>\<cdot> (y2 \<^bold>\<cdot> z2) \<^bold>+ (y1 \<^bold>\<cdot> z2 \<^bold>+ z1 \<^bold>\<cdot> y2) \<^bold>\<cdot> x2, x2 \<^bold>\<cdot> (y2 \<^bold>\<cdot> z2))"
-    using Theorem_40 equivalent_fraction_def
-    using Theorem_29 Theorem_30 Theorem_5 by force
-  also have "equivalent_fraction (x1 \<^bold>\<cdot> (y2 \<^bold>\<cdot> z2) \<^bold>+ (y1 \<^bold>\<cdot> z2 \<^bold>+ z1 \<^bold>\<cdot> y2) \<^bold>\<cdot> x2, x2 \<^bold>\<cdot> (y2 \<^bold>\<cdot> z2)) (x1 \<^bold>\<cdot> (y2 \<^bold>\<cdot> z2) \<^bold>+ (y1 \<^bold>\<cdot> z2 \<^bold>\<cdot> x2 \<^bold>+ z1 \<^bold>\<cdot> y2 \<^bold>\<cdot> x2), x2 \<^bold>\<cdot> (y2 \<^bold>\<cdot> z2))"
-    using Theorem_29 Theorem_30 Theorem_37 by presburger 
-  then have "equivalent_fraction (x1 \<^bold>\<cdot> (y2 \<^bold>\<cdot> z2) \<^bold>+ (y1 \<^bold>\<cdot> z2 \<^bold>\<cdot> x2 \<^bold>+ z1 \<^bold>\<cdot> y2 \<^bold>\<cdot> x2), x2 \<^bold>\<cdot> (y2 \<^bold>\<cdot> z2)) (x1 \<^bold>\<cdot> (y2 \<^bold>\<cdot> z2) \<^bold>+ (y1 \<^bold>\<cdot> z2 \<^bold>+ z1 \<^bold>\<cdot> y2) \<^bold>\<cdot> x2, x2 \<^bold>\<cdot> (y2 \<^bold>\<cdot> z2))"
-    using Theorem_38 by blast 
-  then have "equivalent_fraction (x1 \<^bold>\<cdot> (y2 \<^bold>\<cdot> z2) \<^bold>+ (y1 \<^bold>\<cdot> z2 \<^bold>+ z1 \<^bold>\<cdot> y2) \<^bold>\<cdot> x2, x2 \<^bold>\<cdot> (y2 \<^bold>\<cdot> z2)) ((x1, x2) \<oplus> (y1 \<^bold>\<cdot> z2 \<^bold>+ z1 \<^bold>\<cdot> y2, y2 \<^bold>\<cdot> z2))"
-    using Theorem_40 equivalent_fraction_def
-    by (simp add: plus_fraction_def)
-  then have "((x1, x2) \<oplus> (y1 \<^bold>\<cdot> z2 \<^bold>+ z1 \<^bold>\<cdot> y2, y2 \<^bold>\<cdot> z2)) = (x1, x2) \<oplus> ((y1, y2) \<oplus> (z1, z2))"
-    by (simp add: plus_fraction_def)
-  then show ?thesis
-    by (metis \<open>equivalent_fraction (x1 \<^bold>\<cdot> (y2 \<^bold>\<cdot> z2) \<^bold>+ (y1 \<^bold>\<cdot> z2 \<^bold>+ z1 \<^bold>\<cdot> y2) \<^bold>\<cdot> x2, x2 \<^bold>\<cdot> (y2 \<^bold>\<cdot> z2)) ((x1, x2) \<oplus> (y1 \<^bold>\<cdot> z2 \<^bold>+ z1 \<^bold>\<cdot> y2, y2 \<^bold>\<cdot> z2))\<close> calculation fractions_equivalence_classes surj_pair) 
-qed
-
-
-
-(* Theorem 60: x_1/x_2 + y_1/y_2 > x_1/x_2.
-Proof: x_1y_2 + y_1x_2 > x_1y_2,
-(x_1y_2 + y_1x_2)x_2 > (x_1y_2)x_2 = x_1(y_2x_2) = x_1(x_2y_2),
-x_1/x_2 + y_1/y_2 ~ (x_1y_2 + y_1x_2)/(x_2y_2) > x_1/x_2
-
- *)
-theorem Theorem_60:
-  fixes x1 x2 y1 y2 :: Natnums
-  shows "greater_fraction (plus_fraction (x1, x2) (y1, y2)) (x1, x2)"
-proof -
-  have "x1 \<^bold>\<cdot> y2 \<^bold>+ y1 \<^bold>\<cdot> x2 \<^bold>> x1 \<^bold>\<cdot> y2"
-    using Theorem_18 by blast 
-  hence "(x1 \<^bold>\<cdot> y2 \<^bold>+ y1 \<^bold>\<cdot> x2) \<^bold>\<cdot> x2 \<^bold>> x1 \<^bold>\<cdot> y2 \<^bold>\<cdot> x2"
-    by (simp add: Theorem_35 greater_than_or_equal_def) 
-  hence "(x1 \<^bold>\<cdot> y2 \<^bold>+ y1 \<^bold>\<cdot> x2) \<^bold>\<cdot> x2 \<^bold>> x1 \<^bold>\<cdot> (y2 \<^bold>\<cdot> x2)"
-    by (simp add: Theorem_31) 
-  hence "(x1 \<^bold>\<cdot> y2 \<^bold>+ y1 \<^bold>\<cdot> x2) \<^bold>\<cdot> x2 \<^bold>> x1 \<^bold>\<cdot> (x2 \<^bold>\<cdot> y2)"
-    by (simp add: Theorem_29)
-  hence "greater_fraction (x1 \<^bold>\<cdot> y2 \<^bold>+ y1 \<^bold>\<cdot> x2, x2 \<^bold>\<cdot> y2) (x1, x2)"
-    using greater_fraction_def by auto
-  thus ?thesis
-    by (simp add: plus_fraction_def)
-qed
-
-
-(* Theorem 61: If
-x_1/x_2 > y_1/y_2
-then
-x_1/x_2 + z_1/z_2 > y_1/y_2 + z_1/z_2.
-Proof: If
-x_1y_2 > y_1x_2
-then
-(x_1y_2)z_2 > (y_1x_2)z_2.
-Since
-(xy)z = x(yz) = x(zy) = (xz)y,
-we have
-(x_1z_2)y_2 > (y_1z_2)x_2
-and
-(z_1x_2)y_2 = (z_1y_2)x_2,
-so that
-(x_1z_2 + z_1x_2)y_2 > (y_1z_2 + z_1y_2)x_2,
-(x_1z_2 + z_1x_2)(y_2z_2) > (y_1z_2 + z_1y_2)(x_2z_2),
-x_1/x_2 + z_1/z_2 ~ (x_1z_2 + z_1x_2)/(x_2z_2) > (y_1z_2 + z_1y_2)/(y_2z_2) ~ y_1/y_2 + z_1/z_2.
-
- *)
-theorem Theorem_61:
-  fixes x1 x2 y1 y2 z1 z2 :: Natnums
-  assumes "greater_fraction (x1, x2) (y1, y2)"
-  shows "greater_fraction (plus_fraction (x1, x2) (z1, z2)) (plus_fraction (y1, y2) (z1, z2))"
-proof -
-  have "x1 \<^bold>\<cdot> y2 \<^bold>> y1 \<^bold>\<cdot> x2"
-    using assms greater_fraction_def by auto
-  hence "(x1 \<^bold>\<cdot> y2) \<^bold>\<cdot> z2 \<^bold>> (y1 \<^bold>\<cdot> x2) \<^bold>\<cdot> z2"
-    by (simp add: Theorem_35 greater_than_or_equal_def)
-  hence "(x1 \<^bold>\<cdot> z2) \<^bold>\<cdot> y2 \<^bold>> (y1 \<^bold>\<cdot> z2) \<^bold>\<cdot> x2"
-    using Theorem_29 Theorem_31 by force 
-  moreover have "(z1 \<^bold>\<cdot> x2) \<^bold>\<cdot> y2 = (z1 \<^bold>\<cdot> y2) \<^bold>\<cdot> x2"
-    using Theorem_29 Theorem_31 by presburger 
-  ultimately have "(x1 \<^bold>\<cdot> z2 \<^bold>+ z1 \<^bold>\<cdot> x2) \<^bold>\<cdot> y2 \<^bold>> (y1 \<^bold>\<cdot> z2 \<^bold>+ z1 \<^bold>\<cdot> y2) \<^bold>\<cdot> x2"
-    using Theorem_19 Theorem_29 Theorem_30 by force 
-  hence "(x1 \<^bold>\<cdot> z2 \<^bold>+ z1 \<^bold>\<cdot> x2) \<^bold>\<cdot> (y2 \<^bold>\<cdot> z2) \<^bold>> (y1 \<^bold>\<cdot> z2 \<^bold>+ z1 \<^bold>\<cdot> y2) \<^bold>\<cdot> (x2 \<^bold>\<cdot> z2)"
-    by (metis Theorem_31 Theorem_32) 
-  hence "greater_fraction (x1 \<^bold>\<cdot> z2 \<^bold>+ z1 \<^bold>\<cdot> x2, x2 \<^bold>\<cdot> z2) (y1 \<^bold>\<cdot> z2 \<^bold>+ z1 \<^bold>\<cdot> y2, y2 \<^bold>\<cdot> z2)"
-    using greater_fraction_def by auto
-  thus ?thesis
-    by (simp add: plus_fraction_def)
-qed
-
-
-
-(* Theorem 62: If
-x_1/x_2 > y_1/y_2 or x_1/x_2 ~ y_1/y_2 or x_1/x_2 < y_1/y_2,
-then
-x_1/x_2 + z_1/z_2 > y_1/y_2 + z_1/z_2 or x_1/x_2 + z_1/z_2 ~ y_1/y_2 + z_1/z_2 or x_1/x_2 + z_1/z_2 < y_1/y_2 + z_1/z_2, respectively.
-Proof: The first part is Theorem 61; the second is contained in Theorem 56; and the third is a consequence of the first, since
-y_1/y_2 > x_1/x_2,
-y_1/y_2 + z_1/z_2 > x_1/x_2 + z_1/z_2,
-x_1/x_2 + z_1/z_2 < y_1/y_2 + z_1/z_2.
-
- *)
-theorem Theorem_62:
-  fixes x1 x2 y1 y2 z1 z2 :: Natnums
-  shows "(greater_fraction (x1, x2) (y1, y2) \<longrightarrow> greater_fraction (plus_fraction (x1, x2) (z1, z2)) (plus_fraction (y1, y2) (z1, z2))) \<and>
-         (equivalent_fraction (x1, x2) (y1, y2) \<longrightarrow> equivalent_fraction (plus_fraction (x1, x2) (z1, z2)) (plus_fraction (y1, y2) (z1, z2))) \<and>
-         (greater_fraction (y1, y2) (x1, x2) \<longrightarrow> greater_fraction (plus_fraction (y1, y2) (z1, z2)) (plus_fraction (x1, x2) (z1, z2)))"
-
-proof -
-  have "greater_fraction (x1, x2) (y1, y2) \<Longrightarrow> greater_fraction (plus_fraction (x1, x2) (z1, z2)) (plus_fraction (y1, y2) (z1, z2))"
-    using Theorem_61 by blast
-  moreover have "equivalent_fraction (x1, x2) (y1, y2) \<Longrightarrow> equivalent_fraction (plus_fraction (x1, x2) (z1, z2)) (plus_fraction (y1, y2) (z1, z2))"
-    by (simp add: Theorem_37 Theorem_56) 
-  moreover have "greater_fraction (y1, y2) (x1, x2) \<Longrightarrow> greater_fraction (plus_fraction (y1, y2) (z1, z2)) (plus_fraction (x1, x2) (z1, z2))"
-    using Theorem_61 by blast
-  ultimately show ?thesis
-    by blast
-qed
-
 end

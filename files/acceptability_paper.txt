@@ -49,7 +49,7 @@ attacks each argument which does not belong to S.
 §
 Lemma 14. S is a stable extension iff S = {A|A is not attacked by S}.
 §
-Lemma 15. Every stable extension is u preferred extension, but not vice versa.
+Lemma 15. Every stable extension is a preferred extension, but not vice versa.
 Proof. It is clear that each stable extension is a preferred extension. To show that
 the reverse does not hold, we construct the following argumentation framework:
 Let AF = (AR, attacks) with AR = {A} and attacks = {(A, A)}. It is clear that the

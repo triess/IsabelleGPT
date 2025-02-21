@@ -77,7 +77,10 @@ def initialise(seed=None, model=None, few_shot=None):
         MODEL = model
     if few_shot:
         FEW_SHOT_NO = few_shot
-    API_KEY = open("files/key.txt", "r").read()
+    if "gpt" in model:
+        API_KEY = open("files/openai_key.txt", "r").read()
+    else:
+        API_KEY = open("files/openai_key.txt", "r").read()
     OpenAI.api_key = API_KEY
     client = OpenAI(api_key=API_KEY)
     return client
