@@ -1,4 +1,4 @@
-theory temp
+theory deepseek
 
 (* imports HOL.Set HOL.Metis HOL.Meson HOL.SMT HOL.Sledgehammer *)
 

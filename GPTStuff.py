@@ -10,7 +10,7 @@ MODEL = "gpt-4"
 global_messages = []
 FEW_SHOT_NO = 5
 WORKING_FILE = None
-LOG_FILE = "files/gpt_messages.log"
+LOG_FILE = ""
 
 
 def chat_loop(client, initial_messages):
@@ -79,10 +79,14 @@ def initialise(seed=None, model=None, few_shot=None):
         FEW_SHOT_NO = few_shot
     if "gpt" in model:
         API_KEY = open("files/openai_key.txt", "r").read()
+        LOG_FILE = "files/gpt_messages.log"
+        OpenAI.api_key = API_KEY
+        client = OpenAI(api_key=API_KEY)
     else:
-        API_KEY = open("files/openai_key.txt", "r").read()
-    OpenAI.api_key = API_KEY
-    client = OpenAI(api_key=API_KEY)
+        API_KEY = open("files/deepseek_key.txt", "r").read()
+        LOG_FILE = "files/deepseek_messages.log"
+        OpenAI.api_key = API_KEY
+        client = OpenAI(api_key=API_KEY, base_url="https://api.deepseek.com")
     return client
 
 def system_message(message):

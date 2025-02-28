@@ -59,7 +59,6 @@ Definition 16. The characteristic function, denoted by FAF, of an argumentation
 framework AF = (AR. attacks) is defined as follows:
 F_AF:2^AR \<rightarrow> 2^AR,
 F_AF(S) = {A | A is acceptable with respect to S}.
-§
 Remark 17. As we always refer to an arbitrary but fixed argumentation framework AF, we often write F instead of FAF for short.
 §
 Lemma 18. A conflict-free set S of arguments is admissible iff S \<subseteq> F(S).

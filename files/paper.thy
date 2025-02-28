@@ -423,10 +423,4 @@ F_AF(S) = {A | A is acceptable with respect to S}.
 definition characteristic_function :: "(string set \<times> (string \<times> string) set) \<Rightarrow> string set \<Rightarrow> string set" where
   "characteristic_function G S = {a \<in> arguments G. acceptable G a S}"
 
-
-
-(* 
-Remark 17. As we always refer to an arbitrary but fixed argumentation framework AF, we often write F instead of FAF for short.
- *)
-(* No formalization needed for remarks as they are explanatory in nature. *)
 end

@@ -333,7 +333,10 @@ def read_params():
     if "paper" in theory_file:
         NAMESPACE = "paper"
     else:
-        NAMESPACE = "Landau_GPT4"
+        if "gpt" in parameters.get('model'):
+            NAMESPACE = "Landau_GPT4"
+        else:
+            NAMESPACE = "deepseek"
     temp_file = parameters.get("temp")
     #read temp file or make new one
     if temp_file:

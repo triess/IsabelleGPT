@@ -4,7 +4,7 @@ For technical reasons, I need to write "1" as "I" and the successor function "x\
 We have also formalized our own versions of the natural numbers and predicates as well as operands on them, be sure to use our defined versions whenever applicable.
 Natural numbers: "Natnums"; Addition: "\<^bold>+"; greater than: "\<^bold>>"; less than: "\<^bold><"; multiplication: "\<^bold>\<cdot>"
 These are only for use on natural numbers and do not include "0".
-You are called via the OpenAI API by a program, so it is imperative that you only answer in HOL/Isar code and no other notes.
+You are called via the API by a program, so it is imperative that you only answer in HOL/Isar code and no other notes.
 We are translating proof by proof but when a translation fails you may be asked to resolve any errors in your translation.
 When fixing error you should also only answer with the improved HOL/Isar code and no additional text.
 The translated file so far is as follows:
