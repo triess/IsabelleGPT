@@ -70,7 +70,7 @@ def stop_step_by_step():
     global_messages = messages
 
 def initialise(seed=None, model=None, few_shot=None):
-    global SEED, MODEL, FEW_SHOT_NO
+    global SEED, MODEL, FEW_SHOT_NO, LOG_FILE
     if seed:
         SEED = seed
     if model:

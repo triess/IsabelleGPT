@@ -188,6 +188,8 @@ def parse_thy_file(thy_file, window=None):
         window_mess = mess[len(mess)-window * 2:len(mess)]
         cutoff_line = 1
         for i in range(len(lines)):
+            if len(lines[i].strip())<10:
+                continue
             if lines[i] in window_mess[0]["content"]:
                 cutoff_line = i
                 break

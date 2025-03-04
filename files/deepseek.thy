@@ -1,13 +1,6 @@
 theory deepseek
 
-(* imports HOL.Set HOL.Metis HOL.Meson HOL.SMT HOL.Sledgehammer *)
-
 imports Main
-
-(*
-TODOs:
-- split up equations
- *)
 
 begin
 
@@ -645,4 +638,159 @@ definition less_than (infix "\<^bold><" 50) where
   "x \<^bold>< y \<equiv> (\<exists>v. y = x \<^bold>+ v)"
 
 
+
+(* Theorem 10: For any given x, y, we have exactly one of the cases
+x = y, x > y, x < y.
+Proof: Theorem 9, Definition 2 and Definition 3.
+
+ *)
+theorem Theorem_10: "\<forall>x y. (x = y) \<or> (x \<^bold>> y) \<or> (x \<^bold>< y)"
+
+proof -
+  {
+    fix x y::Natnums
+    from Theorem_9_a have "(x = y) \<or> (\<exists>!u. x = y \<^bold>+ u) \<or> (\<exists>!v. y = x \<^bold>+ v)" by auto
+    hence "(x = y) \<or> (x \<^bold>> y) \<or> (x \<^bold>< y)"
+      using greater_than_def less_than_def by auto
+  }
+  thus "\<forall>x y. (x = y) \<or> (x \<^bold>> y) \<or> (x \<^bold>< y)" by auto
+qed
+
+theorem Theorem_10_exclusive: "\<forall>x y. \<not>((x = y) \<and> (x \<^bold>> y)) \<and> \<not>((x = y) \<and> (x \<^bold>< y)) \<and> \<not>((x \<^bold>> y) \<and> (x \<^bold>< y))"
+proof -
+  {
+    fix x y::Natnums
+    {
+      assume "(x = y) \<and> (x \<^bold>> y)"
+      then have "x = y \<and> (\<exists>u. x = y \<^bold>+ u)" using greater_than_def by auto
+      then have "x = x \<^bold>+ u"
+        using Theorem_6 Theorem_7 by auto 
+      then have False using Theorem_7
+        by (simp add: Theorem_6) 
+    }
+    hence "\<not>((x = y) \<and> (x \<^bold>> y))" by auto
+
+    {
+      assume "(x = y) \<and> (x \<^bold>< y)"
+      then have "x = y \<and> (\<exists>v. y = x \<^bold>+ v)" using less_than_def by auto
+      then have "x = x \<^bold>+ v"
+        using Theorem_6 Theorem_7 by auto 
+      then have False using Theorem_7
+        using Theorem_6 by auto 
+    }
+    hence "\<not>((x = y) \<and> (x \<^bold>< y))" by auto
+
+    {
+      assume "(x \<^bold>> y) \<and> (x \<^bold>< y)"
+      then have "(\<exists>u. x = y \<^bold>+ u) \<and> (\<exists>v. y = x \<^bold>+ v)" using greater_than_def less_than_def by auto
+      then have "x = y \<^bold>+ u \<and> y = x \<^bold>+ v"
+        by (metis Theorem_5 Theorem_6 Theorem_7) 
+      then have "x = (x \<^bold>+ v) \<^bold>+ u"
+        by force 
+      then have "x = x \<^bold>+ (v \<^bold>+ u)" using Theorem_5 by auto
+      then have False using Theorem_7
+        using Theorem_6 by fastforce 
+    }
+    hence "\<not>((x \<^bold>> y) \<and> (x \<^bold>< y))" by auto
+  }
+  thus "\<forall>x y. \<not>((x = y) \<and> (x \<^bold>> y)) \<and> \<not>((x = y) \<and> (x \<^bold>< y)) \<and> \<not>((x \<^bold>> y) \<and> (x \<^bold>< y))"
+    using greater_than_def less_than_def by auto 
+qed
+
+
+(* Theorem 11: If
+x > y
+then
+y < x.
+Proof: Each of these means that
+x = y + u
+for some suitable u.
+
+ *)
+theorem Theorem_11: "\<forall>x y. x \<^bold>> y \<longrightarrow> y \<^bold>< x"
+proof -
+  {
+    fix x y::Natnums
+    assume "x \<^bold>> y"
+    then have "\<exists>u. x = y \<^bold>+ u" using greater_than_def by auto
+    then have "y \<^bold>< x" using less_than_def by auto
+  }
+  thus "\<forall>x y. x \<^bold>> y \<longrightarrow> y \<^bold>< x" by auto
+qed
+
+(* Theorem 12: If
+x < y
+then
+y > x.
+Proof: Each of these means that
+y = x + v
+for some suitable v.
+
+ *)
+theorem Theorem_12: "\<forall>x y. x \<^bold>< y \<longrightarrow> y \<^bold>> x"
+proof -
+  {
+    fix x y::Natnums
+    assume "x \<^bold>< y"
+    then have "\<exists>v. y = x \<^bold>+ v" using less_than_def by auto
+    then have "y \<^bold>> x" using greater_than_def by auto
+  }
+  thus "\<forall>x y. x \<^bold>< y \<longrightarrow> y \<^bold>> x" by auto
+qed
+
+(* Definition 4: x \<ge> y
+means
+x > y or x = y.
+(\<ge> to be read "is greater than or equal to.")
+
+ *)
+definition greater_than_or_equal (infix "\<^bold>\<ge>" 50) where
+  "x \<^bold>\<ge> y \<equiv> (x \<^bold>> y) \<or> (x = y)"
+
+(* Definition 5: x \<le> y
+means
+x < y or x = y.
+(\<le> to be read "is less than or equal to.") *)
+
+definition less_than_or_equal (infix "\<^bold>\<le>" 50) where
+  "x \<^bold>\<le> y \<equiv> (x \<^bold>< y) \<or> (x = y)"
+
+
+(* Theorem 13: If
+x \<ge> y
+then
+y \<le> x.
+Proof: Theorem 11.
+
+ *)
+theorem Theorem_13: "\<forall>x y. x \<^bold>\<ge> y \<longrightarrow> y \<^bold>\<le> x"
+proof -
+  {
+    fix x y::Natnums
+    assume "x \<^bold>\<ge> y"
+    then have "(x \<^bold>> y) \<or> (x = y)" using greater_than_or_equal_def by auto
+    then have "y \<^bold>< x \<or> y = x" using Theorem_11 by auto
+    then have "y \<^bold>\<le> x" using less_than_or_equal_def by auto
+  }
+  thus "\<forall>x y. x \<^bold>\<ge> y \<longrightarrow> y \<^bold>\<le> x" by auto
+qed
+
+(* Theorem 14: If
+x \<le> y
+then
+y \<ge> x.
+Proof: Theorem 12.
+
+ *)
+theorem Theorem_14: "\<forall>x y. x \<^bold>\<le> y \<longrightarrow> y \<^bold>\<ge> x"
+proof -
+  {
+    fix x y::Natnums
+    assume "x \<^bold>\<le> y"
+    then have "(x \<^bold>< y) \<or> (x = y)" using less_than_or_equal_def by auto
+    then have "y \<^bold>> x \<or> y = x" using Theorem_12 by auto
+    then have "y \<^bold>\<ge> x" using greater_than_or_equal_def by auto
+  }
+  thus "\<forall>x y. x \<^bold>\<le> y \<longrightarrow> y \<^bold>\<ge> x" by auto
+qed
 end
